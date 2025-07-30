@@ -1,0 +1,314 @@
+/* Styles pour la page Experiences - Migration des styles inline */
+
+/* Section principale */
+.experiences-page {
+  background: #faf1e6;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+/* En-tête */
+.experiences-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.experiences-title {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 1rem;
+}
+
+.experiences-description {
+  font-size: 1.2rem;
+  color: var(--color-text);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Bouton toggle */
+.experiences-toggle-container {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.experiences-toggle-btn {
+  font-size: 1.1rem;
+  margin: 0 10px;
+}
+
+/* Messages de feedback */
+.experiences-message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 0 auto 2rem;
+  max-width: 600px;
+  text-align: center;
+  border: 1px solid;
+}
+
+.experiences-message.success {
+  background: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.experiences-message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+
+/* Formulaire */
+.experiences-form {
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.experiences-form-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  color: var(--color-primary-dark);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.experiences-form-field {
+  margin-bottom: 1.5rem;
+}
+
+.experiences-form-field.large {
+  margin-bottom: 2rem;
+}
+
+.experiences-form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.experiences-form-input,
+.experiences-form-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+}
+
+.experiences-form-input:focus,
+.experiences-form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-dark);
+}
+
+.experiences-form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.experiences-form-submit-container {
+  text-align: center;
+}
+
+.experiences-form-submit-btn {
+  font-size: 1.1rem;
+  padding: 0.8rem 2rem;
+}
+
+/* Grille des témoignages */
+.experiences-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.experiences-loading {
+  text-align: center;
+  padding: 3rem;
+}
+
+.experiences-loading-spinner {
+  margin: 0 auto;
+}
+
+.experiences-loading-text {
+  margin-top: 1rem;
+  color: var(--color-text);
+}
+
+.experiences-empty {
+  text-align: center;
+  margin: 4rem auto;
+  max-width: 600px;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.experiences-empty-text {
+  font-size: 1.3rem;
+  color: var(--color-text);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.experiences-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.experiences-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.experiences-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.experiences-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.experiences-card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #87ceeb, #4682b4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-size: 1.5rem;
+}
+
+.experiences-card-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.3rem;
+  color: var(--color-primary-dark);
+  margin: 0 0 0.2rem 0;
+}
+
+.experiences-card-author {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+.experiences-card-date {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+.experiences-card-message {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  font-style: italic;
+  flex: 1;
+}
+
+/* Section Google Reviews */
+.experiences-google-section {
+  margin-bottom: 4rem;
+}
+
+.experiences-google-header {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.experiences-google-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 1rem;
+}
+
+.experiences-google-subtitle {
+  font-size: 1.2rem;
+  color: var(--color-text);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .experiences-title {
+    font-size: 2.2rem;
+  }
+
+  .experiences-description {
+    font-size: 1.1rem;
+    padding: 0 1rem;
+  }
+
+  .experiences-form {
+    margin: 0 1rem 3rem;
+    padding: 1.5rem;
+  }
+
+  .experiences-form-title {
+    font-size: 1.7rem;
+  }
+
+  .experiences-content {
+    padding: 0 1rem;
+  }
+
+  .experiences-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .experiences-card {
+    padding: 1.5rem;
+  }
+
+  .experiences-google-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .experiences-page {
+    padding: 1rem 0;
+  }
+
+  .experiences-title {
+    font-size: 1.8rem;
+  }
+
+  .experiences-description {
+    font-size: 1rem;
+  }
+
+  .experiences-form {
+    padding: 1rem;
+  }
+
+  .experiences-form-title {
+    font-size: 1.5rem;
+  }
+}

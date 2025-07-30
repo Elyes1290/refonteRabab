@@ -1,0 +1,229 @@
+/* Styles pour la page Events - Migration des styles inline */
+
+/* Section principale */
+.events-page {
+  background: #faf1e6;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+/* En-tête */
+.events-title {
+  font-family: "Playfair Display", serif;
+  font-size: 38px;
+  color: var(--color-primary-dark);
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.events-description {
+  font-size: 20px;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 2.5rem auto;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+/* Messages d'état */
+.events-loading {
+  text-align: center;
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.events-error {
+  color: red;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Grille d'événements */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 36px;
+  justify-content: center;
+  justify-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Cartes d'événements */
+.event-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  max-width: 320px;
+  min-width: 240px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto 24px auto;
+}
+
+.event-card-image {
+  cursor: zoom-in;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.event-card-image.flyer {
+  width: 100%;
+  height: auto;
+  max-width: 600px;
+  border-radius: 16px;
+}
+
+.event-card-image.regular {
+  width: 180px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Contenu des cartes - pas de padding supplémentaire car déjà dans .event-card */
+
+.event-card-title {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  color: var(--color-primary-dark);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.event-card-price {
+  color: #388e3c;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.event-card-date {
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.event-card-description {
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.event-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* État de l'événement */
+.event-card-status {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.event-card-status.upcoming {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.event-card-status.ongoing {
+  background: #e8f5e8;
+  color: #388e3c;
+}
+
+.event-card-status.past {
+  background: #fafafa;
+  color: #757575;
+}
+
+/* Message d'événements vides */
+.events-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text);
+}
+
+.events-empty-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 1rem;
+}
+
+.events-empty-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .events-title {
+    font-size: 32px;
+  }
+
+  .events-description {
+    font-size: 18px;
+    padding: 0 1rem;
+  }
+}
+
+/* Modal */
+.events-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+}
+
+.events-modal-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  background: #fff;
+  padding: 8px;
+}
+
+@media (max-width: 480px) {
+  .events-page {
+    padding: 1rem 0;
+  }
+
+  .events-title {
+    font-size: 28px;
+    margin-bottom: 1rem;
+  }
+
+  .events-description {
+    font-size: 16px;
+    margin-bottom: 2rem;
+  }
+}

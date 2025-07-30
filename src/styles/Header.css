@@ -1,0 +1,404 @@
+/* ========================================= */
+/* HEADER.CSS - CORRECTION COMPLÈTE        */
+/* Reproduction exacte de la version origin*/
+/* ========================================= */
+
+/* === STYLES DE BASE EXACTS === */
+
+/* Header principal */
+.header-responsive {
+  position: relative;
+}
+
+/* Container principal - comme les styles inline originaux */
+.header-main-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+/* Logo wrap - comme les styles inline originaux */
+.header-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100%;
+  margin-left: 32px;
+}
+
+/* Logo image - comme les styles inline originaux */
+.header-logo-image {
+  height: 56px;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navigation desktop - responsive et sans soulignement */
+.header-nav {
+  margin-right: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-nav-list {
+  display: flex;
+  gap: 1.2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.header-nav li {
+  margin: 0;
+  padding: 0;
+}
+
+/* Liens navigation desktop - responsive + sans soulignement */
+.header-nav-link {
+  color: var(--color-text);
+  background: none;
+  text-decoration: none !important;
+  font-weight: 600;
+  border-radius: 20px;
+  position: relative;
+  font-size: clamp(0.7rem, 1vw, 1.1rem);
+  padding: 0.7vw 2vw;
+  transition: all 0.3s ease;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* État actif des liens - SANS soulignement */
+.header-nav-link.active-link {
+  color: #4682b4;
+  background: #f5f5dc;
+  text-decoration: none !important;
+}
+
+/* Liens spéciaux - SANS soulignement */
+.header-nav-link.special {
+  color: white;
+  background: linear-gradient(45deg, #87ceeb, #4682b4);
+  box-shadow: 0 2px 8px rgba(135, 206, 235, 0.3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-decoration: none !important;
+}
+
+/* Bouton menu mobile - comme les styles inline originaux */
+.header-burger {
+  background: none;
+  border: none;
+  font-size: 32px;
+  margin-right: 18px;
+  cursor: pointer;
+  display: block;
+}
+
+/* Menu mobile - comme les styles inline originaux */
+.header-mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80vw;
+  max-width: 320px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 16px #0002;
+  z-index: 100;
+  flex-direction: column;
+  padding: 32px 18px 18px 18px;
+  transition: transform 0.3s;
+}
+
+/* États d'affichage menu mobile - comme dans l'original */
+.header-mobile-menu:not(.show-mobile) {
+  display: none;
+}
+
+.header-mobile-menu.show-mobile {
+  display: flex;
+}
+
+/* Liste navigation mobile - comme les styles inline originaux */
+.header-mobile-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Liens navigation mobile - SANS soulignement */
+.header-mobile-nav-link {
+  color: var(--color-text);
+  background: none;
+  text-decoration: none !important;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* État actif des liens mobiles - SANS soulignement */
+.header-mobile-nav-link.active-link {
+  color: #4682b4;
+  background: #f5f5dc;
+  text-decoration: none !important;
+}
+
+/* Liens spéciaux mobiles - SANS soulignement */
+.header-mobile-nav-link.special {
+  color: white;
+  background: linear-gradient(45deg, #87ceeb, #4682b4);
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(135, 206, 235, 0.3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-decoration: none !important;
+}
+
+/* === RESPONSIVE CORRECT === */
+
+/* Classes utilitaires de base */
+.hide-mobile {
+  display: block;
+}
+
+.show-mobile {
+  display: none;
+}
+
+/* Desktop responsive - réduction de la taille */
+@media (max-width: 1600px) {
+  .header-nav-link {
+    font-size: clamp(0.7rem, 1vw, 1.1rem);
+    padding: 0.7vw 2vw;
+  }
+
+  .header-nav-list {
+    gap: 0.7rem;
+  }
+}
+
+@media (max-width: 1400px) {
+  .header-nav-link {
+    font-size: clamp(0.7rem, 1vw, 1.1rem);
+    padding: 0.7vw 2vw;
+  }
+
+  .header-nav-list {
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .header-nav-link {
+    font-size: clamp(0.7rem, 1vw, 1.1rem);
+    padding: 0.7vw 2vw;
+  }
+
+  .header-nav-list {
+    gap: 0.6rem;
+  }
+}
+
+/* Sur mobile (tablettes et téléphones) */
+@media (max-width: 1100px) {
+  /* Cache la navigation desktop */
+  .hide-mobile {
+    display: none !important;
+  }
+
+  /* Affiche le burger menu */
+  .show-mobile {
+    display: block !important;
+  }
+
+  /* Header responsive */
+  .header-responsive {
+    min-height: clamp(70px, 10vw, 90px);
+    padding: 0.5rem 1rem;
+  }
+
+  .header-responsive img {
+    height: clamp(50px, 8vw, 70px) !important;
+    max-width: clamp(120px, 20vw, 160px);
+    width: auto;
+  }
+
+  .header-responsive span {
+    font-size: clamp(1rem, 2.5vw, 1.3rem) !important;
+    margin-top: clamp(6px, 1vw, 10px) !important;
+    white-space: nowrap;
+  }
+
+  /* Style du burger */
+  .header-burger {
+    display: block !important;
+    position: absolute;
+    top: 28px;
+    right: 10px;
+    transform: none;
+    z-index: 101;
+    color: #4682b4 !important;
+    text-shadow: 0 1px 4px #fff, 0 0 2px #4682b4;
+    background: none;
+    border: none;
+    font-size: 2.1rem !important;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px #fff8);
+    transition: color 0.2s;
+  }
+
+  .header-burger span {
+    color: #4682b4 !important;
+    font-size: 2.1rem !important;
+  }
+
+  /* Menu mobile responsive */
+  .header-mobile-menu {
+    background: var(--color-header-bg) !important;
+    width: 70vw !important;
+    max-width: 260px !important;
+    min-width: 180px;
+    box-shadow: -2px 0 16px #0002;
+    padding-top: 64px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-bottom: 18px !important;
+    z-index: 100;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.77, 0, 0.18, 1), opacity 0.25s;
+  }
+
+  .header-mobile-menu.show-mobile {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .header-mobile-menu ul {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .header-mobile-menu li {
+    margin-top: 0 !important;
+  }
+
+  /* Logo responsive */
+  .header-logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 100%;
+    min-width: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    width: auto;
+    margin-left: 1vw;
+    flex: 0 0 auto;
+  }
+
+  .header-logo-wrap img {
+    width: auto;
+    height: 4vw !important;
+    max-width: 8vw;
+    min-width: 24px;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  /* Main row responsive */
+  .header-main-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2.5rem;
+    width: 100%;
+  }
+
+  /* Nav responsive */
+  .header-nav {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: flex-end;
+  }
+}
+
+/* Sur desktop */
+@media (min-width: 1101px) {
+  .header-burger {
+    display: none !important;
+  }
+}
+
+/* Focus et active states */
+.header-burger:focus,
+.header-burger:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Logo text mobile responsive */
+.header-logo-text-mobile {
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 1px;
+  font-size: 1.1vw;
+  margin-top: 0.2vw;
+  width: auto;
+  min-width: 0;
+  padding: 0;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+@media (max-width: 1100px) {
+  .header-logo-text-mobile {
+    font-size: 1.3vw !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-logo-text-mobile {
+    font-size: 1.7vw !important;
+  }
+}
+
+/* Media query supplémentaire pour très petits écrans */
+@media (max-width: 600px) {
+  .header-responsive {
+    min-height: 60px;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .header-responsive img {
+    height: 45px !important;
+    max-width: 110px;
+  }
+
+  .header-responsive span {
+    font-size: 0.9rem !important;
+    margin-top: 4px !important;
+  }
+
+  .header-burger {
+    top: 18px !important;
+    right: 8px !important;
+    font-size: 1.8rem !important;
+  }
+}

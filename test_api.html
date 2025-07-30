@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test API</title>
+  </head>
+  <body>
+    <h1>Test API Réservation</h1>
+
+    <button onclick="testCheckAvailability()">
+      Test Vérification Disponibilité
+    </button>
+    <button onclick="testCreateReservation()">Test Création Réservation</button>
+
+    <div id="result"></div>
+
+    <script>
+      async function testCheckAvailability() {
+        const formData = new FormData();
+        formData.append("action", "check_availability");
+        formData.append("date", "2024-12-18"); // Mercredi
+        formData.append("heure", "09:00");
+        formData.append("service_type", "seance_online");
+
+        try {
+          const response = await fetch(
+            "https://rababali.com/rabab/api/db_connect.php",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          const data = await response.json();
+          document.getElementById("result").innerHTML =
+            "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+        } catch (error) {
+          document.getElementById("result").innerHTML =
+            "Erreur: " + error.message;
+        }
+      }
+
+      async function testCreateReservation() {
+        const formData = new FormData();
+        formData.append("action", "create_reservation");
+        formData.append("nom", "Test");
+        formData.append("prenom", "Test");
+        formData.append("email", "test@test.com");
+        formData.append("telephone", "0123456789");
+        formData.append("service_type", "seance_online");
+        formData.append("date_reservation", "2024-12-18");
+        formData.append("heure_reservation", "09:00");
+        formData.append("montant", "100");
+
+        try {
+          const response = await fetch(
+            "https://rababali.com/rabab/api/db_connect.php",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          const data = await response.json();
+          document.getElementById("result").innerHTML =
+            "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+        } catch (error) {
+          document.getElementById("result").innerHTML =
+            "Erreur: " + error.message;
+        }
+      }
+    </script>
+  </body>
+</html>

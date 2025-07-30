@@ -1,0 +1,296 @@
+/* Widget Instagram POWR */
+.powr-instagram-widget {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #faf1e6 0%, #faf1e6 100%);
+  border-radius: 20px;
+  margin: 3rem 0;
+  width: 100%;
+}
+
+.powr-header {
+  margin-bottom: 3rem;
+}
+
+.powr-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-heading, "Avenir", sans-serif);
+}
+
+.powr-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+/* Container pour le widget POWR - Agrandir pour les vidéos */
+.powr-widget-container {
+  margin: 3rem auto;
+  max-width: 1200px;
+  width: 100%;
+  min-height: 600px;
+}
+
+/* Styles pour le message de configuration */
+.powr-setup-info {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.powr-setup-info h4 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.powr-setup-info p {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.powr-setup-info ol {
+  color: #666;
+  line-height: 1.8;
+  padding-left: 1.5rem;
+}
+
+.powr-setup-info li {
+  margin-bottom: 0.5rem;
+}
+
+.powr-setup-info a {
+  color: #4682b4;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.powr-setup-info a:hover {
+  text-decoration: underline;
+}
+
+/* Footer avec bouton suivre */
+.powr-footer {
+  margin-top: 3rem;
+}
+
+.powr-follow-btn {
+  display: inline-block;
+  background: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.powr-follow-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+/* Styles pour surcharger POWR par défaut - Agrandir pour les vidéos */
+.powr-widget-container .powr-social-feed {
+  border-radius: 16px !important;
+  overflow: visible !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-height: 500px !important;
+  width: 100% !important;
+}
+
+/* Forcer les vidéos à être entièrement visibles */
+.powr-widget-container .powr-social-feed iframe {
+  min-height: 500px !important;
+  width: 100% !important;
+}
+
+/* S'assurer que les posts vidéo ont assez d'espace */
+.powr-widget-container .powr-social-feed-item,
+.powr-widget-container .powr-item {
+  min-height: 500px !important;
+  margin: 12px !important;
+  overflow: visible !important;
+}
+
+/* Forcer l'affichage complet du texte des posts */
+.powr-widget-container .powr-social-feed .powr-text,
+.powr-widget-container .powr-social-feed .powr-caption,
+.powr-widget-container .powr-social-feed .powr-content,
+.powr-widget-container .powr-social-feed .powr-description {
+  max-height: none !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
+  -webkit-line-clamp: unset !important;
+  display: block !important;
+  height: auto !important;
+}
+
+/* S'assurer que les boutons "Voir plus" ne sont pas nécessaires */
+.powr-widget-container .powr-social-feed .powr-read-more,
+.powr-widget-container .powr-social-feed .powr-expand {
+  display: none !important;
+}
+
+/* Styles pour les commentaires */
+.powr-widget-container .powr-social-feed .powr-comments,
+.powr-widget-container .powr-social-feed .powr-comment-section {
+  display: block !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Agrandir la zone de contenu pour inclure texte + commentaires */
+.powr-widget-container .powr-social-feed .powr-post-content,
+.powr-widget-container .powr-social-feed .powr-item-content {
+  min-height: 200px !important;
+  padding: 15px !important;
+  overflow: visible !important;
+}
+
+/* Style pour les commentaires individuels */
+.powr-widget-container .powr-social-feed .powr-comment {
+  display: block !important;
+  margin: 8px 0 !important;
+  padding: 8px !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-radius: 8px !important;
+}
+
+/* Texte des commentaires */
+.powr-widget-container .powr-social-feed .powr-comment-text,
+.powr-widget-container .powr-social-feed .powr-comment-content {
+  overflow: visible !important;
+  max-height: none !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
+}
+
+/* Agrandir les éléments vidéo spécifiquement */
+.powr-widget-container video,
+.powr-widget-container .powr-video {
+  min-height: 300px !important;
+  max-height: none !important;
+}
+
+/* Styles spéciaux pour les posts Instagram avec vidéos */
+.powr-widget-container .powr-social-feed [data-type="video"],
+.powr-widget-container .powr-social-feed .powr-video-container {
+  min-height: 350px !important;
+  width: 100% !important;
+}
+
+/* S'assurer que les images ne sont pas coupées non aussi */
+.powr-widget-container .powr-social-feed img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .powr-instagram-widget {
+    padding: 3rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .powr-title {
+    font-size: 2rem;
+  }
+
+  .powr-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .powr-widget-container {
+    max-width: 100%;
+    margin: 2rem auto;
+    min-height: 500px;
+  }
+
+  .powr-widget-container .powr-social-feed {
+    min-height: 500px !important;
+  }
+
+  .powr-widget-container .powr-social-feed iframe {
+    min-height: 500px !important;
+  }
+
+  /* Ajuster les posts pour mobile avec texte complet */
+  .powr-widget-container .powr-social-feed-item,
+  .powr-widget-container .powr-item {
+    min-height: 450px !important;
+  }
+
+  .powr-setup-info {
+    padding: 1.5rem;
+    max-width: 95%;
+  }
+
+  .powr-follow-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .powr-footer {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .powr-instagram-widget {
+    padding: 2rem 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .powr-widget-container {
+    margin: 1.5rem auto;
+    min-height: 400px;
+  }
+
+  .powr-widget-container .powr-social-feed {
+    min-height: 400px !important;
+  }
+
+  .powr-widget-container .powr-social-feed iframe {
+    min-height: 400px !important;
+  }
+
+  /* Ajuster les posts pour petit mobile avec texte complet */
+  .powr-widget-container .powr-social-feed-item,
+  .powr-widget-container .powr-item {
+    min-height: 380px !important;
+  }
+
+  .powr-setup-info {
+    padding: 1rem;
+  }
+
+  .powr-title {
+    font-size: 1.8rem;
+  }
+
+  .powr-subtitle {
+    font-size: 1rem;
+  }
+}

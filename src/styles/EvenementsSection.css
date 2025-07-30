@@ -1,0 +1,253 @@
+/* Styles pour EvenementsSection component - Migration des styles inline */
+
+/* Section principale */
+.evenements-section {
+  background: #faf1e6;
+  padding: 2rem 1rem;
+}
+
+/* Grille d'événements - comme dans Events.css */
+.evenements-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 36px;
+  justify-content: center;
+  justify-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Cartes d'événements - hauteur uniforme fixe */
+.evenement-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  max-width: 320px;
+  min-width: 240px;
+  height: 580px !important;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 0 auto 24px auto;
+}
+
+/* Loading state */
+.evenements-loading {
+  text-align: center;
+  color: var(--color-primary-dark);
+  font-size: 1.1rem;
+  padding: 2rem;
+}
+
+/* Error state */
+.evenements-error {
+  color: red;
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 2rem;
+}
+
+/* Image d'événement - comme dans Events.css */
+.evenement-image {
+  cursor: zoom-in;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+/* Style pour les flyers (grandes images) */
+.evenement-image.flyer {
+  width: 100%;
+  height: auto;
+  max-width: 600px;
+  border-radius: 16px;
+}
+
+/* Style pour les images régulières */
+.evenement-image.regular {
+  width: 180px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.evenement-image:hover {
+  transform: scale(1.02);
+}
+
+/* Titre d'événement - comme dans Events.css */
+.evenement-title {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  color: var(--color-primary-dark);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Prix d'événement - comme dans Events.css */
+.evenement-price {
+  color: #388e3c;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+/* Date d'événement - comme dans Events.css */
+.evenement-date {
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Description d'événement - espace fixe */
+.evenement-description {
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.6;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Lien "Voir tout" */
+.evenements-view-all {
+  display: inline-block;
+  background: var(--color-primary-dark);
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 0.6em 2em;
+  border-radius: 20px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px #0002;
+  transition: all 0.3s ease;
+  margin-top: 24px;
+  font-family: "Avenir", Arial, sans-serif;
+}
+
+.evenements-view-all:hover {
+  background: var(--color-primary);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(70, 130, 180, 0.3);
+}
+
+.evenements-view-all:visited {
+  color: #fff !important;
+}
+
+/* Responsive - avec hauteurs uniformes */
+@media (max-width: 768px) {
+  .evenements-section {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .evenement-card {
+    max-width: 280px;
+    min-width: 200px;
+    height: 500px !important;
+    padding: 20px;
+  }
+
+  .evenement-image.regular {
+    width: 160px;
+    height: 100px;
+  }
+
+  .evenement-title {
+    font-size: 20px;
+  }
+
+  .evenement-date {
+    font-size: 15px;
+  }
+
+  .evenement-description {
+    font-size: 15px;
+  }
+
+  .evenement-price {
+    font-size: 15px;
+  }
+
+  .evenements-view-all {
+    font-size: 16px;
+    padding: 0.6em 1.5em;
+    margin-top: 20px;
+  }
+}
+
+/* Modal d'agrandissement d'image */
+.evenements-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+}
+
+.evenements-modal-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  background: #fff;
+  padding: 8px;
+}
+
+@media (max-width: 480px) {
+  .evenements-section {
+    padding: 1rem 0.5rem;
+  }
+
+  .evenement-card {
+    max-width: 260px;
+    min-width: 180px;
+    height: 440px !important;
+    padding: 16px;
+  }
+
+  .evenement-image.regular {
+    width: 140px;
+    height: 90px;
+  }
+
+  .evenement-title {
+    font-size: 18px;
+  }
+
+  .evenement-date {
+    font-size: 14px;
+  }
+
+  .evenement-description {
+    font-size: 14px;
+  }
+
+  .evenement-price {
+    font-size: 14px;
+  }
+
+  .evenements-view-all {
+    font-size: 15px;
+    padding: 0.5em 1.3em;
+    margin-top: 16px;
+  }
+}

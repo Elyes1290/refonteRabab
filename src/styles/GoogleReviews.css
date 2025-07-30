@@ -1,0 +1,255 @@
+/* Styles pour GoogleReviews component - Migration des styles inline */
+
+/* Container principal */
+.google-reviews-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Loading state */
+.google-reviews-loading {
+  text-align: center;
+  padding: 2rem;
+}
+
+.google-reviews-loading .creative-loading {
+  margin: 0 auto;
+}
+
+.google-reviews-loading-text {
+  margin-top: 1rem;
+  color: var(--color-text);
+}
+
+/* Header section */
+.google-reviews-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.google-reviews-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 1rem;
+}
+
+.google-reviews-rating-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.google-reviews-stars-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.google-reviews-average-rating {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-primary-dark);
+}
+
+.google-reviews-total-count {
+  color: var(--color-text);
+  font-size: 1.1rem;
+}
+
+.google-reviews-see-all-btn {
+  font-size: 1rem;
+}
+
+/* Stars */
+.google-reviews-star {
+  margin-right: 2px;
+}
+
+.google-reviews-star.filled {
+  color: #ffd700;
+}
+
+.google-reviews-star.empty {
+  color: #e0e0e0;
+}
+
+.google-reviews-star.small {
+  font-size: 16px;
+}
+
+.google-reviews-star.medium {
+  font-size: 18px;
+}
+
+.google-reviews-star.large {
+  font-size: 24px;
+}
+
+/* Grid layout */
+.google-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+/* Review card */
+.google-review-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.google-review-card:hover {
+  border-color: #4285f4;
+  box-shadow: 0 15px 40px rgba(66, 133, 244, 0.2);
+}
+
+/* Google badge */
+.google-review-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #4285f4;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* Review header */
+.google-review-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.google-review-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.google-review-avatar.no-photo {
+  background: linear-gradient(45deg, #87ceeb, #4682b4);
+}
+
+.google-review-author-info {
+  flex: 1;
+}
+
+.google-review-author-name {
+  font-family: "Playfair Display", serif;
+  font-size: 1.2rem;
+  color: var(--color-primary-dark);
+  margin: 0 0 0.3rem 0;
+}
+
+.google-review-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.google-review-date {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* Review text */
+.google-review-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Bottom section */
+.google-reviews-bottom {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.google-reviews-leave-review-btn {
+  background: #4285f4;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+}
+
+.google-reviews-leave-review-btn:hover {
+  background: #3367d6;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .google-reviews-container {
+    padding: 0 1rem;
+  }
+
+  .google-reviews-title {
+    font-size: 2rem;
+  }
+
+  .google-reviews-rating-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .google-reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .google-review-card {
+    padding: 1.5rem;
+  }
+}
+
+/* Message d'absence d'avis */
+.google-reviews-no-reviews {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 2px dashed var(--color-primary);
+}
+
+.google-reviews-empty-message {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  margin: 0 0 0.5rem 0;
+}
+
+.google-reviews-empty-subtitle {
+  font-size: 1rem;
+  color: var(--color-text);
+  margin: 0;
+  opacity: 0.8;
+}

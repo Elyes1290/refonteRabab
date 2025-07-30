@@ -1,0 +1,122 @@
+/* Styles pour InstagramSection component - Migration des styles inline */
+
+/* Section principale */
+.instagram-section {
+  background: #faf1e6;
+  padding: 2rem 1rem;
+}
+
+/* Flèches de navigation */
+.instagram-arrow {
+  font-size: 48px;
+  color: var(--color-primary-dark);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.instagram-arrow-left {
+  margin-right: 28px;
+}
+
+.instagram-arrow-right {
+  margin-left: 28px;
+  opacity: 0.5;
+}
+
+.instagram-arrow:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+/* Liens de la galerie */
+.instagram-gallery-link {
+  display: block;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.instagram-gallery-link:hover {
+  transform: scale(1.07);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.instagram-gallery-link img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Texte du bas */
+.instagram-footer-text {
+  text-align: center;
+  margin-top: 8px;
+  color: var(--color-primary-dark);
+  font-size: 15px;
+  font-family: "Avenir", Arial, sans-serif;
+}
+
+/* Lien Instagram */
+.instagram-link {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  transition: all 0.2s ease;
+}
+
+.instagram-link:hover {
+  color: var(--color-primary);
+  text-decoration-color: var(--color-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .instagram-section {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .instagram-arrow {
+    font-size: 36px;
+  }
+
+  .instagram-arrow-left {
+    margin-right: 16px;
+  }
+
+  .instagram-arrow-right {
+    margin-left: 16px;
+  }
+
+  .instagram-footer-text {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .instagram-section {
+    padding: 1rem 0.5rem;
+  }
+
+  .instagram-arrow {
+    font-size: 28px;
+  }
+
+  .instagram-arrow-left {
+    margin-right: 12px;
+  }
+
+  .instagram-arrow-right {
+    margin-left: 12px;
+  }
+
+  .instagram-footer-text {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .instagram-gallery-link:hover {
+    transform: scale(1.05);
+  }
+}
