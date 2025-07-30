@@ -81,7 +81,10 @@ const Admin: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    // Vérifier immédiatement si l'utilisateur est déjà authentifié
+    return localStorage.getItem("admin_auth") === "true";
+  });
   const [authError, setAuthError] = useState<string | null>(null);
   const [eventType, setEventType] = useState<"event" | "flyer">("event");
   const [selectedFlyerModel, setSelectedFlyerModel] = useState<number | null>(
@@ -239,12 +242,6 @@ const Admin: React.FC = () => {
       }
     };
     fetchAppointments();
-  }, []);
-
-  // Vérifier l'authentification au chargement
-  useEffect(() => {
-    const auth = localStorage.getItem("admin_auth");
-    if (auth === "true") setIsAuthenticated(true);
   }, []);
 
   // Gérer le changement de champ
