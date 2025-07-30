@@ -13,17 +13,23 @@ export const fetchWithRetry = async (
   const { retries = 3, retryDelay = 1000, timeout = 10000 } = retryOptions;
 
   // Configuration par défaut pour mobile
+  const defaultHeaders: Record<string, string> = {
+    Accept: "application/json",
+    "Cache-Control": "no-cache",
+    ...(options.headers as Record<string, string>),
+  };
+
+  // Ne pas forcer Content-Type si c'est FormData (pour laisser le navigateur gérer)
+  if (!(options.body instanceof FormData)) {
+    defaultHeaders["Content-Type"] = "application/json";
+  }
+
   const defaultOptions: RequestInit = {
     cache: "no-cache",
     credentials: "omit",
     mode: "cors",
     ...options,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "Cache-Control": "no-cache",
-      ...options.headers,
-    },
+    headers: defaultHeaders,
   };
 
   // Fonction de timeout

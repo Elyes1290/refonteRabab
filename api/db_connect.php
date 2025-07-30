@@ -53,7 +53,6 @@ $password = $_ENV['DB_PASS'] ?? $_SERVER['DB_PASS'];
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     
     // Route pour créer une réservation
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_reservation') {
@@ -169,7 +168,7 @@ try {
             echo json_encode(['success' => false, 'message' => 'Tous les champs sont requis']);
         } else {
             try {
-                $stmt = $pdo->prepare("INSERT INTO experiences (nom, titre, message, date_creation) VALUES (?, ?, ?, NOW())");
+                $stmt = $pdo->prepare("INSERT INTO experiences (nom, titre, message, date_creation, modere, affiche, statut) VALUES (?, ?, ?, NOW(), 0, 0, 'en_attente')");
                 if ($stmt->execute([$nom, $titre, $message])) {
                     echo json_encode(['success' => true, 'message' => 'Expérience ajoutée avec succès']);
                 } else {
