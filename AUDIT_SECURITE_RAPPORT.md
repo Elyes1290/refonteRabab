@@ -26,7 +26,7 @@
 
 ```php
 // AVANT (DANGEREUX)
-'password' => 'Youssef.1918',
+'password' => '****************************',
 
 // APRÈS (SÉCURISÉ)
 'password' => $_ENV['DB_PASS'] ?? $_SERVER['DB_PASS'],
@@ -172,7 +172,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' h
 
 ```bash
 # Ajouter dans api/.env
-DB_PASS=Youssef.1918
+DB_PASS=********************************
 ```
 
 2. **🗑️ Supprimer config.php**
