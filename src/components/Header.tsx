@@ -38,9 +38,7 @@ const Header: React.FC = () => {
             alt="Logo Rabab Ali"
             className="pulse-glow header-logo-image"
           />
-          <span className="header-logo-text-mobile">
-            Approche et Visions 3D
-          </span>
+          <span className="header-logo-text-mobile">Approche et Vision 3D</span>
         </div>
         {/* Menu desktop */}
         <nav className="header-nav hide-mobile">

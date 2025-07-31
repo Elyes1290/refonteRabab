@@ -1,9 +1,10 @@
 @import url("/fonts/avenir/stylesheet.css");
+@import url("/fonts/monotype-corsica/stylesheet.css");
 
 :root {
   --color-bg: #f5f5dc; /* Beige chaleureux */
   --color-header-bg: #fff8dc; /* Crème douce */
-  --color-text: #8b7355; /* Terre d'ombre */
+  --color-text: #2c3e50; /* Bleu foncé pour meilleure visibilité */
   --color-primary: #87ceeb; /* Bleu ciel principal */
   --color-primary-dark: #4682b4; /* Bleu profond */
   --color-accent: #f5f5dc; /* Beige chaleureux (accent) */
@@ -83,12 +84,13 @@ h4,
 h5,
 h6 {
   color: var(--color-text);
-  font-family: "Avenir", Arial, sans-serif;
+  font-family: "Monotype Corsiva", cursive;
   font-weight: bold;
 }
 
 p {
   color: var(--color-text);
+  font-family: "Monotype Corsiva", cursive;
 }
 
 header,
@@ -121,7 +123,7 @@ main {
 }
 
 .titre-rabab {
-  font-family: "Avenir", Arial, sans-serif;
+  font-family: "Monotype Corsiva", cursive;
   font-weight: bold;
   font-size: 42px;
   line-height: 1.2em;
@@ -289,7 +291,7 @@ footer {
   padding: 0;
 }
 .banner-title {
-  font-family: "Sacramento", cursive;
+  font-family: "Sacramento", cursive !important;
   font-size: 4rem;
   border-radius: 12px;
   margin-bottom: 24px;
@@ -340,7 +342,7 @@ footer {
   text-align: center;
 }
 .accompagnement-section h2 {
-  font-family: "Playfair Display", serif;
+  font-family: "Monotype Corsiva", cursive;
   font-size: 32px;
   color: var(--color-primary-dark);
   margin-bottom: 16px;
@@ -348,7 +350,7 @@ footer {
 .accompagnement-section .accompagnement-text {
   max-width: 700px;
   margin: 0 auto;
-  font-size: 20px;
+  font-size: 22px;
   color: var(--color-text);
   line-height: 1.7;
 }
@@ -366,10 +368,10 @@ footer {
 }
 @media (max-width: 700px) {
   .accompagnement-section h2 {
-    font-size: 1.4rem;
+    font-size: 2.2rem !important;
   }
   .accompagnement-section .accompagnement-text {
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0 10px;
   }
   .accompagnement-section .accompagnement-fleur {
@@ -387,7 +389,7 @@ footer {
   text-align: center;
 }
 .vision3d-section h2 {
-  font-family: "Playfair Display", serif;
+  font-family: "Monotype Corsiva", cursive;
   font-size: 32px;
   color: var(--color-primary-dark);
   margin-bottom: 16px;
@@ -395,16 +397,16 @@ footer {
 .vision3d-section .vision3d-text {
   max-width: 700px;
   margin: 0 auto;
-  font-size: 20px;
+  font-size: 22px;
   color: var(--color-text);
   line-height: 1.7;
 }
 @media (max-width: 700px) {
   .vision3d-section h2 {
-    font-size: 1.3rem;
+    font-size: 2.2rem !important;
   }
   .vision3d-section .vision3d-text {
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0 10px;
   }
 }
@@ -416,13 +418,13 @@ footer {
   text-align: center;
 }
 .rendezvous-section h2 {
-  font-family: "Playfair Display", serif;
+  font-family: "Monotype Corsiva", cursive;
   font-size: 30px;
   color: var(--color-primary-dark);
   margin-bottom: 18px;
 }
 .rendezvous-section p {
-  font-size: 20px;
+  font-size: 22px;
   color: var(--color-text);
   margin-bottom: 24px;
 }
@@ -440,10 +442,10 @@ footer {
 }
 @media (max-width: 700px) {
   .rendezvous-section h2 {
-    font-size: 1.2rem;
+    font-size: 2.2rem !important;
   }
   .rendezvous-section p {
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0 10px;
   }
   .rendezvous-section .rendezvous-btn {
@@ -462,7 +464,7 @@ footer {
 
 .evenements-section h2,
 .temoignages-section h2 {
-  font-family: "Playfair Display", serif;
+  font-family: "Monotype Corsiva", cursive;
   font-size: 30px;
   color: var(--color-primary-dark);
   margin-bottom: 18px;
@@ -503,7 +505,7 @@ footer {
 
 /* Styles spécifiques aux témoignages */
 .experience-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Monotype Corsiva", cursive;
   font-size: 1.3rem;
   color: var(--color-primary-dark);
   margin: 0 0 1rem 0;
@@ -606,7 +608,7 @@ footer {
 
   .evenements-section h2,
   .temoignages-section h2 {
-    font-size: 1.5rem;
+    font-size: 2.2rem !important;
   }
 
   /* Style spécifique pour les cartes événements sur mobile */
@@ -719,7 +721,7 @@ footer {
     margin: 1.2rem auto 0 auto;
   }
   .instagram-section h2 {
-    font-size: 1.1rem;
+    font-size: 2.2rem !important;
   }
 }
 
@@ -737,14 +739,61 @@ footer {
   max-width: 420px;
   margin: 1rem;
   color: var(--color-text);
-  font: var(--font_8);
+  font-family: "Monotype Corsiva", cursive;
+  font-size: 1.6rem;
+  line-height: 1.8;
   text-align: center;
+}
+
+/* Styles pour les pages RDV et Vision 3D */
+.rdv-page p,
+.vision3d-page p,
+.rdv-page .rdv-text,
+.vision3d-page .vision3d-text,
+.rdv-page .formule-text,
+.vision3d-page .presentation-text,
+.vision3d-page .accompagnement-intro,
+.vision3d-subtitle,
+.rdv-page .formule-intro,
+.booking-description,
+.vision3d-subtitle,
+.vision3d-section-text,
+.vision3d-content,
+.vision3d-cta-text,
+.vision3d-cta-button {
+  font-family: "Monotype Corsiva", cursive !important;
+  font-size: 1.5rem !important;
+  line-height: 1.8 !important;
+}
+
+/* Styles pour la page À propos */
+.about-page p,
+.about-page .about-text,
+.about-page .about-description,
+.about-page .about-content,
+section p {
+  font-family: "Monotype Corsiva", cursive !important;
+  font-size: 1.4rem !important;
+  line-height: 1.8 !important;
+}
+
+/* Agrandir les textes à côté des images */
+.accompagnement-section .accompagnement-text,
+.vision3d-section .vision3d-text {
+  font-size: 1.6rem !important;
+  line-height: 1.8 !important;
 }
 .presentation-content h2 {
   font-size: 2.1rem;
-  font-family: "Playfair Display", serif;
+  font-family: "Monotype Corsiva", cursive;
   color: var(--color-primary-dark);
   margin-bottom: 0.5rem;
+}
+
+@media (max-width: 700px) {
+  .presentation-content h2 {
+    font-size: 2.2rem !important;
+  }
 }
 @media (min-width: 601px) {
   .presentation-section {

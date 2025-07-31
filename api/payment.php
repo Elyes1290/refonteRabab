@@ -8,6 +8,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 require_once __DIR__ . '/Reservation.php';
+require_once __DIR__ . '/send_reservation_email.php';
 
 // ✅ Fonction helper pour séparer prénom et nom correctement
 function separerPrenomNom($nomComplet) {
@@ -107,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
         // En production, cela sera fait par le webhook
         if (strpos($_ENV['STRIPE_SECRET_KEY'] ?? $_SERVER['STRIPE_SECRET_KEY'], 'sk_test_') === 0) {
             try {
-                $reservationId = createReservation([
+                $reservationData = [
                     'nom' => separerPrenomNom($reservation['nom'])['nom'],
                     'prenom' => separerPrenomNom($reservation['nom'])['prenom'],
                     'email' => $reservation['email'],
@@ -118,7 +119,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
                     'montant' => $amount / 100,
                     'notes' => $reservation['message'],
                     'statut' => 'confirmee',
-                ]);
+                ];
+                
+                $reservationId = createReservation($reservationData);
+                
+                // Envoyer l'email de notification (même en test)
+                if ($reservationId) {
+                    try {
+                        sendReservationNotificationEmail($reservationData);
+                    } catch (Exception $e) {
+                        error_log("Erreur envoi email réservation TEST: " . $e->getMessage());
+                    }
+                }
             } catch (Exception $e) {
                 error_log("Erreur création réservation TEST: " . $e->getMessage());
             }
@@ -169,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
         
         if (!checkReservationExists($email, $date, $horaire, $service)) {
             try {
-                $reservationId = createReservation([
+                $reservationData = [
                     'nom' => separerPrenomNom($metadata->nom ?? '')['nom'],
                     'prenom' => separerPrenomNom($metadata->nom ?? '')['prenom'],
                     'email' => $email,
@@ -180,7 +192,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
                     'montant' => ($session->amount_total ?? 0) / 100,
                     'notes' => $metadata->message ?? '',
                     'statut' => 'confirmee',
-                ]);
+                ];
+                
+                $reservationId = createReservation($reservationData);
+                
+                // Envoyer l'email de notification
+                if ($reservationId) {
+                    try {
+                        sendReservationNotificationEmail($reservationData);
+                    } catch (Exception $e) {
+                        error_log("Erreur envoi email réservation: " . $e->getMessage());
+                    }
+                }
             } catch (Exception $e) {
                 error_log("Erreur création réservation: " . $e->getMessage());
             }

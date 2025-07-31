@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Monotype Corsiva", "Monotype Corsica", cursive;
   line-height: 1.5;
   font-weight: 400;
 
@@ -24,11 +24,51 @@ a:hover {
 
 body {
   margin: 0;
+  font-family: "Monotype Corsiva", "Monotype Corsica", cursive;
+}
+
+* {
+  font-family: "Monotype Corsiva", "Monotype Corsica", cursive;
+}
+
+/* Exclure la navigation de la police Monotype Corsica */
+.header-nav-link,
+.header-mobile-nav-link,
+.header-nav-list,
+.header-mobile-nav-list,
+.header-nav-list *,
+.header-mobile-nav-list * {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  font-family: "Monotype Corsiva", "Monotype Corsica", cursive;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Monotype Corsiva", "Monotype Corsica", cursive;
+}
+
+/* S'assurer que les titres de sections utilisent la police cursive */
+.titre-rabab,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Monotype Corsiva", "Monotype Corsica", cursive !important;
+}
+
+/* Exclure le titre de la bannière pour qu'il garde son apparence originale */
+.banner-title {
+  font-family: "Sacramento", cursive !important;
 }
 
 button {

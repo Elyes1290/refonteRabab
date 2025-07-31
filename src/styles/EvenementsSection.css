@@ -26,7 +26,7 @@
   padding: 24px;
   max-width: 320px;
   min-width: 240px;
-  height: 580px !important;
+  height: 650px !important;
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
@@ -34,6 +34,9 @@
   justify-content: flex-start;
   width: 100%;
   margin: 0 auto 24px auto;
+  overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Loading state */
@@ -87,6 +90,9 @@
   color: var(--color-primary-dark);
   margin-bottom: 10px;
   text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 /* Prix d'événement - comme dans Events.css */
@@ -105,6 +111,9 @@
   margin-bottom: 8px;
   font-size: 16px;
   text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 /* Description d'événement - espace fixe */
@@ -118,6 +127,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Lien "Voir tout" */
@@ -156,7 +169,7 @@
   .evenement-card {
     max-width: 280px;
     min-width: 200px;
-    height: 500px !important;
+    height: 700px !important;
     padding: 20px;
   }
 
@@ -220,8 +233,13 @@
   .evenement-card {
     max-width: 260px;
     min-width: 180px;
-    height: 440px !important;
+    height: 650px !important;
     padding: 16px;
+  }
+
+  /* Hauteur réduite pour les cartes sans flyers en mobile */
+  .evenement-card:not(:has(.evenement-image.flyer)) {
+    height: 450px !important;
   }
 
   .evenement-image.regular {
