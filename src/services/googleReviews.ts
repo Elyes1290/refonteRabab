@@ -26,20 +26,17 @@ export interface GooglePlaceDetails {
   reviews: GoogleReviewData[];
 }
 
-// Fonction pour récupérer les avis Google
+// Fonction pour récupérer les avis Google via notre API backend
 export const fetchGoogleReviews =
   async (): Promise<GooglePlaceDetails | null> => {
-    if (!GOOGLE_API_KEY || !PLACE_ID) {
-      console.warn(
-        "Google API Key ou Place ID manquant. Utilisation des données de démonstration."
-      );
-      return null;
-    }
-
     try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,rating,reviews,user_ratings_total&key=${GOOGLE_API_KEY}&language=fr`
-      );
+      // En développement, utiliser localhost, en production utiliser rababali.com
+      const apiBase =
+        window.location.hostname === "localhost"
+          ? "http://localhost/RefonteSiteRabab/api"
+          : "https://rababali.com/rabab/api";
+
+      const response = await fetch(`${apiBase}/google_reviews_simple.php`);
 
       if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);
@@ -47,10 +44,10 @@ export const fetchGoogleReviews =
 
       const data = await response.json();
 
-      if (data.status === "OK") {
-        return data.result;
+      if (data.success) {
+        return data.data;
       } else {
-        console.error("Erreur Google API:", data.status, data.error_message);
+        console.error("Erreur API Google:", data.message, data.error);
         return null;
       }
     } catch (error) {
@@ -65,8 +62,8 @@ export const getGoogleReviewUrl = (placeId?: string): string => {
   if (id) {
     return `https://search.google.com/local/writereview?placeid=${id}`;
   }
-  // URL de fallback - à remplacer par votre URL Google My Business
-  return "https://g.page/r/YOUR_GOOGLE_BUSINESS_ID/review";
+  // URL de fallback - votre vraie URL Google My Business
+  return "https://g.page/r/CZq788eH7GZ7EBM/review";
 };
 
 // Fonction pour obtenir l'URL de tous les avis
@@ -75,8 +72,8 @@ export const getGoogleAllReviewsUrl = (placeId?: string): string => {
   if (id) {
     return `https://www.google.com/maps/place/?q=place_id:${id}`;
   }
-  // URL de fallback - à remplacer par votre URL Google My Business
-  return "https://g.page/YOUR_GOOGLE_BUSINESS_ID";
+  // URL de fallback - votre vraie URL Google My Business
+  return "https://g.page/r/CZq788eH7GZ7EBM";
 };
 
 // Configuration pour les variables d'environnement

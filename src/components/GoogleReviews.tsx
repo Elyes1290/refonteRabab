@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { fetchGoogleReviews } from "../services/googleReviews";
 import "../styles/GoogleReviews.css";
 
 interface GoogleReview {
@@ -25,18 +26,48 @@ export const GoogleReviews: React.FC<GoogleReviewsProps> = ({
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
 
-  // Données Google Reviews (vides en attendant les vrais avis)
-  const mockReviews: GoogleReview[] = [];
-
   useEffect(() => {
-    // TODO: Remplacer par l'appel API Google My Business
-    // Pour l'instant, aucun avis affiché
-    setTimeout(() => {
-      setReviews(mockReviews.slice(0, maxReviews));
-      setAverageRating(0);
-      setTotalReviews(0);
-      setLoading(false);
-    }, 500);
+    const loadGoogleReviews = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchGoogleReviews();
+
+        // Debug temporaire
+        console.log("🔍 Données reçues de l'API:", data);
+
+        if (data && data.reviews) {
+          // Transformer les données de l'API Google au format du composant
+          const formattedReviews: GoogleReview[] = data.reviews.map(
+            (review, index) => ({
+              id: `google_${index}`,
+              author_name: review.author_name,
+              rating: review.rating,
+              text: review.text,
+              time: review.time * 1000, // Convertir en millisecondes
+              profile_photo_url: review.profile_photo_url,
+            })
+          );
+
+          setReviews(formattedReviews.slice(0, maxReviews));
+          setAverageRating(data.rating || 0);
+          setTotalReviews(data.user_ratings_total || formattedReviews.length);
+        } else {
+          // Aucun avis trouvé
+          setReviews([]);
+          setAverageRating(0);
+          setTotalReviews(0);
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des avis Google:", error);
+        setReviews([]);
+        setAverageRating(0);
+        setTotalReviews(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadGoogleReviews();
   }, [maxReviews]);
 
   const renderStars = (
@@ -69,8 +100,13 @@ export const GoogleReviews: React.FC<GoogleReviewsProps> = ({
   };
 
   const handleSeeAllReviews = () => {
-    // TODO: Remplacer par l'URL Google My Business réelle
-    window.open("https://g.page/r/YOUR_GOOGLE_BUSINESS_ID/review", "_blank");
+    // Ouvrir tous les avis Google My Business
+    window.open("https://g.page/r/CZq788eH7GZ7EBM", "_blank");
+  };
+
+  const handleLeaveReview = () => {
+    // Ouvrir le formulaire d'avis Google My Business
+    window.open("https://g.page/r/CZq788eH7GZ7EBM/review", "_blank");
   };
 
   if (loading) {
@@ -168,7 +204,7 @@ export const GoogleReviews: React.FC<GoogleReviewsProps> = ({
       {/* Bouton pour voir plus d'avis */}
       <div className="google-reviews-bottom">
         <button
-          onClick={handleSeeAllReviews}
+          onClick={handleLeaveReview}
           className="google-reviews-leave-review-btn zoom-hover"
         >
           📱 Laisser un avis sur Google

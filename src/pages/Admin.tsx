@@ -28,7 +28,12 @@ interface EventItem {
   date_fin: string;
   prix: string;
   devise: string;
-  image_url: string;
+  image_url?: string; // Optionnel car peut être vide
+  type?: string; // "event" ou "flyer"
+  modele?: string; // Pour différencier les modèles de flyers
+  sous_titre?: string; // Sous-titre pour les flyers
+  lieu?: string; // Lieu pour les flyers
+  texte?: string; // Texte additionnel pour les flyers
 }
 
 // Interface pour les expériences/avis
@@ -91,6 +96,7 @@ const Admin: React.FC = () => {
     null
   );
   const [showFlyerModels, setShowFlyerModels] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loadingExperiences, setLoadingExperiences] = useState(true);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -300,7 +306,13 @@ const Admin: React.FC = () => {
     setMessage(null);
     try {
       const formData = new FormData();
-      formData.append("action", "add_event");
+      const isEditing = editingEvent !== null;
+      formData.append("action", isEditing ? "update_event" : "add_event");
+
+      if (isEditing) {
+        formData.append("id", editingEvent.id.toString());
+      }
+
       formData.append("titre", form.titre);
       formData.append("description", form.description);
       formData.append("date_event", form.date_event);
@@ -315,7 +327,9 @@ const Admin: React.FC = () => {
       });
       const data = await response.json();
       if (data.success) {
-        toast.success("Événement ajouté avec succès !");
+        toast.success(
+          `Événement ${isEditing ? "modifié" : "ajouté"} avec succès !`
+        );
         setForm({
           titre: "",
           description: "",
@@ -325,6 +339,7 @@ const Admin: React.FC = () => {
           devise: "€",
           image: null,
         });
+        setEditingEvent(null);
         // Recharger la liste
         const refresh = await fetch(
           `${API_BASE}/rabab/api/db_connect.php?action=get_events`
@@ -332,7 +347,10 @@ const Admin: React.FC = () => {
         const refreshData = await refresh.json();
         if (refreshData.success) setEvents(refreshData.data);
       } else {
-        toast.error(data.message || "Erreur lors de l'ajout.");
+        toast.error(
+          data.message ||
+            `Erreur lors de ${isEditing ? "la modification" : "l'ajout"}.`
+        );
       }
     } catch {
       toast.error("Erreur lors de l'envoi du formulaire.");
@@ -364,7 +382,13 @@ const Admin: React.FC = () => {
       type: "image/png",
     });
     const formData = new FormData();
-    formData.append("action", "add_flyer");
+    const isEditing = editingEvent !== null;
+    formData.append("action", isEditing ? "update_event" : "add_flyer");
+
+    if (isEditing) {
+      formData.append("id", editingEvent.id.toString());
+    }
+
     formData.append("titre", flyerCircles.titre);
     formData.append("sous_titre", flyerCircles.sousTitre);
     formData.append("date_event", flyerCircles.date);
@@ -383,7 +407,9 @@ const Admin: React.FC = () => {
       const data = await response.json();
       console.log("Réponse API flyer:", data);
       if (data.success) {
-        toast.success("Flyer ajouté avec succès !");
+        toast.success(
+          `Flyer ${isEditing ? "modifié" : "ajouté"} avec succès !`
+        );
         setFlyerCircles({
           titre: "",
           sousTitre: "",
@@ -401,6 +427,7 @@ const Admin: React.FC = () => {
           image3Url: "",
         });
         setSelectedFlyerModel(null);
+        setEditingEvent(null);
         // Recharger la liste des événements
         const refresh = await fetch(
           `${API_BASE}/rabab/api/db_connect.php?action=get_events`
@@ -442,7 +469,13 @@ const Admin: React.FC = () => {
       type: "image/png",
     });
     const formData = new FormData();
-    formData.append("action", "add_flyer");
+    const isEditing = editingEvent !== null;
+    formData.append("action", isEditing ? "update_event" : "add_flyer");
+
+    if (isEditing) {
+      formData.append("id", editingEvent.id.toString());
+    }
+
     formData.append("titre", flyerSquares.titre);
     formData.append("sous_titre", flyerSquares.sousTitre);
     formData.append("date_event", flyerSquares.date);
@@ -460,7 +493,9 @@ const Admin: React.FC = () => {
       });
       const data = await response.json();
       if (data.success) {
-        toast.success("Flyer ajouté avec succès !");
+        toast.success(
+          `Flyer ${isEditing ? "modifié" : "ajouté"} avec succès !`
+        );
         setFlyerSquares({
           titre: "",
           sousTitre: "",
@@ -478,6 +513,7 @@ const Admin: React.FC = () => {
           image3Url: "",
         });
         setSelectedFlyerModel(null);
+        setEditingEvent(null);
         // Recharger la liste des événements
         const refresh = await fetch(
           `${API_BASE}/rabab/api/db_connect.php?action=get_events`
@@ -524,6 +560,144 @@ const Admin: React.FC = () => {
     localStorage.removeItem("admin_auth");
     setUsernameInput("");
     setPasswordInput("");
+  };
+
+  // Fonction pour éditer un événement
+  const handleEditEvent = (eventItem: EventItem) => {
+    setEditingEvent(eventItem);
+
+    // Détecter le type d'événement
+    const isFlyer =
+      (eventItem.modele && eventItem.modele !== "") ||
+      eventItem.type === "flyer";
+
+    if (isFlyer) {
+      // C'est un flyer - définir le type et le modèle
+      setEventType("flyer");
+
+      // Déterminer quel modèle de flyer
+      if (eventItem.modele === "cercles") {
+        setSelectedFlyerModel(1);
+        setFlyerCircles({
+          titre: eventItem.titre,
+          sousTitre: eventItem.sous_titre || "",
+          date: eventItem.date_event,
+          date_fin: eventItem.date_fin,
+          prix: eventItem.prix,
+          devise: eventItem.devise,
+          lieu: eventItem.lieu || "",
+          texte: eventItem.texte || eventItem.description,
+          image1: null,
+          image2: null,
+          image3: null,
+          image1Url: eventItem?.image_url
+            ? `https://rababali.com${eventItem?.image_url}`
+            : "",
+          image2Url: "", // Les flyers complexes n'ont qu'une image fusionnée
+          image3Url: "",
+        });
+      } else if (eventItem.modele === "carres") {
+        setSelectedFlyerModel(2);
+        setFlyerSquares({
+          titre: eventItem.titre,
+          sousTitre: eventItem.sous_titre || "",
+          date: eventItem.date_event,
+          date_fin: eventItem.date_fin,
+          prix: eventItem.prix,
+          devise: eventItem.devise,
+          lieu: eventItem.lieu || "",
+          texte: eventItem.texte || eventItem.description,
+          image1: null,
+          image2: null,
+          image3: null,
+          image1Url: eventItem?.image_url
+            ? `https://rababali.com${eventItem.image_url}`
+            : "",
+          image2Url: "",
+          image3Url: "",
+        });
+      } else if (eventItem.modele === "sobre") {
+        setSelectedFlyerModel(10);
+        setFlyerSquares({
+          titre: eventItem.titre,
+          sousTitre: eventItem.sous_titre || "",
+          date: eventItem.date_event,
+          date_fin: eventItem.date_fin,
+          prix: eventItem.prix,
+          devise: eventItem.devise,
+          lieu: eventItem.lieu || "",
+          texte: eventItem.texte || eventItem.description,
+          image1: null,
+          image2: null,
+          image3: null,
+          image1Url: eventItem?.image_url
+            ? `https://rababali.com${eventItem.image_url}`
+            : "",
+          image2Url: "",
+          image3Url: "",
+        });
+      } else if (eventItem.modele === "externe") {
+        setSelectedFlyerModel(11);
+        setFlyerSquares({
+          titre: eventItem.titre,
+          sousTitre: eventItem.sous_titre || "",
+          date: eventItem.date_event,
+          date_fin: eventItem.date_fin,
+          prix: eventItem.prix,
+          devise: eventItem.devise,
+          lieu: eventItem.lieu || "",
+          texte: eventItem.texte || eventItem.description,
+          image1: null,
+          image2: null,
+          image3: null,
+          image1Url: eventItem?.image_url
+            ? `https://rababali.com${eventItem.image_url}`
+            : "",
+          image2Url: "",
+          image3Url: "",
+        });
+      } else if (eventItem.modele === "fond_image") {
+        setSelectedFlyerModel(12);
+        setFlyerSquares({
+          titre: eventItem.titre,
+          sousTitre: eventItem.sous_titre || "",
+          date: eventItem.date_event,
+          date_fin: eventItem.date_fin,
+          prix: eventItem.prix,
+          devise: eventItem.devise,
+          lieu: eventItem.lieu || "",
+          texte: eventItem.texte || eventItem.description,
+          image1: null,
+          image2: null,
+          image3: null,
+          image1Url: eventItem?.image_url
+            ? `https://rababali.com${eventItem.image_url}`
+            : "",
+          image2Url: "",
+          image3Url: "",
+        });
+      } else {
+        // Autres modèles de flyers
+        setSelectedFlyerModel(null);
+      }
+
+      setShowFlyerModels(true); // Afficher les modèles pour l'édition
+    } else {
+      // C'est un événement classique
+      setEventType("event");
+      setForm({
+        titre: eventItem.titre,
+        description: eventItem.description,
+        date_event: eventItem.date_event,
+        date_fin: eventItem.date_fin,
+        prix: eventItem.prix,
+        devise: eventItem.devise,
+        image: null, // L'image sera optionnelle lors de la modification
+      });
+    }
+
+    // Défiler vers le formulaire
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Ajout de la fonction de suppression d'événement
@@ -1509,15 +1683,54 @@ const Admin: React.FC = () => {
           {/* Formulaire selon le type choisi */}
           {eventType === "event" ? (
             <form onSubmit={handleSubmit} className="admin-form">
-              <h2
+              <div
                 style={{
-                  color: "#4682B4",
-                  fontSize: "1.3rem",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   marginBottom: 18,
                 }}
               >
-                Ajouter un événement
-              </h2>
+                <h2
+                  style={{
+                    color: "#4682B4",
+                    fontSize: "1.3rem",
+                    margin: 0,
+                  }}
+                >
+                  {editingEvent
+                    ? "Modifier un événement"
+                    : "Ajouter un événement"}
+                </h2>
+                {editingEvent && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingEvent(null);
+                      setForm({
+                        titre: "",
+                        description: "",
+                        date_event: "",
+                        date_fin: "",
+                        prix: "",
+                        devise: "€",
+                        image: null,
+                      });
+                    }}
+                    style={{
+                      background: "#888",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "6px 12px",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Annuler
+                  </button>
+                )}
+              </div>
               <div style={{ marginBottom: 16 }}>
                 <label
                   style={{
@@ -1554,13 +1767,18 @@ const Admin: React.FC = () => {
                     marginBottom: 6,
                   }}
                 >
-                  Description *
+                  Description{" "}
+                  {editingEvent && editingEvent.modele === "externe"
+                    ? "(optionnel)"
+                    : "*"}
                 </label>
                 <textarea
                   name="description"
                   value={form.description}
                   onChange={handleChange}
-                  required
+                  required={
+                    !(editingEvent && editingEvent.modele === "externe")
+                  }
                   rows={4}
                   style={{
                     width: "100%",
@@ -1686,13 +1904,51 @@ const Admin: React.FC = () => {
                     marginBottom: 6,
                   }}
                 >
-                  Flyer / Image
+                  Flyer / Image{" "}
+                  {editingEvent
+                    ? "(optionnel - garder actuelle ou changer)"
+                    : ""}
                 </label>
+
+                {/* Affichage de l'image actuelle en mode édition */}
+                {editingEvent && editingEvent.image_url && (
+                  <div style={{ marginBottom: 12 }}>
+                    <div
+                      style={{
+                        fontSize: "0.9rem",
+                        color: "#666",
+                        marginBottom: 6,
+                      }}
+                    >
+                      Image actuelle :
+                    </div>
+                    <img
+                      src={`https://rababali.com${editingEvent.image_url}`}
+                      alt="Image actuelle"
+                      style={{
+                        maxWidth: "200px",
+                        maxHeight: "150px",
+                        objectFit: "cover",
+                        borderRadius: 6,
+                        border: "2px solid #e0e0e0",
+                      }}
+                    />
+                  </div>
+                )}
+
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
                 />
+
+                {editingEvent && (
+                  <div
+                    style={{ fontSize: "0.8rem", color: "#666", marginTop: 4 }}
+                  >
+                    Laisser vide pour conserver l'image actuelle
+                  </div>
+                )}
               </div>
               <div style={{ textAlign: "center" }}>
                 <button
@@ -1706,7 +1962,11 @@ const Admin: React.FC = () => {
                   }}
                   disabled={submitting}
                 >
-                  {submitting ? "⏳ Ajout en cours..." : "Ajouter l'événement"}
+                  {submitting
+                    ? `⏳ ${
+                        editingEvent ? "Modification" : "Ajout"
+                      } en cours...`
+                    : `${editingEvent ? "Modifier" : "Ajouter"} l'événement`}
                 </button>
               </div>
             </form>
@@ -2044,6 +2304,48 @@ const Admin: React.FC = () => {
                         placeholder="Ajoutez un texte libre..."
                       />
                       <div style={{ marginBottom: 10 }}>
+                        {editingEvent && editingEvent.image_url && (
+                          <div
+                            style={{
+                              marginBottom: 15,
+                              padding: 10,
+                              backgroundColor: "#f8f9fa",
+                              borderRadius: 6,
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontSize: "0.9rem",
+                                color: "#495057",
+                                marginBottom: 8,
+                              }}
+                            >
+                              <strong>🖼️ Flyer actuel :</strong>
+                            </div>
+                            <img
+                              src={`https://rababali.com${editingEvent.image_url}`}
+                              alt="Flyer actuel"
+                              style={{
+                                maxWidth: "150px",
+                                maxHeight: "200px",
+                                objectFit: "cover",
+                                borderRadius: 4,
+                                border: "1px solid #dee2e6",
+                              }}
+                            />
+                            <div
+                              style={{
+                                fontSize: "0.8rem",
+                                color: "#6c757d",
+                                marginTop: 8,
+                              }}
+                            >
+                              Pour modifier : ajoutez de nouvelles images
+                              ci-dessous
+                            </div>
+                          </div>
+                        )}
+
                         <label>Image Cercle 1</label>
                         <input
                           type="file"
@@ -2217,6 +2519,48 @@ const Admin: React.FC = () => {
                         placeholder="Ajoutez un texte libre..."
                       />
                       <div style={{ marginBottom: 10 }}>
+                        {editingEvent && editingEvent.image_url && (
+                          <div
+                            style={{
+                              marginBottom: 15,
+                              padding: 10,
+                              backgroundColor: "#f8f9fa",
+                              borderRadius: 6,
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontSize: "0.9rem",
+                                color: "#495057",
+                                marginBottom: 8,
+                              }}
+                            >
+                              <strong>🖼️ Flyer actuel :</strong>
+                            </div>
+                            <img
+                              src={`https://rababali.com${editingEvent.image_url}`}
+                              alt="Flyer actuel"
+                              style={{
+                                maxWidth: "150px",
+                                maxHeight: "200px",
+                                objectFit: "cover",
+                                borderRadius: 4,
+                                border: "1px solid #dee2e6",
+                              }}
+                            />
+                            <div
+                              style={{
+                                fontSize: "0.8rem",
+                                color: "#6c757d",
+                                marginTop: 8,
+                              }}
+                            >
+                              Pour modifier : ajoutez de nouvelles images
+                              ci-dessous
+                            </div>
+                          </div>
+                        )}
+
                         <label>Image Carré 1</label>
                         <input
                           type="file"
@@ -2346,7 +2690,16 @@ const Admin: React.FC = () => {
                         { type: "image/png" }
                       );
                       const formData = new FormData();
-                      formData.append("action", "add_flyer");
+                      const isEditing = editingEvent !== null;
+                      formData.append(
+                        "action",
+                        isEditing ? "update_event" : "add_flyer"
+                      );
+
+                      if (isEditing) {
+                        formData.append("id", editingEvent.id.toString());
+                      }
+
                       formData.append("titre", flyerSquares.titre);
                       formData.append("sous_titre", flyerSquares.sousTitre);
                       formData.append("date_event", flyerSquares.date);
@@ -2367,7 +2720,11 @@ const Admin: React.FC = () => {
                         );
                         const data = await response.json();
                         if (data.success) {
-                          toast.success("Flyer ajouté avec succès !");
+                          toast.success(
+                            `Flyer ${
+                              isEditing ? "modifié" : "ajouté"
+                            } avec succès !`
+                          );
                           setFlyerSquares({
                             titre: "",
                             sousTitre: "",
@@ -2385,6 +2742,7 @@ const Admin: React.FC = () => {
                             image3Url: "",
                           });
                           setSelectedFlyerModel(null);
+                          setEditingEvent(null);
                           const refresh = await fetch(
                             `${API_BASE}/rabab/api/db_connect.php?action=get_events`
                           );
@@ -2450,6 +2808,48 @@ const Admin: React.FC = () => {
                         placeholder="Ajoutez un texte libre..."
                       />
                       <div style={{ marginBottom: 10 }}>
+                        {editingEvent && editingEvent.image_url && (
+                          <div
+                            style={{
+                              marginBottom: 15,
+                              padding: 10,
+                              backgroundColor: "#f8f9fa",
+                              borderRadius: 6,
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontSize: "0.9rem",
+                                color: "#495057",
+                                marginBottom: 8,
+                              }}
+                            >
+                              <strong>🖼️ Flyer actuel :</strong>
+                            </div>
+                            <img
+                              src={`https://rababali.com${editingEvent.image_url}`}
+                              alt="Flyer actuel"
+                              style={{
+                                maxWidth: "150px",
+                                maxHeight: "200px",
+                                objectFit: "cover",
+                                borderRadius: 4,
+                                border: "1px solid #dee2e6",
+                              }}
+                            />
+                            <div
+                              style={{
+                                fontSize: "0.8rem",
+                                color: "#6c757d",
+                                marginTop: 8,
+                              }}
+                            >
+                              Pour modifier : ajoutez de nouvelles images
+                              ci-dessous
+                            </div>
+                          </div>
+                        )}
+
                         <label>Image Carré 1</label>
                         <input
                           type="file"
@@ -2696,20 +3096,35 @@ const Admin: React.FC = () => {
                     className="admin-flyer-form-flex"
                     onSubmit={async (e) => {
                       e.preventDefault();
-                      if (!flyerSquares.image1) {
+                      const isEditing = editingEvent !== null;
+
+                      if (!flyerSquares.image1 && !isEditing) {
                         toast.error(
                           "Veuillez sélectionner une image à importer."
                         );
                         return;
                       }
                       const formData = new FormData();
-                      formData.append("action", "add_flyer");
+                      formData.append(
+                        "action",
+                        isEditing ? "update_event" : "add_flyer"
+                      );
+
+                      if (isEditing) {
+                        formData.append("id", editingEvent.id.toString());
+                      }
+
                       formData.append("titre", flyerSquares.titre);
                       formData.append("date_event", flyerSquares.date);
                       formData.append("date_fin", flyerSquares.date_fin);
                       formData.append("description", flyerSquares.texte || "");
                       formData.append("modele", "externe");
-                      formData.append("image", flyerSquares.image1);
+
+                      // Ajouter l'image seulement si une nouvelle image est sélectionnée
+                      if (flyerSquares.image1) {
+                        formData.append("image", flyerSquares.image1);
+                      }
+
                       formData.append("prix", flyerSquares.prix);
                       formData.append("devise", flyerSquares.devise);
                       try {
@@ -2722,7 +3137,11 @@ const Admin: React.FC = () => {
                         );
                         const data = await response.json();
                         if (data.success) {
-                          toast.success("Flyer importé avec succès !");
+                          toast.success(
+                            `Flyer ${
+                              isEditing ? "modifié" : "importé"
+                            } avec succès !`
+                          );
                           setFlyerSquares({
                             titre: "",
                             sousTitre: "",
@@ -2740,6 +3159,7 @@ const Admin: React.FC = () => {
                             image3Url: "",
                           });
                           setSelectedFlyerModel(null);
+                          setEditingEvent(null);
                           const refresh = await fetch(
                             `${API_BASE}/rabab/api/db_connect.php?action=get_events`
                           );
@@ -2791,11 +3211,59 @@ const Admin: React.FC = () => {
                         rows={2}
                         placeholder="Ajoutez une description..."
                       />
-                      <label>Image du flyer (obligatoire)</label>
+                      <label>
+                        Image du flyer{" "}
+                        {editingEvent
+                          ? "(optionnel - garder actuelle ou changer)"
+                          : "(obligatoire)"}
+                      </label>
+
+                      {/* Affichage de l'image actuelle en mode édition */}
+                      {editingEvent && editingEvent.image_url && (
+                        <div
+                          style={{
+                            marginBottom: 15,
+                            padding: 10,
+                            backgroundColor: "#f8f9fa",
+                            borderRadius: 6,
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: "0.9rem",
+                              color: "#495057",
+                              marginBottom: 8,
+                            }}
+                          >
+                            <strong>🖼️ Flyer actuel :</strong>
+                          </div>
+                          <img
+                            src={`https://rababali.com${editingEvent.image_url}`}
+                            alt="Flyer actuel"
+                            style={{
+                              maxWidth: "200px",
+                              maxHeight: "250px",
+                              objectFit: "cover",
+                              borderRadius: 4,
+                              border: "1px solid #dee2e6",
+                            }}
+                          />
+                          <div
+                            style={{
+                              fontSize: "0.8rem",
+                              color: "#6c757d",
+                              marginTop: 8,
+                            }}
+                          >
+                            Laisser vide pour conserver ce flyer
+                          </div>
+                        </div>
+                      )}
+
                       <input
                         type="file"
                         accept="image/*"
-                        required
+                        required={!editingEvent}
                         onChange={(e) =>
                           handleFlyerSquaresImage(
                             1,
@@ -3100,7 +3568,16 @@ const Admin: React.FC = () => {
                         { type: "image/png" }
                       );
                       const formData = new FormData();
-                      formData.append("action", "add_flyer");
+                      const isEditing = editingEvent !== null;
+                      formData.append(
+                        "action",
+                        isEditing ? "update_event" : "add_flyer"
+                      );
+
+                      if (isEditing) {
+                        formData.append("id", editingEvent.id.toString());
+                      }
+
                       formData.append("titre", flyerSquares.titre);
                       formData.append("sous_titre", flyerSquares.sousTitre);
                       formData.append("date_event", flyerSquares.date);
@@ -3121,7 +3598,11 @@ const Admin: React.FC = () => {
                         );
                         const data = await response.json();
                         if (data.success) {
-                          toast.success("Flyer ajouté avec succès !");
+                          toast.success(
+                            `Flyer ${
+                              isEditing ? "modifié" : "ajouté"
+                            } avec succès !`
+                          );
                           setFlyerSquares({
                             titre: "",
                             sousTitre: "",
@@ -3139,6 +3620,7 @@ const Admin: React.FC = () => {
                             image3Url: "",
                           });
                           setSelectedFlyerModel(null);
+                          setEditingEvent(null);
                           const refresh = await fetch(
                             `${API_BASE}/rabab/api/db_connect.php?action=get_events`
                           );
@@ -3362,23 +3844,40 @@ const Admin: React.FC = () => {
                       event.devise &&
                       `💶 ${event.prix} ${event.devise}`}
                   </div>
-                  <button
-                    className="admin-event-delete-btn"
-                    onClick={() => handleDeleteEvent(event.id)}
-                    style={{
-                      background: "#b22222",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: 6,
-                      padding: "6px 14px",
-                      marginTop: 10,
-                      cursor: "pointer",
-                      fontWeight: 600,
-                      transition: "background 0.2s",
-                    }}
-                  >
-                    Supprimer
-                  </button>
+                  <div style={{ display: "flex", gap: "8px", marginTop: 10 }}>
+                    <button
+                      className="admin-event-edit-btn"
+                      onClick={() => handleEditEvent(event)}
+                      style={{
+                        background: "#4682B4",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 6,
+                        padding: "6px 14px",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        transition: "background 0.2s",
+                      }}
+                    >
+                      Modifier
+                    </button>
+                    <button
+                      className="admin-event-delete-btn"
+                      onClick={() => handleDeleteEvent(event.id)}
+                      style={{
+                        background: "#b22222",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 6,
+                        padding: "6px 14px",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        transition: "background 0.2s",
+                      }}
+                    >
+                      Supprimer
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

@@ -12,7 +12,7 @@ const PresentationSection: React.FC = () => (
     </div>
     <div className="presentation-content">
       <h2 className="titre-rabab">Rabab Ali</h2>
-      <p>J'aime rire à la vie.😊</p>
+      <p>"J'aime rire à la vie."</p>
       <p>
         Ce n'est pas juste une phrase, c'est un état d'esprit. Une manière de
         traverser les tempêtes avec légèreté, de transformer les épreuves en
@@ -24,7 +24,7 @@ const PresentationSection: React.FC = () => (
       </p>
       <p>
         Née dans une famille musulmane, j'ai grandi avec un esprit curieux,
-        libre et ouvert, toujours à l'écoute de l'invisible.☀️
+        libre et ouvert, toujours à l'écoute de l'invisible.
       </p>
       <p>Avec le temps, cette sensibilité est devenue une force.</p>
       <p>
@@ -40,9 +40,9 @@ const PresentationSection: React.FC = () => (
         mémoires, avec douceur et profondeur.
       </p>
       <p>
-        <b>Ma mission :</b> t'aider à voir plus clair, à libérer ce qui bloque,
-        et à faire circuler pleinement ton énergie de vie 🌱 pour que, toi
-        aussi, tu puisses rire à la vie.☀️
+        Ma mission : t'aider à voir plus clair, à libérer ce qui bloque, et à
+        faire circuler pleinement ton énergie de vie pour que, toi aussi, tu
+        puisses rire à la vie.
       </p>
     </div>
   </section>

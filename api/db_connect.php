@@ -26,6 +26,12 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 header('Access-Control-Allow-Credentials: false');
 header('Access-Control-Max-Age: 86400');
 
+// Gestion des requêtes OPTIONS (preflight CORS)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 // ✅ SÉCURITÉ : Headers de protection critiques
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
@@ -140,7 +146,7 @@ try {
     
     // Route pour récupérer tous les événements
     elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_events') {
-        $stmt = $pdo->query("SELECT id, titre, description, date_event, date_fin, prix, devise, image_url, type FROM events ORDER BY date_event DESC");
+        $stmt = $pdo->query("SELECT id, titre, description, date_event, date_fin, prix, devise, image_url, type, modele, sous_titre, lieu, texte FROM events ORDER BY date_event DESC");
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['success' => true, 'data' => $events]);
     }
@@ -284,6 +290,113 @@ try {
             $modele
         ]);
         echo json_encode(['success' => true, 'message' => 'Flyer ajouté avec succès']);
+    }
+    
+    // Route pour modifier un événement (classique ou flyer)
+    elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_event') {
+        $id = intval($_POST['id'] ?? 0);
+        
+        if ($id <= 0) {
+            echo json_encode(['success' => false, 'message' => 'ID événement manquant']);
+            exit;
+        }
+        
+        // Récupérer l'événement existant pour connaître son type
+        $stmt = $pdo->prepare("SELECT type, modele FROM events WHERE id = ?");
+        $stmt->execute([$id]);
+        $existingEvent = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$existingEvent) {
+            echo json_encode(['success' => false, 'message' => 'Événement non trouvé']);
+            exit;
+        }
+        
+        $titre = trim($_POST['titre'] ?? '');
+        $date_event = trim($_POST['date_event'] ?? '');
+        $date_fin = trim($_POST['date_fin'] ?? '');
+        $prix = trim($_POST['prix'] ?? '');
+        $devise = trim($_POST['devise'] ?? '€');
+        
+        // Gestion de l'image (optionnelle lors de la modification)
+        $image_url = null;
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $uploadFile = $_FILES['image'];
+            $maxSize = 5 * 1024 * 1024; // 5MB max
+            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+            
+            // Validation taille
+            if ($uploadFile['size'] > $maxSize) {
+                echo json_encode(['success' => false, 'message' => 'Fichier trop volumineux (max 5MB)']);
+                exit;
+            }
+            
+            // Validation type MIME
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $uploadFile['tmp_name']);
+            finfo_close($finfo);
+            
+            if (!in_array($mimeType, $allowedTypes)) {
+                echo json_encode(['success' => false, 'message' => 'Type de fichier non autorisé']);
+                exit;
+            }
+            
+            // Validation extension
+            $ext = strtolower(pathinfo($uploadFile['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowedExts)) {
+                echo json_encode(['success' => false, 'message' => 'Extension non autorisée']);
+                exit;
+            }
+            
+            // Génération nom sécurisé
+            $isFlyer = ($existingEvent['type'] === 'flyer');
+            $prefix = $isFlyer ? 'flyer_' : 'event_';
+            $uploadDir = $isFlyer ? 'flyers_uploads' : 'events_uploads';
+            $filename = $prefix . uniqid() . '_' . time() . '.' . $ext;
+            $dest = __DIR__ . "/../images/{$uploadDir}/" . $filename;
+            
+            if (move_uploaded_file($uploadFile['tmp_name'], $dest)) {
+                $image_url = "/rabab/images/{$uploadDir}/" . $filename;
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'upload']);
+                exit;
+            }
+        }
+        
+        // Traitement selon le type d'événement
+        if ($existingEvent['type'] === 'flyer') {
+            // C'est un flyer
+            $sous_titre = trim($_POST['sous_titre'] ?? '');
+            $lieu = trim($_POST['lieu'] ?? '');
+            $texte = trim($_POST['texte'] ?? '');
+            $modele = trim($_POST['modele'] ?? $existingEvent['modele']);
+            $description = isset($_POST['description']) ? trim($_POST['description']) : $texte;
+            
+            if ($image_url) {
+                // Avec nouvelle image
+                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ?, image_url = ?, sous_titre = ?, lieu = ?, texte = ?, modele = ? WHERE id = ?");
+                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $image_url, $sous_titre, $lieu, $texte, $modele, $id]);
+            } else {
+                // Sans nouvelle image
+                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ?, sous_titre = ?, lieu = ?, texte = ?, modele = ? WHERE id = ?");
+                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $sous_titre, $lieu, $texte, $modele, $id]);
+            }
+        } else {
+            // C'est un événement classique
+            $description = trim($_POST['description'] ?? '');
+            
+            if ($image_url) {
+                // Avec nouvelle image
+                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ?, image_url = ? WHERE id = ?");
+                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $image_url, $id]);
+            } else {
+                // Sans nouvelle image
+                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ? WHERE id = ?");
+                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $id]);
+            }
+        }
+        
+        echo json_encode(['success' => true, 'message' => 'Événement modifié avec succès']);
     }
     
     // Route pour supprimer un événement (classique ou flyer)

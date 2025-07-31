@@ -30,6 +30,33 @@
   border-radius: 8px;
 }
 
+/* Container du contenu texte */
+.presentation-content {
+  flex: 1;
+  max-width: 600px;
+}
+
+/* Titre de présentation */
+.presentation-content .titre-rabab {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Paragraphes de présentation */
+.presentation-content p {
+  text-align: justify;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-weight: normal;
+}
+
+/* Premier paragraphe avec guillemets - centré */
+.presentation-content p:first-of-type {
+  font-style: italic;
+  font-weight: normal;
+  text-align: center;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .presentation-section {

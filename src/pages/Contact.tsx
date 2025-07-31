@@ -33,14 +33,45 @@ const Contact: React.FC = () => {
     e.preventDefault();
     setSending(true);
     setFeedback(null);
-    setTimeout(() => {
-      setSending(false);
-      setFeedback({
-        type: "success",
-        text: "Votre message a bien été envoyé. Merci pour votre prise de contact !",
+
+    try {
+      // API endpoint pour l'envoi d'email
+      const apiBase =
+        window.location.hostname === "localhost"
+          ? "http://localhost/RefonteSiteRabab/api"
+          : "https://rababali.com/rabab/api";
+
+      const response = await fetch(`${apiBase}/send_contact_email.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-      setFormData({ nom: "", email: "", sujet: "", message: "" });
-    }, 1200);
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFeedback({
+          type: "success",
+          text: data.message,
+        });
+        setFormData({ nom: "", email: "", sujet: "", message: "" });
+      } else {
+        setFeedback({
+          type: "error",
+          text: data.message || "Erreur lors de l'envoi du message.",
+        });
+      }
+    } catch (error) {
+      console.error("Erreur envoi contact:", error);
+      setFeedback({
+        type: "error",
+        text: "Erreur de connexion. Veuillez réessayer plus tard.",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
