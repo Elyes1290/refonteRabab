@@ -7,7 +7,7 @@ import AppointmentsTab from "../components/admin/AppointmentsTab";
 import ExperiencesTab from "../components/admin/ExperiencesTab";
 
 // Utiliser toujours rababali.com (API configurée avec CORS)
-const API_BASE = "https://rababali.com";
+const API_BASE = "https://www.rababali.com";
 
 // Interfaces
 interface EventForm {
@@ -69,6 +69,7 @@ const Admin: React.FC = () => {
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [loginAttempting, setLoginAttempting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // États des onglets
   const [activeTab, setActiveTab] = useState<
@@ -509,24 +510,47 @@ const Admin: React.FC = () => {
   // Interface de connexion
   if (!isAuthenticated) {
     return (
-      <div className="admin-login-container">
-        <div className="admin-login-form">
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#faf1e6",
+          padding: "1rem",
+        }}
+      >
+        <div
+          style={{
+            background: "white",
+            padding: "2.5rem",
+            borderRadius: "1rem",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+            width: "100%",
+            maxWidth: "400px",
+            border: "1px solid rgba(255,255,255,0.2)",
+          }}
+        >
           <h1
             style={{
               textAlign: "center",
               color: "#4682B4",
               marginBottom: "2rem",
+              fontSize: "1.8rem",
+              fontWeight: "600",
             }}
           >
-            Administration
+            🔐 Administration
           </h1>
           <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: "1rem" }}>
+            <div style={{ marginBottom: "1.5rem" }}>
               <label
                 style={{
                   display: "block",
                   marginBottom: "0.5rem",
-                  fontWeight: 600,
+                  fontWeight: "600",
+                  color: "#333",
+                  fontSize: "0.9rem",
                 }}
               >
                 Nom d'utilisateur
@@ -538,53 +562,121 @@ const Admin: React.FC = () => {
                 required
                 style={{
                   width: "100%",
-                  padding: "0.75rem",
-                  border: "2px solid #ddd",
-                  borderRadius: "0.5rem",
+                  padding: "0.875rem",
+                  border: "2px solid #e1e5e9",
+                  borderRadius: "0.75rem",
                   fontSize: "1rem",
+                  transition: "border-color 0.2s ease",
+                  boxSizing: "border-box",
                 }}
+                onFocus={(e) =>
+                  ((e.target as HTMLInputElement).style.borderColor = "#4682B4")
+                }
+                onBlur={(e) =>
+                  ((e.target as HTMLInputElement).style.borderColor = "#e1e5e9")
+                }
               />
             </div>
-            <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{ marginBottom: "2rem" }}>
               <label
                 style={{
                   display: "block",
                   marginBottom: "0.5rem",
-                  fontWeight: 600,
+                  fontWeight: "600",
+                  color: "#333",
+                  fontSize: "0.9rem",
                 }}
               >
                 Mot de passe
               </label>
-              <input
-                type="password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "2px solid #ddd",
-                  borderRadius: "0.5rem",
-                  fontSize: "1rem",
-                }}
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "0.875rem",
+                    paddingRight: "3rem",
+                    border: "2px solid #e1e5e9",
+                    borderRadius: "0.75rem",
+                    fontSize: "1rem",
+                    transition: "border-color 0.2s ease",
+                    boxSizing: "border-box",
+                  }}
+                  onFocus={(e) =>
+                    ((e.target as HTMLInputElement).style.borderColor =
+                      "#4682B4")
+                  }
+                  onBlur={(e) =>
+                    ((e.target as HTMLInputElement).style.borderColor =
+                      "#e1e5e9")
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "0.75rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "1.2rem",
+                    color: "#666",
+                    padding: "0.25rem",
+                    borderRadius: "0.25rem",
+                    transition: "background-color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) =>
+                    ((e.target as HTMLButtonElement).style.backgroundColor =
+                      "#f0f0f0")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.target as HTMLButtonElement).style.backgroundColor =
+                      "transparent")
+                  }
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
             <button
               type="submit"
               disabled={loginAttempting}
               style={{
                 width: "100%",
-                padding: "0.75rem",
-                background: "#4682B4",
+                padding: "0.875rem",
+                background: "linear-gradient(135deg, #4682B4 0%, #5a9bd4 100%)",
                 color: "white",
                 border: "none",
-                borderRadius: "0.5rem",
+                borderRadius: "0.75rem",
                 fontSize: "1rem",
+                fontWeight: "600",
                 cursor: loginAttempting ? "not-allowed" : "pointer",
                 opacity: loginAttempting ? 0.7 : 1,
+                transition: "all 0.2s ease",
+                boxShadow: "0 4px 15px rgba(70, 130, 180, 0.3)",
               }}
+              onMouseEnter={(e) =>
+                !loginAttempting &&
+                (((e.target as HTMLButtonElement).style.transform =
+                  "translateY(-2px)"),
+                ((e.target as HTMLButtonElement).style.boxShadow =
+                  "0 6px 20px rgba(70, 130, 180, 0.4)"))
+              }
+              onMouseLeave={(e) =>
+                !loginAttempting &&
+                (((e.target as HTMLButtonElement).style.transform =
+                  "translateY(0)"),
+                ((e.target as HTMLButtonElement).style.boxShadow =
+                  "0 4px 15px rgba(70, 130, 180, 0.3)"))
+              }
             >
-              {loginAttempting ? "Connexion..." : "Se connecter"}
+              {loginAttempting ? "🔄 Connexion..." : "🚀 Se connecter"}
             </button>
           </form>
         </div>

@@ -47,7 +47,8 @@ function AppContent() {
       <Header />
       <main>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Vision3D />} />
+          <Route path="/accueil" element={<Home />} />
           <Route path="/a-propos" element={<About />} />
           <Route path="/vision3d" element={<Vision3D />} />
           <Route path="/rendez-vous" element={<Booking />} />

@@ -45,9 +45,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-require_once __DIR__ . '/vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+// Gestion des erreurs pour debug
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Erreur chargement autoload: ' . $e->getMessage()]);
+    exit;
+}
 
 // Configuration de la base de données sécurisée
 // $config = require __DIR__ . '/config.php';
@@ -562,6 +568,31 @@ try {
             $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             echo json_encode(['success' => true, 'data' => $reservations]);
+        } catch(PDOException $e) {
+            echo json_encode(['success' => false, 'message' => 'Erreur de base de données: ' . $e->getMessage()]);
+        }
+    }
+    
+    // Route d'authentification admin
+    elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'admin_login') {
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
+        
+        if (empty($username) || empty($password)) {
+            echo json_encode(['success' => false, 'message' => 'Identifiants manquants']);
+            return;
+        }
+        
+        try {
+            $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE username = ? LIMIT 1');
+            $stmt->execute([$username]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password_hash'])) {
+                echo json_encode(['success' => true, 'message' => 'Authentification réussie']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Identifiants incorrects']);
+            }
         } catch(PDOException $e) {
             echo json_encode(['success' => false, 'message' => 'Erreur de base de données: ' . $e->getMessage()]);
         }

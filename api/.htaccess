@@ -1,41 +1,7 @@
-AddHandler application/x-httpd-php .php
-
-# ✅ SÉCURITÉ : Headers de protection au niveau serveur
+# Headers CORS uniquement
 
 <IfModule mod_headers.c>
-    # Protection contre le clickjacking
-    Header always set X-Frame-Options "DENY"
-    
-    # Protection XSS
-    Header always set X-XSS-Protection "1; mode=block"
-    
-    # Prévention du sniffing MIME
-    Header always set X-Content-Type-Options "nosniff"
-    
-    # Politique de référent stricte
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    
-    # HSTS (Transport Security)
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    
-    # CSP (Content Security Policy) - Version relaxée pour compatibilité
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.stripe.com;"
+    Header always set Access-Control-Allow-Origin "https://www.rababali.com"
+    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type"
 </IfModule>
-
-# Protection des fichiers sensibles
-
-<Files ".env">
-Order deny,allow
-Deny from all
-</Files>
-
-# Désactiver l'affichage des erreurs PHP
-
-php_flag display_errors Off
-php_flag display_startup_errors Off
-php_value error_reporting 0
-
-# Limiter la taille des uploads
-
-php_value upload_max_filesize 5M
-php_value post_max_size 6M

@@ -3,9 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 
 const navLinks = [
-  { to: "/", label: "🏠 Accueil" },
+  { to: "/", label: "🌟 Vision 3D" },
+  { to: "/accueil", label: "🏠 Accueil" },
   { to: "/a-propos", label: "✨ À propos" },
-  { to: "/vision3d", label: "🌟 Vision 3D" },
   { to: "/rendez-vous", label: "📅 Prendre rendez-vous", special: true },
   { to: "/evenements", label: "🎉 Événements" },
   { to: "/experiences", label: "💬 Expériences" },

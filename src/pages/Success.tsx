@@ -17,7 +17,7 @@ const Success: React.FC = () => (
         mail à <b>rabab@rababali.com</b>.
       </p>
       <a href="/" className="success-home-link">
-        Retour à l'accueil
+        Retour à la Vision 3D
       </a>
     </div>
   </section>
