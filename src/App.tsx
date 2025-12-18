@@ -7,13 +7,11 @@ import {
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { FloatingParticles } from "./components/FloatingParticles";
+import LogoIntro from "./components/LogoIntro";
 import Home from "./pages/Home";
-import About from "./pages/About";
 import Vision3D from "./pages/Vision3D";
-import Booking from "./pages/Booking";
-import Events from "./pages/Events";
-import Experiences from "./pages/Experiences";
-import Contact from "./pages/Contact";
+import BookingAndContact from "./pages/BookingAndContact";
+import EventsAndExperiences from "./pages/EventsAndExperiences";
 import Admin from "./pages/Admin";
 import MentionsLegales from "./pages/MentionsLegales";
 import Cookies from "./pages/Cookies";
@@ -40,21 +38,32 @@ if (
 
 function AppContent() {
   const location = useLocation();
-  const hideFooter = location.pathname === "/contact";
+  const hideFooter =
+    location.pathname === "/contact" ||
+    location.pathname === "/rendez-vous-et-contact";
   return (
     <>
+      <LogoIntro />
       <FloatingParticles />
       <Header />
       <main>
         <Routes>
           <Route path="/" element={<Vision3D />} />
           <Route path="/accueil" element={<Home />} />
-          <Route path="/a-propos" element={<About />} />
           <Route path="/vision3d" element={<Vision3D />} />
-          <Route path="/rendez-vous" element={<Booking />} />
-          <Route path="/evenements" element={<Events />} />
-          <Route path="/experiences" element={<Experiences />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/rendez-vous-et-contact"
+            element={<BookingAndContact />}
+          />
+          {/* Redirection des anciennes routes */}
+          <Route path="/rendez-vous" element={<BookingAndContact />} />
+          <Route path="/contact" element={<BookingAndContact />} />
+          <Route
+            path="/evenements-et-avis"
+            element={<EventsAndExperiences />}
+          />
+          <Route path="/evenements" element={<EventsAndExperiences />} />
+          <Route path="/experiences" element={<EventsAndExperiences />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="/cookies" element={<Cookies />} />

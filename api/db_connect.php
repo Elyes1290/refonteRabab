@@ -152,9 +152,29 @@ try {
     
     // Route pour récupérer tous les événements
     elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_events') {
-        $stmt = $pdo->query("SELECT id, titre, description, date_event, date_fin, prix, devise, image_url, type, modele, sous_titre, lieu, texte FROM events ORDER BY date_event DESC");
+        // Supprimer automatiquement les événements expirés (date_fin passée)
+        $today = date('Y-m-d');
+        $deleteStmt = $pdo->prepare("DELETE FROM events WHERE date_fin < :today");
+        $deleteStmt->execute(['today' => $today]);
+        
+        // Récupérer les événements restants
+        $stmt = $pdo->query("SELECT id, titre, description, date_event, date_fin, prix, devise, image_url, type, modele, sous_titre, lieu, texte, url_inscription, is_promotion, prix_promo FROM events ORDER BY date_event DESC");
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['success' => true, 'data' => $events]);
+    }
+    
+    // Route pour récupérer la promotion active pour les rendez-vous
+    elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_active_promotion') {
+        $today = date('Y-m-d');
+        $stmt = $pdo->prepare("SELECT id, titre, date_event, date_fin, prix_promo FROM events WHERE is_promotion = 1 AND date_event <= :today AND date_fin >= :today ORDER BY date_event DESC LIMIT 1");
+        $stmt->execute(['today' => $today]);
+        $promotion = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($promotion) {
+            echo json_encode(['success' => true, 'data' => $promotion]);
+        } else {
+            echo json_encode(['success' => true, 'data' => null]);
+        }
     }
     
     // Route pour récupérer toutes les expériences
@@ -200,6 +220,9 @@ try {
         $date_fin = trim($_POST['date_fin'] ?? '');
         $prix = trim($_POST['prix'] ?? '');
         $devise = trim($_POST['devise'] ?? '€');
+        $url_inscription = trim($_POST['url_inscription'] ?? '');
+        $is_promotion = isset($_POST['is_promotion']) ? (int)$_POST['is_promotion'] : 0;
+        $prix_promo = trim($_POST['prix_promo'] ?? '');
         $type = 'event';
         $image_url = '';
 
@@ -252,8 +275,8 @@ try {
             }
         }
 
-        $stmt = $pdo->prepare("INSERT INTO events (titre, description, date_event, date_fin, prix, devise, image_url, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $image_url, $type]);
+        $stmt = $pdo->prepare("INSERT INTO events (titre, description, date_event, date_fin, prix, devise, image_url, type, url_inscription, is_promotion, prix_promo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $image_url, $type, $url_inscription, $is_promotion, $prix_promo]);
         echo json_encode(['success' => true, 'message' => 'Événement ajouté avec succès']);
     }
     
@@ -390,15 +413,18 @@ try {
         } else {
             // C'est un événement classique
             $description = trim($_POST['description'] ?? '');
+            $url_inscription = trim($_POST['url_inscription'] ?? '');
+            $is_promotion = isset($_POST['is_promotion']) ? (int)$_POST['is_promotion'] : 0;
+            $prix_promo = trim($_POST['prix_promo'] ?? '');
             
             if ($image_url) {
                 // Avec nouvelle image
-                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ?, image_url = ? WHERE id = ?");
-                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $image_url, $id]);
+                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ?, image_url = ?, url_inscription = ?, is_promotion = ?, prix_promo = ? WHERE id = ?");
+                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $image_url, $url_inscription, $is_promotion, $prix_promo, $id]);
             } else {
                 // Sans nouvelle image
-                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ? WHERE id = ?");
-                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $id]);
+                $stmt = $pdo->prepare("UPDATE events SET titre = ?, description = ?, date_event = ?, date_fin = ?, prix = ?, devise = ?, url_inscription = ?, is_promotion = ?, prix_promo = ? WHERE id = ?");
+                $stmt->execute([$titre, $description, $date_event, $date_fin, $prix, $devise, $url_inscription, $is_promotion, $prix_promo, $id]);
             }
         }
         

@@ -5,6 +5,7 @@ import "../styles/Admin.css";
 import EventsTab from "../components/admin/EventsTab";
 import AppointmentsTab from "../components/admin/AppointmentsTab";
 import ExperiencesTab from "../components/admin/ExperiencesTab";
+import VideoEditorTab from "../components/admin/VideoEditorTab";
 
 // Utiliser toujours rababali.com (API configurée avec CORS)
 const API_BASE = "https://www.rababali.com";
@@ -18,6 +19,9 @@ interface EventForm {
   prix: string;
   devise: string;
   image: File | null;
+  url_inscription?: string;
+  is_promotion?: number;
+  prix_promo?: string;
 }
 
 interface EventItem {
@@ -34,6 +38,9 @@ interface EventItem {
   sous_titre?: string;
   lieu?: string;
   texte?: string;
+  url_inscription?: string;
+  is_promotion?: number;
+  prix_promo?: string;
 }
 
 interface Experience {
@@ -73,7 +80,7 @@ const Admin: React.FC = () => {
 
   // États des onglets
   const [activeTab, setActiveTab] = useState<
-    "events" | "experiences" | "appointments"
+    "events" | "experiences" | "appointments" | "videos"
   >("events");
 
   // États pour les événements
@@ -91,6 +98,9 @@ const Admin: React.FC = () => {
     prix: "",
     devise: "€",
     image: null,
+    url_inscription: "",
+    is_promotion: 0,
+    prix_promo: "",
   });
 
   // États pour les flyers
@@ -697,7 +707,9 @@ const Admin: React.FC = () => {
         {activeTab === "events"
           ? "des événements"
           : activeTab === "experiences"
-          ? "des avis"
+          ? "des témoignages/avis"
+          : activeTab === "videos"
+          ? "de l'éditeur vidéo"
           : "des rendez-vous"}
       </h1>
 
@@ -748,7 +760,7 @@ const Admin: React.FC = () => {
           onClick={() => setActiveTab("appointments")}
           style={{
             padding: "10px 24px",
-            borderRadius: "0 8px 8px 0",
+            borderRadius: "0",
             border: "2px solid #4682B4",
             borderLeft: "none",
             background: activeTab === "appointments" ? "#4682B4" : "#fff",
@@ -761,6 +773,24 @@ const Admin: React.FC = () => {
           }}
         >
           Rendez-vous
+        </button>
+        <button
+          onClick={() => setActiveTab("videos")}
+          style={{
+            padding: "10px 24px",
+            borderRadius: "0 8px 8px 0",
+            border: "2px solid #4682B4",
+            borderLeft: "none",
+            background: activeTab === "videos" ? "#4682B4" : "#fff",
+            color: activeTab === "videos" ? "#fff" : "#4682B4",
+            fontWeight: 700,
+            fontSize: "1rem",
+            cursor: "pointer",
+            outline: "none",
+            transition: "background 0.2s, color 0.2s",
+          }}
+        >
+          🎬 Vidéos
         </button>
       </div>
 
@@ -818,6 +848,8 @@ const Admin: React.FC = () => {
             API_BASE={API_BASE}
           />
         )}
+
+        {activeTab === "videos" && <VideoEditorTab />}
       </div>
     </div>
   );

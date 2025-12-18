@@ -17,7 +17,7 @@
   font-family: "Avenir", Arial, sans-serif;
   font-weight: bold;
   font-size: 48px;
-  color: var(--color-primary-dark);
+  color: #5c7671;
   margin-bottom: 18px;
 }
 
@@ -54,11 +54,11 @@
 }
 
 .booking-service-card.online {
-  border: 3px solid var(--color-primary);
+  border: 3px solid #5c7671;
 }
 
 .booking-service-card.presentiel {
-  border: 3px solid var(--color-primary-dark);
+  border: 3px solid #5c7671;
 }
 
 /* Badge type de séance */
@@ -75,11 +75,11 @@
 }
 
 .booking-service-badge.online {
-  background: var(--color-primary);
+  background: #5c7671;
 }
 
 .booking-service-badge.presentiel {
-  background: var(--color-primary-dark);
+  background: #5c7671;
 }
 
 /* Contenu du service */
@@ -91,7 +91,7 @@
   font-family: "Avenir", Arial, sans-serif;
   font-weight: bold;
   font-size: 24px;
-  color: var(--color-primary-dark);
+  color: #5c7671;
   margin-bottom: 8px;
 }
 
@@ -103,11 +103,11 @@
 }
 
 .booking-service-subtitle.online {
-  color: var(--color-primary);
+  color: #5c7671;
 }
 
 .booking-service-subtitle.presentiel {
-  color: var(--color-primary-dark);
+  color: #5c7671;
 }
 
 .booking-service-description {
@@ -148,18 +148,18 @@
 }
 
 .booking-service-duration.online {
-  color: var(--color-primary);
+  color: #5c7671;
 }
 
 .booking-service-duration.presentiel {
-  color: var(--color-primary-dark);
+  color: #5c7671;
 }
 
 .booking-service-price {
   font-family: "Avenir", Arial, sans-serif;
   font-weight: bold;
   font-size: 20px;
-  color: var(--color-primary-dark);
+  color: #5c7671;
 }
 
 .booking-service-button {
@@ -175,11 +175,11 @@
 }
 
 .booking-service-button.online {
-  background: var(--color-primary);
+  background: #5c7671;
 }
 
 .booking-service-button.presentiel {
-  background: var(--color-primary-dark);
+  background: #5c7671;
 }
 
 .booking-service-button:hover {
@@ -222,7 +222,7 @@
   background: none;
   border: none;
   font-size: 28px;
-  color: var(--color-primary-dark);
+  color: #5c7671;
   cursor: pointer;
 }
 
@@ -230,7 +230,7 @@
   font-family: "Avenir", Arial, sans-serif;
   font-weight: bold;
   font-size: 26px;
-  color: var(--color-primary-dark);
+  color: #5c7671;
   text-align: center;
   margin-bottom: 24px;
 }
@@ -251,24 +251,41 @@
 }
 
 .booking-calendar-nav {
-  background: var(--color-primary);
-  color: white;
+  background: #5c7671 !important;
+  color: white !important;
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: bold;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  opacity: 1 !important;
+}
+
+.booking-calendar-nav span {
+  color: white !important;
 }
 
 .booking-calendar-nav:hover {
-  background: var(--color-primary-dark);
+  background: #4a5e5a !important;
+  color: white !important;
+}
+
+.booking-calendar-nav:hover span {
+  color: white !important;
 }
 
 .booking-calendar-month {
   font-weight: bold;
   font-size: 18px;
-  color: var(--color-primary-dark);
+  color: #5c7671;
 }
 
 .booking-calendar-grid {
@@ -282,7 +299,7 @@
 .booking-calendar-day-header {
   text-align: center;
   font-weight: bold;
-  color: var(--color-primary-dark);
+  color: #5c7671;
   padding: 8px 4px;
 }
 
@@ -307,18 +324,18 @@
 }
 
 .booking-calendar-day.selectable {
-  background: var(--color-primary);
+  background: #5c7671;
   color: #fff !important;
 }
 
 .booking-calendar-day.selectable:hover {
-  background: var(--color-primary-dark);
+  background: #4a5e5a;
 }
 
 .booking-calendar-day.selected {
-  background: var(--color-primary-dark);
+  background: #4a5e5a;
   color: #fff !important;
-  border: 2px solid var(--color-primary-dark);
+  border: 2px solid #4a5e5a;
   font-weight: bold;
 }
 
@@ -330,7 +347,7 @@
 .booking-time-slots-title {
   font-weight: bold;
   margin-bottom: 8px;
-  color: var(--color-primary-dark);
+  color: #5c7671;
 }
 
 .booking-time-slots-grid {
@@ -349,16 +366,16 @@
 }
 
 .booking-time-slot.available {
-  background: var(--color-primary);
+  background: #5c7671;
 }
 
 .booking-time-slot.available:hover {
-  background: var(--color-primary-dark);
+  background: #4a5e5a;
 }
 
 .booking-time-slot.selected {
-  background: var(--color-primary-dark);
-  border: 2px solid var(--color-primary-dark);
+  background: #4a5e5a;
+  border: 2px solid #4a5e5a;
   font-weight: bold;
 }
 
@@ -391,8 +408,8 @@
 
 .booking-form-input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.2);
+  border-color: #5c7671;
+  box-shadow: 0 0 0 2px rgba(92, 118, 113, 0.2);
 }
 
 .booking-form-textarea {
@@ -407,8 +424,8 @@
 
 .booking-form-textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.2);
+  border-color: #5c7671;
+  box-shadow: 0 0 0 2px rgba(92, 118, 113, 0.2);
 }
 
 .booking-form-error {
@@ -421,7 +438,7 @@
 }
 
 .booking-form-submit {
-  background: var(--color-primary-dark);
+  background: #5c7671;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -433,7 +450,7 @@
 }
 
 .booking-form-submit:hover:not(:disabled) {
-  background: var(--color-primary);
+  background: #4a5e5a;
   transform: translateY(-1px);
 }
 
@@ -446,7 +463,7 @@
 /* Confirmation */
 .booking-confirmation {
   text-align: center;
-  color: var(--color-primary-dark);
+  color: #5c7671;
   font-weight: bold;
   font-size: 20px;
   margin-top: 24px;
@@ -476,7 +493,7 @@
 }
 
 .booking-additional-info strong {
-  color: var(--color-primary-dark);
+  color: #5c7671;
 }
 
 /* Responsive */

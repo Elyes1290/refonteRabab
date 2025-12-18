@@ -85,6 +85,10 @@
     min-height: auto;
     justify-content: center;
   }
+
+  .presentation-content {
+    padding: 0 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -100,5 +104,9 @@
   .presentation-img {
     max-height: 320px;
     border-width: 2px;
+  }
+
+  .presentation-content {
+    padding: 0 1rem;
   }
 }

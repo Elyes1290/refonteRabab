@@ -4,12 +4,12 @@
 :root {
   --color-bg: #f5f5dc; /* Beige chaleureux */
   --color-header-bg: #fff8dc; /* Crème douce */
-  --color-text: #2c3e50; /* Bleu foncé pour meilleure visibilité */
-  --color-primary: #87ceeb; /* Bleu ciel principal */
-  --color-primary-dark: #4682b4; /* Bleu profond */
+  --color-text: #2c3e50; /* Texte foncé pour meilleure visibilité */
+  --color-primary: #5c7671; /* Vert/gris principal */
+  --color-primary-dark: #4a5e5a; /* Vert/gris foncé */
   --color-accent: #f5f5dc; /* Beige chaleureux (accent) */
   --color-border: #e0e0e0; /* Bordure douce */
-  --color-soft-blue: #b0d7ed; /* Bleu ciel doux pour transitions */
+  --color-soft-blue: #7a9d98; /* Vert doux pour transitions */
   --color-soft-cream: #fefcf3; /* Crème très douce */
   --font_8: normal normal bold 15px/1.4em "Avenir", Arial, sans-serif;
   /* Structure responsive globale */
@@ -499,8 +499,8 @@ footer {
 }
 
 .temoignage-card:hover {
-  border-color: #87ceeb;
-  box-shadow: 0 15px 40px rgba(135, 206, 235, 0.2);
+  border-color: #5c7671;
+  box-shadow: 0 15px 40px rgba(92, 118, 113, 0.2);
 }
 
 /* Styles spécifiques aux témoignages */
@@ -993,11 +993,16 @@ section p {
   border: none;
   border-radius: 2px;
   background: var(--color-primary-dark);
-  color: var(--color-bg);
+  color: #ffffff;
   font-size: 16px;
   margin-top: 4px;
   box-sizing: border-box;
   resize: vertical;
+}
+
+.footer-form input::placeholder,
+.footer-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 .footer-form button {
   background: #fff;
@@ -1024,14 +1029,14 @@ section p {
 .booking-calendar select,
 .booking-calendar h3,
 .booking-calendar h2 {
-  color: rgb(84, 190, 241) !important;
+  color: #5c7671 !important;
 }
 
 .booking-calendar,
 .booking-calendar *,
 .modal,
 .modal * {
-  color: rgb(84, 190, 241) !important;
+  color: #5c7671 !important;
 }
 
 /* Liens sobres pour les pages légales */
@@ -1043,7 +1048,7 @@ section p {
 }
 .legal-page a:hover,
 .legal-page a:focus {
-  color: #4682b4;
+  color: #5c7671;
   text-decoration: underline;
 }
 

@@ -264,6 +264,10 @@
     padding: 0 1rem;
   }
 
+  .experiences-toggle-btn {
+    font-size: 1rem;
+  }
+
   .experiences-form {
     margin: 0 1rem 3rem;
     padding: 1.5rem;
@@ -302,6 +306,10 @@
 
   .experiences-description {
     font-size: 1rem;
+  }
+
+  .experiences-toggle-btn {
+    font-size: 0.95rem;
   }
 
   .experiences-form {

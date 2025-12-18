@@ -17,7 +17,7 @@
 .contact-title {
   font-family: "Playfair Display", serif;
   font-size: 2.8rem;
-  color: var(--color-primary-dark);
+  color: #5c7671;
   margin-bottom: 1rem;
   font-weight: 700;
   text-align: center;
@@ -78,8 +78,8 @@
 
 .contact-form-input:focus,
 .contact-form-textarea:focus {
-  border-color: var(--color-primary-dark);
-  box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.1);
+  border-color: #5c7671;
+  box-shadow: 0 0 0 3px rgba(92, 118, 113, 0.1);
 }
 
 .contact-form-textarea {
@@ -93,7 +93,7 @@
 }
 
 .contact-form-submit-btn {
-  background: var(--color-primary-dark);
+  background: #5c7671;
   color: white;
   border: none;
   padding: 12px 32px;
@@ -102,13 +102,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 12px rgba(70, 130, 180, 0.3);
+  box-shadow: 0 4px 12px rgba(92, 118, 113, 0.3);
 }
 
 .contact-form-submit-btn:hover {
-  background: #5a9fd4;
+  background: #4a5e5a;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(70, 130, 180, 0.4);
+  box-shadow: 0 6px 18px rgba(92, 118, 113, 0.4);
 }
 
 .contact-form-submit-btn:disabled {
@@ -150,13 +150,13 @@
 }
 
 .contact-info-link {
-  color: #4682b4;
+  color: #5c7671;
   text-decoration: underline;
   transition: color 0.3s ease;
 }
 
 .contact-info-link:hover {
-  color: #5a9fd4;
+  color: #4a5e5a;
 }
 
 /* Responsive */

@@ -91,8 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-                    'success_url' => 'https://www.rababali.com/rendez-vous?success=1',
-        'cancel_url' => 'https://www.rababali.com/rendez-vous',
+            'success_url' => 'https://www.rababali.com/rendez-vous-et-contact?success=1',
+            'cancel_url' => 'https://www.rababali.com/rendez-vous-et-contact',
             'metadata' => [
                 'nom' => $reservation['nom'],
                 'email' => $reservation['email'],

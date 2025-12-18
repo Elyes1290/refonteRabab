@@ -41,7 +41,7 @@ const PowrInstagramWidget: React.FC<PowrInstagramWidgetProps> = ({
         // Double vérification avant création
         if (widgetRef.current && widgetRef.current.children.length === 0) {
           const powrElement = document.createElement("div");
-          powrElement.className = "powr-social-feed";
+          powrElement.className = "powr-instagram-feed";
           powrElement.id = powrId;
           widgetRef.current.appendChild(powrElement);
         }
@@ -52,7 +52,7 @@ const PowrInstagramWidget: React.FC<PowrInstagramWidgetProps> = ({
       loadPowrScript().then(() => {
         if (widgetRef.current && widgetRef.current.children.length === 0) {
           const powrElement = document.createElement("div");
-          powrElement.className = "powr-social-feed";
+          powrElement.className = "powr-instagram-feed";
           powrElement.id = "new-powr-widget";
           widgetRef.current.appendChild(powrElement);
         }
@@ -62,9 +62,10 @@ const PowrInstagramWidget: React.FC<PowrInstagramWidgetProps> = ({
     // Nettoyage robuste
     return () => {
       if (widgetRef.current) {
-        // Supprimer tous les widgets POWR
-        const powrElements =
-          widgetRef.current.querySelectorAll(".powr-social-feed");
+        // Supprimer tous les widgets POWR (ancien et nouveau format)
+        const powrElements = widgetRef.current.querySelectorAll(
+          ".powr-social-feed, .powr-instagram-feed"
+        );
         powrElements.forEach((el) => el.remove());
       }
     };

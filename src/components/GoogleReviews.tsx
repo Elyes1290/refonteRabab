@@ -101,12 +101,12 @@ export const GoogleReviews: React.FC<GoogleReviewsProps> = ({
 
   const handleSeeAllReviews = () => {
     // Ouvrir tous les avis Google My Business
-    window.open("https://g.page/r/CZq788eH7GZ7EBM", "_blank");
+    window.open("https://maps.app.goo.gl/xAg5jcX2Fj4dSWkF9", "_blank");
   };
 
   const handleLeaveReview = () => {
     // Ouvrir le formulaire d'avis Google My Business
-    window.open("https://g.page/r/CZq788eH7GZ7EBM/review", "_blank");
+    window.open("https://maps.app.goo.gl/xAg5jcX2Fj4dSWkF9", "_blank");
   };
 
   if (loading) {

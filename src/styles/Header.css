@@ -32,7 +32,7 @@
 .header-logo-image {
   height: 56px;
   display: block;
-  margin: 0;
+  margin: 20px;
   padding: 0;
 }
 
@@ -73,11 +73,23 @@
   transition: all 0.3s ease;
   min-width: 0;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Icône dans les liens de navigation */
+.header-nav-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* État actif des liens - SANS soulignement */
 .header-nav-link.active-link {
-  color: #4682b4;
+  color: #5c7671;
   background: #f5f5dc;
   text-decoration: none !important;
 }
@@ -85,8 +97,8 @@
 /* Liens spéciaux - SANS soulignement */
 .header-nav-link.special {
   color: white;
-  background: linear-gradient(45deg, #87ceeb, #4682b4);
-  box-shadow: 0 2px 8px rgba(135, 206, 235, 0.3);
+  background: linear-gradient(45deg, #5c7671, #4a5e5a);
+  box-shadow: 0 2px 8px rgba(92, 118, 113, 0.3);
   overflow: hidden;
   white-space: nowrap;
   text-decoration: none !important;
@@ -100,6 +112,37 @@
   margin-right: 18px;
   cursor: pointer;
   display: block;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Bouton de fermeture dans le menu mobile */
+.header-burger-close {
+  position: fixed;
+  top: 20px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  cursor: pointer;
+  z-index: 101;
+  color: #5c7671;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  display: none;
+}
+
+.header-burger-close:focus,
+.header-burger-close:active {
+  outline: none !important;
+  box-shadow: none !important;
+  background: none !important;
 }
 
 /* Menu mobile - comme les styles inline originaux */
@@ -147,11 +190,14 @@
   border-radius: 20px;
   transition: all 0.3s ease;
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* État actif des liens mobiles - SANS soulignement */
 .header-mobile-nav-link.active-link {
-  color: #4682b4;
+  color: #5c7671;
   background: #f5f5dc;
   text-decoration: none !important;
 }
@@ -159,9 +205,9 @@
 /* Liens spéciaux mobiles - SANS soulignement */
 .header-mobile-nav-link.special {
   color: white;
-  background: linear-gradient(45deg, #87ceeb, #4682b4);
+  background: linear-gradient(45deg, #5c7671, #4a5e5a);
   font-size: 15px;
-  box-shadow: 0 2px 8px rgba(135, 206, 235, 0.3);
+  box-shadow: 0 2px 8px rgba(92, 118, 113, 0.3);
   overflow: hidden;
   white-space: nowrap;
   text-decoration: none !important;
@@ -242,27 +288,49 @@
     white-space: nowrap;
   }
 
-  /* Style du burger */
+  /* Style du burger (3 traits) - reste dans le header */
   .header-burger {
     display: block !important;
     position: absolute;
     top: 28px;
     right: 10px;
     transform: none;
-    z-index: 101;
-    color: #4682b4 !important;
-    text-shadow: 0 1px 4px #fff, 0 0 2px #4682b4;
+    z-index: 50;
+    color: #5c7671 !important;
+    text-shadow: 0 1px 4px #fff, 0 0 2px #5c7671;
     background: none;
     border: none;
     font-size: 2.1rem !important;
     line-height: 1;
     filter: drop-shadow(0 1px 2px #fff8);
     transition: color 0.2s;
+    /* Supprimer le carré bleu sur mobile */
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .header-burger:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .header-burger:active {
+    outline: none !important;
+    box-shadow: none !important;
+    background: none !important;
   }
 
   .header-burger span {
-    color: #4682b4 !important;
+    color: #5c7671 !important;
     font-size: 2.1rem !important;
+  }
+
+  /* Bouton de fermeture (croix) - fixe dans le menu */
+  .header-burger-close {
+    display: block !important;
   }
 
   /* Menu mobile responsive */
@@ -350,6 +418,8 @@
 .header-burger:active {
   outline: none !important;
   box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  background: none !important;
 }
 
 /* Logo text mobile responsive */
@@ -357,9 +427,10 @@
   font-family: "Playfair Display", serif;
   font-weight: 500;
   color: var(--color-text);
-  letter-spacing: 1px;
+  letter-spacing: -0.5px;
+  word-spacing: -2px;
   font-size: 1.1vw;
-  margin-top: 0.2vw;
+  margin-top: -0.8vw;
   width: auto;
   min-width: 0;
   padding: 0;
@@ -400,5 +471,11 @@
     top: 18px !important;
     right: 8px !important;
     font-size: 1.8rem !important;
+  }
+
+  .header-burger-close {
+    top: 15px !important;
+    right: 12px !important;
+    font-size: 2rem !important;
   }
 }

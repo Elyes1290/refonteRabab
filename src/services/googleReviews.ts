@@ -30,11 +30,8 @@ export interface GooglePlaceDetails {
 export const fetchGoogleReviews =
   async (): Promise<GooglePlaceDetails | null> => {
     try {
-      // En développement, utiliser localhost, en production utiliser rababali.com
-      const apiBase =
-        window.location.hostname === "localhost"
-          ? "http://localhost/RefonteSiteRabab/api"
-          : "https://rababali.com/rabab/api";
+      // Toujours utiliser l'API de production (rababali.com)
+      const apiBase = "https://rababali.com/rabab/api";
 
       const response = await fetch(`${apiBase}/google_reviews_simple.php`);
 

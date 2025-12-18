@@ -111,7 +111,8 @@
 }
 
 /* Styles pour surcharger POWR par défaut - Agrandir pour les vidéos */
-.powr-widget-container .powr-social-feed {
+.powr-widget-container .powr-social-feed,
+.powr-widget-container .powr-instagram-feed {
   border-radius: 16px !important;
   overflow: visible !important;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -120,7 +121,8 @@
 }
 
 /* Forcer les vidéos à être entièrement visibles */
-.powr-widget-container .powr-social-feed iframe {
+.powr-widget-container .powr-social-feed iframe,
+.powr-widget-container .powr-instagram-feed iframe {
   min-height: 500px !important;
   width: 100% !important;
 }
@@ -137,7 +139,11 @@
 .powr-widget-container .powr-social-feed .powr-text,
 .powr-widget-container .powr-social-feed .powr-caption,
 .powr-widget-container .powr-social-feed .powr-content,
-.powr-widget-container .powr-social-feed .powr-description {
+.powr-widget-container .powr-social-feed .powr-description,
+.powr-widget-container .powr-instagram-feed .powr-text,
+.powr-widget-container .powr-instagram-feed .powr-caption,
+.powr-widget-container .powr-instagram-feed .powr-content,
+.powr-widget-container .powr-instagram-feed .powr-description {
   max-height: none !important;
   overflow: visible !important;
   text-overflow: unset !important;
@@ -149,13 +155,17 @@
 
 /* S'assurer que les boutons "Voir plus" ne sont pas nécessaires */
 .powr-widget-container .powr-social-feed .powr-read-more,
-.powr-widget-container .powr-social-feed .powr-expand {
+.powr-widget-container .powr-social-feed .powr-expand,
+.powr-widget-container .powr-instagram-feed .powr-read-more,
+.powr-widget-container .powr-instagram-feed .powr-expand {
   display: none !important;
 }
 
 /* Styles pour les commentaires */
 .powr-widget-container .powr-social-feed .powr-comments,
-.powr-widget-container .powr-social-feed .powr-comment-section {
+.powr-widget-container .powr-social-feed .powr-comment-section,
+.powr-widget-container .powr-instagram-feed .powr-comments,
+.powr-widget-container .powr-instagram-feed .powr-comment-section {
   display: block !important;
   max-height: none !important;
   overflow: visible !important;
@@ -163,14 +173,17 @@
 
 /* Agrandir la zone de contenu pour inclure texte + commentaires */
 .powr-widget-container .powr-social-feed .powr-post-content,
-.powr-widget-container .powr-social-feed .powr-item-content {
+.powr-widget-container .powr-social-feed .powr-item-content,
+.powr-widget-container .powr-instagram-feed .powr-post-content,
+.powr-widget-container .powr-instagram-feed .powr-item-content {
   min-height: 200px !important;
   padding: 15px !important;
   overflow: visible !important;
 }
 
 /* Style pour les commentaires individuels */
-.powr-widget-container .powr-social-feed .powr-comment {
+.powr-widget-container .powr-social-feed .powr-comment,
+.powr-widget-container .powr-instagram-feed .powr-comment {
   display: block !important;
   margin: 8px 0 !important;
   padding: 8px !important;
@@ -180,7 +193,9 @@
 
 /* Texte des commentaires */
 .powr-widget-container .powr-social-feed .powr-comment-text,
-.powr-widget-container .powr-social-feed .powr-comment-content {
+.powr-widget-container .powr-social-feed .powr-comment-content,
+.powr-widget-container .powr-instagram-feed .powr-comment-text,
+.powr-widget-container .powr-instagram-feed .powr-comment-content {
   overflow: visible !important;
   max-height: none !important;
   text-overflow: unset !important;
@@ -196,13 +211,16 @@
 
 /* Styles spéciaux pour les posts Instagram avec vidéos */
 .powr-widget-container .powr-social-feed [data-type="video"],
-.powr-widget-container .powr-social-feed .powr-video-container {
+.powr-widget-container .powr-social-feed .powr-video-container,
+.powr-widget-container .powr-instagram-feed [data-type="video"],
+.powr-widget-container .powr-instagram-feed .powr-video-container {
   min-height: 350px !important;
   width: 100% !important;
 }
 
 /* S'assurer que les images ne sont pas coupées non aussi */
-.powr-widget-container .powr-social-feed img {
+.powr-widget-container .powr-social-feed img,
+.powr-widget-container .powr-instagram-feed img {
   max-width: 100% !important;
   height: auto !important;
 }
@@ -210,36 +228,21 @@
 /* Responsive */
 @media (max-width: 768px) {
   .powr-instagram-widget {
-    padding: 3rem 1.5rem;
+    padding: 2rem 1rem;
     margin: 2rem 0;
   }
 
   .powr-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .powr-subtitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .powr-widget-container {
     max-width: 100%;
-    margin: 2rem auto;
-    min-height: 500px;
-  }
-
-  .powr-widget-container .powr-social-feed {
-    min-height: 500px !important;
-  }
-
-  .powr-widget-container .powr-social-feed iframe {
-    min-height: 500px !important;
-  }
-
-  /* Ajuster les posts pour mobile avec texte complet */
-  .powr-widget-container .powr-social-feed-item,
-  .powr-widget-container .powr-item {
-    min-height: 450px !important;
+    margin: 1.5rem auto;
   }
 
   .powr-setup-info {
@@ -259,27 +262,12 @@
 
 @media (max-width: 480px) {
   .powr-instagram-widget {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.8rem;
     margin: 1.5rem 0;
   }
 
   .powr-widget-container {
-    margin: 1.5rem auto;
-    min-height: 400px;
-  }
-
-  .powr-widget-container .powr-social-feed {
-    min-height: 400px !important;
-  }
-
-  .powr-widget-container .powr-social-feed iframe {
-    min-height: 400px !important;
-  }
-
-  /* Ajuster les posts pour petit mobile avec texte complet */
-  .powr-widget-container .powr-social-feed-item,
-  .powr-widget-container .powr-item {
-    min-height: 380px !important;
+    margin: 1rem auto;
   }
 
   .powr-setup-info {
@@ -287,10 +275,10 @@
   }
 
   .powr-title {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
 
   .powr-subtitle {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }

@@ -1,0 +1,119 @@
+/* Overlay pour l'intro du logo */
+.logo-intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #faf1e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.logo-intro-overlay.animate-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Contenu centré */
+.logo-intro-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: scaleAndMove 1s ease-in-out 1.5s forwards;
+}
+
+/* Logo */
+.logo-intro-image {
+  width: 500px;
+  height: auto;
+  margin-bottom: 2rem;
+  animation: fadeInScale 0.8s ease-out;
+  transition: all 1s ease-in-out;
+}
+
+/* Texte */
+.logo-intro-text {
+  font-family: "Monotype Corsiva", "Brush Script MT", cursive;
+  font-size: 3.5rem;
+  color: #5c7671;
+  font-weight: bold;
+  text-align: center;
+  animation: fadeInUp 0.8s ease-out 0.3s backwards;
+  transition: all 1s ease-in-out;
+  white-space: nowrap;
+}
+
+/* Animation d'apparition du logo */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation d'apparition du texte */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation de transition vers le header */
+@keyframes scaleAndMove {
+  to {
+    transform: scale(0.3) translateY(-45vh) translateX(-40vw);
+    opacity: 0;
+  }
+}
+
+/* Version mobile */
+@media (max-width: 768px) {
+  .logo-intro-image {
+    width: 280px;
+    margin-bottom: 1.5rem;
+  }
+
+  .logo-intro-text {
+    font-size: 2.5rem;
+  }
+
+  @keyframes scaleAndMove {
+    to {
+      transform: scale(0.25) translateY(-45vh) translateX(-30vw);
+      opacity: 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-intro-image {
+    width: 240px;
+    margin-bottom: 1rem;
+  }
+
+  .logo-intro-text {
+    font-size: 2rem;
+  }
+
+  @keyframes scaleAndMove {
+    to {
+      transform: scale(0.2) translateY(-45vh) translateX(-20vw);
+      opacity: 0;
+    }
+  }
+}

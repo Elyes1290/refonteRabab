@@ -3,13 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 
 const navLinks = [
-  { to: "/", label: "🌟 Vision 3D" },
-  { to: "/accueil", label: "🏠 Accueil" },
-  { to: "/a-propos", label: "✨ À propos" },
-  { to: "/rendez-vous", label: "📅 Prendre rendez-vous", special: true },
-  { to: "/evenements", label: "🎉 Événements" },
-  { to: "/experiences", label: "💬 Expériences" },
-  { to: "/contact", label: "📧 Contact" },
+  { to: "/", label: "Constellation", hasIcon: true },
+  { to: "/accueil", label: "Qui je suis", hasIcon: true },
+  { to: "/evenements-et-avis", label: "Événements & Avis", hasIcon: true },
+  {
+    to: "/rendez-vous-et-contact",
+    label: "📅 Rendez-vous & Contact",
+  },
 ];
 
 const Header: React.FC = () => {
@@ -36,9 +36,11 @@ const Header: React.FC = () => {
           <img
             src="/images/logo.png"
             alt="Logo Rabab Ali"
-            className="pulse-glow header-logo-image"
+            className="header-logo-image"
           />
-          <span className="header-logo-text-mobile">Approche et Vision 3D</span>
+          <span className="header-logo-text-mobile">
+            Approche & Constellation
+          </span>
         </div>
         {/* Menu desktop */}
         <nav className="header-nav hide-mobile">
@@ -52,11 +54,16 @@ const Header: React.FC = () => {
                   <Link
                     to={link.to}
                     className={`header-nav-link zoom-hover${
-                      link.special ? " special" : ""
-                    }${isActive ? " active-link" : ""}${
-                      link.to === "/vision3d" ? " pulse-glow" : ""
-                    }`}
+                      isActive ? " active-link" : ""
+                    }${link.to === "/vision3d" ? " pulse-glow" : ""}`}
                   >
+                    {link.hasIcon && (
+                      <img
+                        src="/images/signe_rabab.png?v=2"
+                        alt=""
+                        className="header-nav-icon"
+                      />
+                    )}
                     {link.label}
                   </Link>
                 </li>
@@ -64,16 +71,18 @@ const Header: React.FC = () => {
             })}
           </ul>
         </nav>
-        {/* Burger menu mobile */}
-        <button
-          className="header-burger show-mobile"
-          aria-label="Ouvrir le menu"
-          onClick={() => setMobileMenuOpen((v) => !v)}
-        >
-          <span role="img" aria-label="menu">
-            {mobileMenuOpen ? "✖️" : "☰"}
-          </span>
-        </button>
+        {/* Burger menu mobile - 3 traits seulement */}
+        {!mobileMenuOpen && (
+          <button
+            className="header-burger show-mobile"
+            aria-label="Ouvrir le menu"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <span role="img" aria-label="menu">
+              ☰
+            </span>
+          </button>
+        )}
       </div>
       {/* Texte sous le logo, hors flux principal sur desktop */}
       {/* Menu mobile drawer animé */}
@@ -81,8 +90,16 @@ const Header: React.FC = () => {
         ref={menuRef}
         className={`header-mobile-menu${mobileMenuOpen ? " show-mobile" : ""}`}
       >
-        {/* Bouton de fermeture (croix) */}
-        {/* SUPPRIMÉ : bouton croix supplémentaire */}
+        {/* Bouton de fermeture (croix) dans le menu */}
+        <button
+          className="header-burger-close"
+          aria-label="Fermer le menu"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <span role="img" aria-label="fermer">
+            ✖️
+          </span>
+        </button>
         <ul className="header-mobile-nav-list">
           {navLinks.map((link) => {
             const isActive =
@@ -93,12 +110,17 @@ const Header: React.FC = () => {
                 <Link
                   to={link.to}
                   className={`header-mobile-nav-link zoom-hover${
-                    link.special ? " special" : ""
-                  }${isActive ? " active-link" : ""}${
-                    link.to === "/vision3d" ? " pulse-glow" : ""
-                  }`}
+                    isActive ? " active-link" : ""
+                  }${link.to === "/vision3d" ? " pulse-glow" : ""}`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
+                  {link.hasIcon && (
+                    <img
+                      src="/images/signe_rabab.png?v=2"
+                      alt=""
+                      className="header-nav-icon"
+                    />
+                  )}
                   {link.label}
                 </Link>
               </li>

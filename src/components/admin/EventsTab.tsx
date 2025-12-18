@@ -77,6 +77,9 @@ interface EventItem {
   sous_titre?: string;
   lieu?: string;
   texte?: string;
+  url_inscription?: string;
+  is_promotion?: number;
+  prix_promo?: string;
 }
 
 interface FormData {
@@ -87,6 +90,9 @@ interface FormData {
   prix: string;
   devise: string;
   image: File | null;
+  url_inscription?: string;
+  is_promotion?: number;
+  prix_promo?: string;
 }
 
 // Interfaces pour les flyers
@@ -659,6 +665,9 @@ const EventsTab: React.FC<EventsTabProps> = ({
         prix: eventItem.prix,
         devise: eventItem.devise,
         image: null, // L'image sera optionnelle lors de la modification
+        url_inscription: eventItem.url_inscription || "",
+        is_promotion: eventItem.is_promotion || 0,
+        prix_promo: eventItem.prix_promo || "",
       });
     }
 
@@ -716,6 +725,9 @@ const EventsTab: React.FC<EventsTabProps> = ({
       formData.append("date_fin", form.date_fin);
       formData.append("prix", form.prix);
       formData.append("devise", form.devise);
+      formData.append("url_inscription", form.url_inscription || "");
+      formData.append("is_promotion", form.is_promotion?.toString() || "0");
+      formData.append("prix_promo", form.prix_promo || "");
 
       if (form.image) {
         formData.append("image", form.image);
@@ -739,6 +751,9 @@ const EventsTab: React.FC<EventsTabProps> = ({
           prix: "",
           devise: "€",
           image: null,
+          url_inscription: "",
+          is_promotion: 0,
+          prix_promo: "",
         });
         setEditingEvent(null);
         onRefreshEvents();
@@ -826,6 +841,9 @@ const EventsTab: React.FC<EventsTabProps> = ({
                     prix: "",
                     devise: "€",
                     image: null,
+                    url_inscription: "",
+                    is_promotion: 0,
+                    prix_promo: "",
                   });
                 }}
                 style={{
@@ -1007,6 +1025,120 @@ const EventsTab: React.FC<EventsTabProps> = ({
               <option value="€">€</option>
               <option value="CHF">CHF</option>
             </select>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label
+              style={{
+                fontWeight: 600,
+                color: "#4682B4",
+                display: "block",
+                marginBottom: 6,
+              }}
+            >
+              URL d'inscription (optionnel)
+            </label>
+            <input
+              type="url"
+              name="url_inscription"
+              value={form.url_inscription || ""}
+              onChange={handleChange}
+              placeholder="https://form.jotform.com/..."
+              style={{
+                width: "100%",
+                padding: 10,
+                borderRadius: 8,
+                border: "2px solid #e0e0e0",
+                fontSize: "1rem",
+              }}
+            />
+            <div style={{ fontSize: "0.8rem", color: "#666", marginTop: 4 }}>
+              Si renseigné, un bouton "S'inscrire" sera affiché sur l'événement
+            </div>
+          </div>
+
+          {/* Section Promotion pour les rendez-vous */}
+          <div
+            style={{
+              marginBottom: 16,
+              padding: 16,
+              border: "2px dashed #ff9800",
+              borderRadius: 12,
+              background: "#fff3e0",
+            }}
+          >
+            <div style={{ marginBottom: 12 }}>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  color: "#ff9800",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  name="is_promotion"
+                  checked={form.is_promotion === 1}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      is_promotion: e.target.checked ? 1 : 0,
+                    }))
+                  }
+                  style={{ marginRight: 8, width: 18, height: 18 }}
+                />
+                🎉 Cet événement est une promotion pour les rendez-vous
+              </label>
+              <div
+                style={{
+                  fontSize: "0.8rem",
+                  color: "#666",
+                  marginTop: 6,
+                  marginLeft: 26,
+                }}
+              >
+                Si cochée, le prix promotionnel sera appliqué automatiquement
+                sur la page de réservation pendant la période de l'événement
+              </div>
+            </div>
+
+            {form.is_promotion === 1 && (
+              <div>
+                <label
+                  style={{
+                    fontWeight: 600,
+                    color: "#ff9800",
+                    display: "block",
+                    marginBottom: 6,
+                  }}
+                >
+                  Prix promotionnel *
+                </label>
+                <input
+                  type="text"
+                  name="prix_promo"
+                  value={form.prix_promo || ""}
+                  onChange={handleChange}
+                  placeholder="80"
+                  required={form.is_promotion === 1}
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    borderRadius: 8,
+                    border: "2px solid #ff9800",
+                    fontSize: "1rem",
+                  }}
+                />
+                <div
+                  style={{ fontSize: "0.8rem", color: "#666", marginTop: 4 }}
+                >
+                  Prix réduit qui s'affichera sur la page de réservation (ex: 80
+                  CHF au lieu de 100 CHF)
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
