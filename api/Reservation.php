@@ -18,9 +18,22 @@ function getPDO() {
 
 function createReservation($data) {
     $pdo = getPDO();
+    static $statusColumnEnsured = false;
+    if (!$statusColumnEnsured) {
+        try {
+            $pdo->exec("ALTER TABLE reservations MODIFY COLUMN statut VARCHAR(64) NOT NULL DEFAULT 'en_attente'");
+        } catch (PDOException $e) {
+            // Non bloquant
+        }
+        $statusColumnEnsured = true;
+    }
+    $durationMinutes = isset($data['duration_minutes']) ? intval($data['duration_minutes']) : 60;
+    if (!in_array($durationMinutes, [60, 90], true)) {
+        $durationMinutes = 60;
+    }
     $stmt = $pdo->prepare(
-        "INSERT INTO reservations (nom, prenom, email, telephone, service_type, date_reservation, heure_reservation, statut, montant, notes, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
+        "INSERT INTO reservations (nom, prenom, email, telephone, service_type, date_reservation, heure_reservation, duration_minutes, statut, montant, notes, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
     );
     
     $stmt->execute([
@@ -31,6 +44,7 @@ function createReservation($data) {
         $data['service_type'],
         $data['date_reservation'],
         $data['heure_reservation'],
+        $durationMinutes,
         $data['statut'] ?? 'en_attente',
         $data['montant'],
         $data['notes'] ?? ''

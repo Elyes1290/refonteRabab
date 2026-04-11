@@ -1,7 +1,7 @@
-import React from "react";
+﻿import React from "react";
 
 const AccompagnementSection: React.FC = () => (
-  <section className="accompagnement-section" style={{ background: "#faf1e6" }}>
+  <section className="accompagnement-section" style={{ background: "#F2E8E1" }}>
     <h2>Accompagnement</h2>
     <div className="accompagnement-text">
       <p>

@@ -1,9 +1,9 @@
 /* Styles principaux pour la page Admin */
 
 .admin-container {
-  max-width: 1046px;
+  max-width: 1520px;
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: calc(3rem + 88px) 1.5rem 3rem;
 }
 
 .admin-logout-row {
@@ -45,6 +45,45 @@
   gap: 24px;
   margin-bottom: 32px;
   justify-content: center;
+}
+
+.admin-tabs {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 2.5rem;
+  gap: 0;
+  overflow-x: auto;
+  padding: 0 0.25rem 0.2rem;
+  scrollbar-width: thin;
+}
+
+.admin-tab-btn {
+  padding: 10px 24px;
+  border: 2px solid #4682b4;
+  border-right: none;
+  background: #fff;
+  color: #4682b4;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.admin-tab-btn:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.admin-tab-btn:last-child {
+  border-right: 2px solid #4682b4;
+  border-radius: 0 8px 8px 0;
+}
+
+.admin-tab-btn.active {
+  background: #4682b4;
+  color: #fff;
 }
 
 .admin-form {
@@ -934,8 +973,164 @@
   overflow-y: auto;
 }
 
-.calendar-day:hover .appointment-details {
-  display: block;
+/* Tooltip desktop : visible au hover, caché sur touch */
+@media (hover: hover) and (pointer: fine) {
+  .calendar-day:hover .appointment-details {
+    display: block;
+  }
+}
+
+/* Sur touch (mobile/tablette) : jamais de tooltip hover */
+@media (hover: none), (pointer: coarse) {
+  .appointment-details {
+    display: none !important;
+  }
+}
+
+/* Badges mobiles dans les cellules */
+.cal-mobile-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.cal-mobile-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #4682b4;
+  border-radius: 4px;
+  padding: 1px 4px;
+  min-width: 0;
+}
+
+.cal-mobile-badge-time {
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cal-mobile-badge-name {
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52px;
+}
+
+.cal-mobile-badge-more {
+  background: #ff6b6b;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Sur desktop : masquer les badges mobiles, afficher le nom */
+@media (hover: hover) and (pointer: fine) {
+  .cal-mobile-badges {
+    display: none;
+  }
+}
+
+/* Sur touch : masquer le nom desktop, afficher uniquement les badges */
+@media (hover: none), (pointer: coarse) {
+  .appointment-preview {
+    display: none !important;
+  }
+}
+
+/* Jour sélectionné (tap mobile) */
+.calendar-day.selected-day {
+  outline: 2px solid #4682b4;
+  outline-offset: -2px;
+}
+
+/* Panneau détail jour — mobile et desktop */
+.calendar-day-panel {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-top: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.calendar-day-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #4682b4;
+  color: #fff;
+  padding: 0.7rem 1rem;
+}
+
+.calendar-day-panel-date {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.calendar-day-panel-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+
+.calendar-day-panel-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.calendar-day-panel-item:last-child {
+  border-bottom: none;
+}
+
+.calendar-day-panel-time {
+  font-weight: 700;
+  color: #4682b4;
+  font-size: 1rem;
+  min-width: 48px;
+  padding-top: 2px;
+}
+
+.calendar-day-panel-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.calendar-day-panel-info strong {
+  font-size: 0.95rem;
+  color: #222;
+}
+
+.calendar-day-panel-service {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.calendar-day-panel-notes {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.calendar-day-panel-status {
+  font-size: 1.2rem;
+  padding-top: 2px;
 }
 
 .appointment-item {
@@ -984,6 +1179,8 @@
   box-shadow: 0 2px 12px #0001;
   padding: 2rem;
   margin-bottom: 2rem;
+  overflow: hidden; /* Empêche le tableau de déborder du conteneur */
+  max-width: 100%;
 }
 
 /* Statistiques */
@@ -1020,11 +1217,14 @@
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-appointments-table table {
   border-collapse: collapse;
-  table-layout: fixed; /* Largeurs fixes pour éviter le débordement */
+  width: 100%;
+  table-layout: fixed;
 }
 
 .admin-appointments-table th {
@@ -1079,13 +1279,15 @@
 
 .admin-appointments-table th:nth-child(7),
 .admin-appointments-table td:nth-child(7) {
-  width: 22%;
+  width: 15%;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 } /* Contact */
 
 .admin-appointments-table th:nth-child(8),
 .admin-appointments-table td:nth-child(8) {
-  width: 8%;
-  min-width: 120px; /* Largeur minimum pour les 3 boutons */
+  width: 14%;
+  min-width: 190px;
 } /* Actions */
 
 .admin-appointments-table tr:hover {
@@ -1117,17 +1319,30 @@
   display: inline-block;
 }
 
-.status-badge.confirme {
+.status-badge.confirme,
+.status-badge.confirmee {
   background: #e8f5e8;
   color: #2e7d32;
 }
 
+.status-badge.payee_a_confirmer {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-badge.reportee {
+  background: #ede7f6;
+  color: #5e35b1;
+}
+
+.status-badge.en_attente,
 .status-badge.en_attente_paiement {
   background: #fff3e0;
   color: #f57c00;
 }
 
-.status-badge.annule {
+.status-badge.annule,
+.status-badge.annulee {
   background: #ffebee;
   color: #c62828;
 }
@@ -1483,7 +1698,7 @@
 @media (min-width: 1200px) {
   .admin-appointments-table th:nth-child(8),
   .admin-appointments-table td:nth-child(8) {
-    min-width: 140px;
+    min-width: 200px;
   }
 }
 
@@ -1696,8 +1911,588 @@
   box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
 }
 
+/* ==============================
+   Availability Admin
+============================== */
+.availability-tab {
+  display: grid;
+}
+
+.availability-table-card {
+  border: 1px solid #e3edf6;
+}
+
+.availability-title {
+  color: #4682b4;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.availability-lead {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #4c6072;
+}
+
+.availability-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e6eef6;
+  border-radius: 12px;
+}
+
+.availability-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.availability-table thead th {
+  background: #f5f9fd;
+  color: #366b96;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid #dde8f2;
+  text-align: left;
+}
+
+.availability-table tbody td {
+  padding: 0.72rem 0.75rem;
+  border-bottom: 1px solid #edf3f8;
+  vertical-align: middle;
+}
+
+.availability-table tbody tr:hover td {
+  background: #fbfdff;
+}
+
+.availability-day-pill {
+  display: inline-block;
+  background: #edf5fc;
+  color: #335f84;
+  border: 1px solid #d2e2f1;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-weight: 600;
+  font-size: 0.84rem;
+}
+
+.availability-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: #395670;
+}
+
+.availability-time-input,
+.availability-interval-select {
+  border: 1px solid #cdd9e5;
+  border-radius: 8px;
+  padding: 0.38rem 0.52rem;
+  font-size: 0.88rem;
+  background: #fff;
+}
+
+.availability-save-btn {
+  border: 1px solid #3f7db0;
+  background: #4682b4;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.availability-save-btn:hover:not(:disabled) {
+  background: #356a94;
+}
+
+.availability-save-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.availability-vacations-card {
+  margin-top: 1.2rem;
+  border: 1px solid #e6eef6;
+  border-radius: 12px;
+  background: #fcfeff;
+  padding: 1rem;
+}
+
+.availability-subtitle {
+  margin: 0 0 0.35rem;
+  color: #2f5e86;
+  font-size: 1.02rem;
+}
+
+.availability-sublead {
+  margin: 0 0 0.9rem;
+  color: #5d7184;
+  font-size: 0.9rem;
+}
+
+.availability-vacation-form-grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, minmax(140px, 1fr));
+  gap: 0.7rem;
+}
+
+.availability-vacation-form-grid label {
+  display: block;
+  color: #45647e;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 0.84rem;
+}
+
+.availability-vacation-form-grid input,
+.availability-vacation-form-grid select {
+  width: 100%;
+  border: 1px solid #cdd9e5;
+  border-radius: 8px;
+  padding: 0.42rem 0.55rem;
+  font-size: 0.88rem;
+}
+
+.availability-vacation-actions {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.availability-vacations-table-wrap {
+  margin-top: 0.9rem;
+  overflow-x: auto;
+  border: 1px solid #e8eff7;
+  border-radius: 10px;
+}
+
+.availability-vacations-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.availability-vacations-table thead th {
+  background: #f6f9fd;
+  color: #365f83;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.72rem;
+  border-bottom: 1px solid #dbe6f1;
+}
+
+.availability-vacations-table tbody td {
+  padding: 0.68rem 0.72rem;
+  border-bottom: 1px solid #ecf2f8;
+}
+
+.availability-empty-cell {
+  color: #60798f;
+  text-align: center;
+  padding: 1rem !important;
+}
+
+@media (max-width: 1024px) {
+  .availability-vacation-form-grid {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+}
+
+/* ==============================
+   Waitlist Admin
+============================== */
+.waitlist-tab {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.waitlist-form-card {
+  margin-bottom: 0;
+}
+
+.waitlist-section-title {
+  color: #4682b4;
+  margin: 0;
+}
+
+.waitlist-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.waitlist-field {
+  margin-bottom: 12px;
+}
+
+.waitlist-field label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+  color: #4682b4;
+}
+
+.waitlist-field input,
+.waitlist-field select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.waitlist-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.waitlist-primary-btn {
+  min-width: 220px;
+}
+
+.waitlist-secondary-btn {
+  background: #eef4f8;
+  color: #356d99;
+  border: 1px solid #9dc0db;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.waitlist-table-card {
+  background: #fff;
+  border: 1px solid #e7edf3;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #0001;
+  padding: 1rem;
+}
+
+.waitlist-entries-card {
+  margin-top: 0.25rem;
+  background: #fff;
+  border: 1px solid #e7edf3;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #0001;
+  padding: 1rem;
+}
+
+.waitlist-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.waitlist-card-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.waitlist-bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.waitlist-bulk-label {
+  color: #356d99;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.waitlist-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid #bfd5e8;
+  background: #f3f8fd;
+  color: #356d99;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.waitlist-close-btn:hover {
+  background: #e7f2fb;
+}
+
+.waitlist-total-pill {
+  background: #eef5fb;
+  color: #356d99;
+  border: 1px solid #bfd5e8;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.waitlist-table-scroll {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e7edf3;
+  border-radius: 12px;
+}
+
+.waitlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 920px;
+  background: #fff;
+}
+
+.waitlist-table thead th {
+  background: #f6f9fc;
+  color: #356d99;
+  border-bottom: 1px solid #dfe8f0;
+  font-size: 0.9rem;
+  padding: 0.75rem 0.7rem;
+}
+
+.waitlist-table td {
+  border-bottom: 1px solid #eef2f6;
+  padding: 0.75rem 0.7rem;
+  vertical-align: middle;
+  color: #2f3a44;
+  font-size: 0.92rem;
+}
+
+.waitlist-table tr:last-child td {
+  border-bottom: none;
+}
+
+.waitlist-table tr:hover td {
+  background: #fbfdff;
+}
+
+.event-waitlist-col-status {
+  min-width: 180px;
+  padding-right: 1.1rem !important;
+}
+
+.event-waitlist-col-created {
+  min-width: 190px;
+  padding-left: 1.1rem !important;
+}
+
+.waitlist-empty-cell {
+  text-align: center;
+  color: #7a8a99;
+  padding: 1rem;
+}
+
+.waitlist-date-chip {
+  display: inline-block;
+  background: #f2f7fc;
+  color: #356d99;
+  border: 1px solid #d2e2f0;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-weight: 600;
+  font-size: 0.84rem;
+}
+
+.waitlist-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #e8f2fa;
+  color: #2c5d8a;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.waitlist-status-badge,
+.waitlist-entry-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.58rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.waitlist-status-badge.open {
+  color: #18794e;
+  background: #e9f9f0;
+  border-color: #b9e7cb;
+}
+
+.waitlist-status-badge.closed {
+  color: #92400e;
+  background: #fff4e5;
+  border-color: #f4d7b4;
+}
+
+.waitlist-status-badge.archived {
+  color: #475569;
+  background: #f1f5f9;
+  border-color: #d9e2ec;
+}
+
+.waitlist-status-badge.draft {
+  color: #7c3aed;
+  background: #f4ecff;
+  border-color: #dfcdfa;
+}
+
+.waitlist-entry-status.pending {
+  color: #92400e;
+  background: #fff4e5;
+  border-color: #f4d7b4;
+}
+
+.waitlist-entry-status.contacted {
+  color: #1d4ed8;
+  background: #e9f2ff;
+  border-color: #bfd5ff;
+}
+
+.waitlist-entry-status.confirmed {
+  color: #166534;
+  background: #e8f8ee;
+  border-color: #bfe4cd;
+}
+
+.waitlist-entry-status.cancelled {
+  color: #b42318;
+  background: #fef3f2;
+  border-color: #f4c7c3;
+}
+
+.waitlist-entry-status-btn {
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.waitlist-entry-status-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.waitlist-entry-status-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.inline-status-select {
+  min-width: 150px;
+  border: 2px solid #4682b4;
+  border-radius: 8px;
+  background: #fff;
+  color: #2f3a44;
+  font-size: 0.84rem;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.inline-status-select:focus {
+  box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.2);
+}
+
+.waitlist-inline-status-select {
+  min-width: 140px;
+  border: 1px solid #c8d7e6;
+  border-radius: 8px;
+  background: #fff;
+  color: #2f3a44;
+  font-size: 0.84rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.waitlist-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.waitlist-row-btn {
+  border: 1px solid #b7cee2;
+  background: #f6fbff;
+  color: #2c5d8a;
+  border-radius: 8px;
+  padding: 0.42rem 0.72rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.waitlist-row-btn:hover {
+  background: #eaf4fd;
+}
+
+.waitlist-row-btn.danger {
+  border-color: #f4b8b8;
+  background: #fff2f2;
+  color: #c03535;
+}
+
+.waitlist-row-btn.danger:hover {
+  background: #ffe8e8;
+}
+
+.waitlist-email-cell {
+  word-break: break-word;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
+  .admin-container {
+    padding-top: calc(2rem + 82px);
+  }
+
+  .admin-title {
+    font-size: 1.45rem;
+    line-height: 1.3;
+    margin-bottom: 1.2rem;
+  }
+
+  .admin-form,
+  .admin-flyer-form {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .admin-events-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .admin-tabs {
+    justify-content: flex-start;
+    margin: 1rem 0 1.5rem;
+    padding-left: 0.15rem;
+  }
+
+  .admin-tab-btn {
+    padding: 8px 14px;
+    font-size: 0.88rem;
+  }
+
   .video-editor-tab {
     padding: 1rem;
   }
@@ -1713,5 +2508,23 @@
   .compile-btn {
     min-width: 200px;
     padding: 0.875rem 1.5rem;
+  }
+
+  .waitlist-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .waitlist-table-card {
+    margin: 0 0.5rem;
+  }
+
+  .waitlist-actions-row .btn-magical,
+  .waitlist-actions-row .waitlist-secondary-btn {
+    width: 100%;
+  }
+
+  .waitlist-bulk-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

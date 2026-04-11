@@ -16,15 +16,15 @@
 .btn-magical {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(45deg, #5c7671, #4a5e5a);
+  background: var(--color-accent);
   border: none;
   border-radius: 50px;
   padding: 15px 30px;
-  color: white;
+  color: white !important;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(92, 118, 113, 0.3);
+  box-shadow: 0 2px 8px rgba(92, 118, 113, 0.2);
 }
 
 .btn-magical::before {
@@ -50,6 +50,13 @@
 .btn-magical:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(92, 118, 113, 0.5);
+  color: white !important;
+}
+
+.btn-magical:visited,
+.btn-magical:active,
+.btn-magical:focus {
+  color: white !important;
 }
 
 /* Animation de pulsation pour les éléments importants */
@@ -82,7 +89,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #5c7671;
+  background: var(--color-accent);
   animation: revealText 1.5s ease-out forwards;
 }
 
@@ -254,7 +261,7 @@
 
 /* Animation de gradient animé */
 .animated-gradient {
-  background: linear-gradient(-45deg, #5c7671, #4a5e5a, #f5f5dc, #fff8dc);
+  background: linear-gradient(-45deg, var(--color-accent), var(--color-accent-hover), #f5f5dc, #fff8dc);
   background-size: 400% 400%;
   animation: gradientShift 6s ease infinite;
 }
@@ -298,7 +305,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #5c7671;
+  border-top: 3px solid var(--color-accent);
   border-radius: 50%;
   animation: creativeLoading 2s linear infinite;
 }
@@ -357,11 +364,11 @@ body {
 
 /* Mettre en évidence le lien actif dans la barre de menu */
 .active-link {
-  background: #f5f5dc !important;
-  color: #5c7671 !important;
-  box-shadow: 0 2px 12px rgba(92, 118, 113, 0.1);
+  background: rgba(92, 118, 113, 0.1) !important;
+  color: var(--color-accent) !important;
+  box-shadow: 0 2px 12px rgba(92, 118, 113, 0.15);
   font-weight: 700;
-  border: 2px solid #5c7671;
+  border: 2px solid var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 4px;
   z-index: 2;

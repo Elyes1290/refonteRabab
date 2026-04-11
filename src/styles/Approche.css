@@ -1,0 +1,237 @@
+/* Page L'Approche 3D */
+
+.approche-page {
+  background: var(--color-bg);
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* Section héro */
+.approche-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 2rem 3rem 2rem;
+}
+
+.approche-title {
+  font-family: var(--font-titles) !important;
+  font-weight: 400 !important;
+  font-size: 72px !important;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+
+/* Étapes */
+.approche-step {
+  max-width: 900px;
+  margin: 0 auto 3rem auto;
+  padding: 0 2rem;
+}
+
+/* Carte seule (étapes 1 et 4) */
+.approche-step-card-only {
+  display: flex;
+  justify-content: center;
+}
+
+.approche-step-card-only .approche-card {
+  max-width: 304px;
+}
+
+.approche-card {
+  background: #fff;
+  border-radius: 30px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  padding: 0.5rem 2.5rem 1.5rem 2.5rem;
+  text-align: center;
+  max-width: 300px;
+  box-sizing: content-box;
+}
+
+.approche-card-title {
+  font-family: "Lato", sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--color-accent);
+  text-align: center;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem;
+}
+
+.approche-card-text {
+  font-family: "Lato", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: var(--color-body-text);
+  line-height: 1.7;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.approche-card-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Étapes avec image (étapes 2 et 3) */
+.approche-step-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3rem;
+}
+
+.approche-step-reverse {
+  flex-direction: row-reverse;
+}
+
+.approche-image-wrap {
+  flex-shrink: 0;
+  width: 320px;
+}
+
+.approche-step-image {
+  width: 100%;
+  border-radius: 20px;
+  border: 3px solid var(--color-accent);
+  object-fit: cover;
+  display: block;
+}
+
+.approche-step-content {
+  flex: 1;
+}
+
+/* Section infos pratiques - grille 3 cartes */
+.approche-infos-grid {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.approche-info-card {
+  max-width: none !important;
+  padding: 0.5rem 1.5rem 1.5rem 1.5rem !important;
+}
+
+/* Boutons d'action */
+.approche-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 3rem 2rem 5rem 2rem;
+}
+
+.approche-cta-button {
+  display: inline-block;
+  background: var(--color-accent);
+  color: #fff !important;
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  text-decoration: none !important;
+  transition: all 0.3s ease;
+}
+
+.approche-cta-button:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+}
+
+.approche-instagram-button {
+  display: inline-block;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: white !important;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none !important;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.approche-instagram-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .approche-hero {
+    padding: 4rem 1.5rem 2.5rem;
+  }
+
+  .approche-title {
+    font-size: 56px !important;
+  }
+
+  .approche-step {
+    padding: 0 1.5rem;
+    margin-bottom: 2.25rem;
+  }
+
+  .approche-step-row {
+    gap: 2rem;
+  }
+
+  .approche-image-wrap {
+    width: 280px;
+  }
+
+  .approche-infos-grid {
+    grid-template-columns: 1fr 1fr;
+    max-width: 860px;
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .approche-hero {
+    padding: 3rem 1.5rem 2rem 1.5rem;
+  }
+
+  .approche-title {
+    font-size: 48px !important;
+  }
+
+  .approche-step-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .approche-step-reverse {
+    flex-direction: column;
+  }
+
+  .approche-image-wrap {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+
+  .approche-card {
+    max-width: 100%;
+  }
+
+  .approche-infos-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .approche-title {
+    font-size: 36px !important;
+  }
+}

@@ -1,0 +1,274 @@
+/* Page À propos */
+
+.about-page {
+  background: var(--color-bg);
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* Section héro */
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 2rem 2rem 2rem;
+}
+
+.about-title {
+  font-family: var(--font-titles) !important;
+  font-weight: 400 !important;
+  font-size: 92px !important;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+
+.about-photo-wrap {
+  width: 250px;
+  height: 350px;
+  border-radius: 80px;
+  overflow: hidden;
+  border: 3px solid #9a6d4a;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.about-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.about-quote {
+  font-family: "Cinzel Decorative Local", serif !important;
+  font-size: 20px !important;
+  font-weight: 400 !important;
+  color: var(--color-body-text);
+  text-align: center;
+  letter-spacing: 2px;
+  margin-top: 1rem;
+}
+
+/* Section texte */
+.about-text-section {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2.5rem 4.2rem;
+  background: #fff;
+  border-radius: 30px;
+  border: 2px solid #9a6d4a;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.about-text-section p {
+  font-family: "Lato", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: var(--color-body-text);
+  line-height: 1.8;
+  text-align: center !important;
+  margin-bottom: 1.5rem;
+}
+
+/* Section Mes Valeurs */
+.about-valeurs {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.about-valeurs-title {
+  font-family: var(--font-titles) !important;
+  font-weight: 400 !important;
+  font-size: 60px !important;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.about-valeurs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.about-valeur-card {
+  background: #fff;
+  border-radius: 80px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 0.6rem 1rem 0.1rem 1rem;
+  text-align: center;
+  width: 100%;
+  max-width: 315px;
+}
+
+.about-valeur-name {
+  font-family: "Lato", sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: var(--color-accent);
+  text-align: center !important;
+  margin-top: 0.3rem !important;
+  margin-bottom: 0.2rem;
+}
+
+.about-valeur-text {
+  font-family: "Lato", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: var(--color-body-text);
+  text-align: center !important;
+}
+
+/* Section certificats */
+.about-certifs {
+  max-width: 1000px;
+  margin: 0 auto 3rem auto;
+  padding: 0 2rem;
+}
+
+.about-certifs-title {
+  font-family: var(--font-titles) !important;
+  font-weight: 400 !important;
+  font-size: 48px !important;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.about-certifs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.about-certif-card {
+  background: #fff;
+  border-radius: 30px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.about-certif-img {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  cursor: zoom-in;
+  transition: box-shadow 0.2s;
+}
+
+.about-certif-img:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.about-certif-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.about-certif-info {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  color: #888;
+}
+
+.about-certif-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+}
+
+.about-certif-modal-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: #fff;
+  padding: 8px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .about-hero {
+    padding: 4rem 1.5rem 2rem;
+  }
+
+  .about-title {
+    font-size: 68px !important;
+  }
+
+  .about-text-section {
+    margin: 0 1.5rem;
+    padding: 2rem 2.5rem;
+  }
+
+  .about-text-section p {
+    font-size: 18px !important;
+  }
+
+  .about-valeurs-title {
+    font-size: 50px !important;
+  }
+
+  .about-certifs {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    padding: 3rem 1.5rem 2rem 1.5rem;
+  }
+
+  .about-title {
+    font-size: 58px !important;
+  }
+
+  .about-photo-wrap {
+    width: 250px;
+    height: 320px;
+  }
+
+  .about-certifs-grid {
+    grid-template-columns: 1fr;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-title {
+    font-size: 46px !important;
+  }
+
+  .about-photo-wrap {
+    width: 220px;
+    height: 280px;
+  }
+}

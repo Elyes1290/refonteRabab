@@ -1,10 +1,10 @@
-import React from "react";
+﻿import React from "react";
 
 const Vision3DSection: React.FC = () => (
   <section
     className="vision3d-section"
     style={{
-      background: "#faf1e6",
+      background: "#F2E8E1",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",

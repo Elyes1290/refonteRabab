@@ -11,6 +11,7 @@ interface StripePayButtonProps {
     date: string;
     horaire: string;
     service: string;
+    duration_minutes: 60 | 90;
   };
 }
 
@@ -29,7 +30,13 @@ const StripePayButton: React.FC<StripePayButtonProps> = ({
           body: JSON.stringify({ amount, description, reservation }),
         }
       );
-      const data = await res.json();
+      const raw = await res.text();
+      let data: { success?: boolean; url?: string; message?: string } = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        throw new Error("Réponse serveur invalide (non JSON)");
+      }
       if (data.success && data.url) {
         window.location.href = data.url;
       } else {

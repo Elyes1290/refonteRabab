@@ -78,6 +78,7 @@ interface EventItem {
   lieu?: string;
   texte?: string;
   url_inscription?: string;
+  video_urls?: string[];
   is_promotion?: number;
   prix_promo?: string;
 }
@@ -91,8 +92,20 @@ interface FormData {
   devise: string;
   image: File | null;
   url_inscription?: string;
+  video_urls?: string[];
   is_promotion?: number;
   prix_promo?: string;
+}
+
+interface EventWaitlistEntry {
+  id: number;
+  event_id: number;
+  nom: string;
+  email: string;
+  telephone: string;
+  message?: string;
+  status: "pending" | "contacted" | "confirmed" | "cancelled";
+  created_at: string;
 }
 
 // Interfaces pour les flyers
@@ -189,6 +202,141 @@ const EventsTab: React.FC<EventsTabProps> = ({
   // Références pour les aperçus de flyers
   const flyerCirclesRef = useRef<HTMLDivElement>(null);
   const flyerSquaresRef = useRef<HTMLDivElement>(null);
+  const [selectedEventWaitlistId, setSelectedEventWaitlistId] = useState<number | null>(null);
+  const [eventWaitlistEntries, setEventWaitlistEntries] = useState<EventWaitlistEntry[]>([]);
+  const [loadingEventWaitlist, setLoadingEventWaitlist] = useState(false);
+  const [updatingEventWaitlistEntryId, setUpdatingEventWaitlistEntryId] = useState<number | null>(null);
+  const [deletingEventWaitlistEntryId, setDeletingEventWaitlistEntryId] = useState<number | null>(null);
+  const [eventWaitlistBulkStatus, setEventWaitlistBulkStatus] =
+    useState<EventWaitlistEntry["status"]>("confirmed");
+  const [updatingEventWaitlistBulk, setUpdatingEventWaitlistBulk] = useState(false);
+
+  const statusLabel: Record<EventWaitlistEntry["status"], string> = {
+    pending: "En attente",
+    contacted: "Contacté",
+    confirmed: "Confirmé",
+    cancelled: "Annulé",
+  };
+
+  const fetchEventWaitlistEntries = async (eventId: number) => {
+    setLoadingEventWaitlist(true);
+    try {
+      const response = await fetch(
+        `${API_BASE}/rabab/api/db_connect.php?action=get_event_waitlist_entries&event_id=${eventId}`
+      );
+      const data = await response.json();
+      if (data.success) {
+        setEventWaitlistEntries(Array.isArray(data.data) ? data.data : []);
+      } else {
+        toast.error(data.message || "Erreur chargement liste d'attente événement");
+        setEventWaitlistEntries([]);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur de connexion");
+      setEventWaitlistEntries([]);
+    } finally {
+      setLoadingEventWaitlist(false);
+    }
+  };
+
+  const handleToggleEventWaitlist = async (eventId: number) => {
+    if (selectedEventWaitlistId === eventId) {
+      setSelectedEventWaitlistId(null);
+      setEventWaitlistEntries([]);
+      return;
+    }
+    setSelectedEventWaitlistId(eventId);
+    await fetchEventWaitlistEntries(eventId);
+  };
+
+  const handleUpdateEventWaitlistEntryStatus = async (
+    entryId: number,
+    status: EventWaitlistEntry["status"]
+  ) => {
+    setUpdatingEventWaitlistEntryId(entryId);
+    try {
+      const formData = new FormData();
+      formData.append("action", "update_event_waitlist_entry_status");
+      formData.append("id", String(entryId));
+      formData.append("status", status);
+      const response = await fetch(`${API_BASE}/rabab/api/db_connect.php`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEventWaitlistEntries((prev) =>
+          prev.map((entry) =>
+            entry.id === entryId ? { ...entry, status } : entry
+          )
+        );
+        toast.success("Statut mis à jour");
+      } else {
+        toast.error(data.message || "Erreur mise à jour statut");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur de connexion");
+    } finally {
+      setUpdatingEventWaitlistEntryId(null);
+    }
+  };
+
+  const handleDeleteEventWaitlistEntry = async (entryId: number) => {
+    if (!window.confirm("Supprimer cet inscrit de la liste d'attente ?")) return;
+    setDeletingEventWaitlistEntryId(entryId);
+    try {
+      const formData = new FormData();
+      formData.append("action", "delete_event_waitlist_entry");
+      formData.append("id", String(entryId));
+      const response = await fetch(`${API_BASE}/rabab/api/db_connect.php`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEventWaitlistEntries((prev) => prev.filter((entry) => entry.id !== entryId));
+        toast.success("Inscrit supprimé");
+      } else {
+        toast.error(data.message || "Erreur suppression inscrit");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur de connexion");
+    } finally {
+      setDeletingEventWaitlistEntryId(null);
+    }
+  };
+
+  const handleBulkUpdateEventWaitlistStatus = async () => {
+    if (!selectedEventWaitlistId) return;
+    setUpdatingEventWaitlistBulk(true);
+    try {
+      const formData = new FormData();
+      formData.append("action", "update_event_waitlist_entries_status_bulk");
+      formData.append("event_id", String(selectedEventWaitlistId));
+      formData.append("status", eventWaitlistBulkStatus);
+      const response = await fetch(`${API_BASE}/rabab/api/db_connect.php`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEventWaitlistEntries((prev) =>
+          prev.map((entry) => ({ ...entry, status: eventWaitlistBulkStatus }))
+        );
+        toast.success("Statut de tous les inscrits mis à jour");
+      } else {
+        toast.error(data.message || "Erreur mise à jour globale");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur de connexion");
+    } finally {
+      setUpdatingEventWaitlistBulk(false);
+    }
+  };
 
   // Gestionnaires pour les flyers Cercles
   const handleFlyerCirclesChange = (
@@ -436,6 +584,29 @@ const EventsTab: React.FC<EventsTabProps> = ({
     }));
   };
 
+  const handleVideoUrlChange = (index: number, value: string) => {
+    setForm((prev) => {
+      const urls = [...(prev.video_urls && prev.video_urls.length > 0 ? prev.video_urls : [""])];
+      urls[index] = value;
+      return { ...prev, video_urls: urls };
+    });
+  };
+
+  const handleAddVideoUrlField = () => {
+    setForm((prev) => ({
+      ...prev,
+      video_urls: [...(prev.video_urls && prev.video_urls.length > 0 ? prev.video_urls : [""]), ""],
+    }));
+  };
+
+  const handleRemoveVideoUrlField = (index: number) => {
+    setForm((prev) => {
+      const urls = [...(prev.video_urls && prev.video_urls.length > 0 ? prev.video_urls : [""])];
+      urls.splice(index, 1);
+      return { ...prev, video_urls: urls.length > 0 ? urls : [""] };
+    });
+  };
+
   // Gestionnaire pour l'image événement classique
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -666,6 +837,10 @@ const EventsTab: React.FC<EventsTabProps> = ({
         devise: eventItem.devise,
         image: null, // L'image sera optionnelle lors de la modification
         url_inscription: eventItem.url_inscription || "",
+        video_urls:
+          eventItem.video_urls && eventItem.video_urls.length > 0
+            ? eventItem.video_urls
+            : [""],
         is_promotion: eventItem.is_promotion || 0,
         prix_promo: eventItem.prix_promo || "",
       });
@@ -726,6 +901,10 @@ const EventsTab: React.FC<EventsTabProps> = ({
       formData.append("prix", form.prix);
       formData.append("devise", form.devise);
       formData.append("url_inscription", form.url_inscription || "");
+      const normalizedVideoUrls = (form.video_urls || [])
+        .map((u) => u.trim())
+        .filter(Boolean);
+      formData.append("video_urls", normalizedVideoUrls.join("\n"));
       formData.append("is_promotion", form.is_promotion?.toString() || "0");
       formData.append("prix_promo", form.prix_promo || "");
 
@@ -752,6 +931,7 @@ const EventsTab: React.FC<EventsTabProps> = ({
           devise: "€",
           image: null,
           url_inscription: "",
+          video_urls: [""],
           is_promotion: 0,
           prix_promo: "",
         });
@@ -842,6 +1022,7 @@ const EventsTab: React.FC<EventsTabProps> = ({
                     devise: "€",
                     image: null,
                     url_inscription: "",
+                    video_urls: [""],
                     is_promotion: 0,
                     prix_promo: "",
                   });
@@ -1054,6 +1235,75 @@ const EventsTab: React.FC<EventsTabProps> = ({
             />
             <div style={{ fontSize: "0.8rem", color: "#666", marginTop: 4 }}>
               Si renseigné, un bouton "S'inscrire" sera affiché sur l'événement
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label
+              style={{
+                fontWeight: 600,
+                color: "#4682B4",
+                display: "block",
+                marginBottom: 6,
+              }}
+            >
+              URLs vidéos / réels (optionnel)
+            </label>
+            {(form.video_urls && form.video_urls.length > 0
+              ? form.video_urls
+              : [""]).map((videoUrl, index) => (
+              <div
+                key={`video-url-${index}`}
+                style={{ display: "flex", gap: 8, marginBottom: 8 }}
+              >
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => handleVideoUrlChange(index, e.target.value)}
+                  placeholder="https://www.instagram.com/reel/... ou https://www.youtube.com/watch?v=..."
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    borderRadius: 8,
+                    border: "2px solid #e0e0e0",
+                    fontSize: "1rem",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveVideoUrlField(index)}
+                  style={{
+                    border: "none",
+                    borderRadius: 8,
+                    background: "#ef5350",
+                    color: "#fff",
+                    padding: "0 12px",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                  }}
+                  title="Supprimer ce lien"
+                >
+                  -
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={handleAddVideoUrlField}
+              style={{
+                border: "none",
+                borderRadius: 8,
+                background: "#1DA395",
+                color: "#fff",
+                padding: "8px 12px",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              + Ajouter un lien vidéo
+            </button>
+            <div style={{ fontSize: "0.8rem", color: "#666", marginTop: 4 }}>
+              Mets uniquement des liens directs. YouTube sera lu dans la modal, Instagram ouvrira le lien.
             </div>
           </div>
 
@@ -2840,9 +3090,140 @@ const EventsTab: React.FC<EventsTabProps> = ({
                 >
                   Supprimer
                 </button>
+                <button
+                  type="button"
+                  className="waitlist-row-btn"
+                  onClick={() => handleToggleEventWaitlist(event.id)}
+                >
+                  {selectedEventWaitlistId === event.id ? "Fermer inscrits" : "Voir inscrits"}
+                </button>
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {selectedEventWaitlistId && (
+        <div className="waitlist-entries-card" style={{ marginTop: 20 }}>
+          <div className="waitlist-card-head">
+            <h3 className="waitlist-section-title" style={{ margin: 0 }}>
+              Inscriptions liste d'attente -{" "}
+              {events.find((event) => event.id === selectedEventWaitlistId)?.titre || "Événement"}
+            </h3>
+            <button
+              type="button"
+              className="waitlist-close-btn"
+              onClick={() => setSelectedEventWaitlistId(null)}
+            >
+              ✕
+            </button>
+          </div>
+          {loadingEventWaitlist ? (
+            <div className="waitlist-empty-cell" style={{ padding: "14px 0" }}>
+              Chargement des inscrits...
+            </div>
+          ) : (
+            <>
+              {eventWaitlistEntries.length > 0 && (
+                <div className="waitlist-bulk-actions">
+                  <span className="waitlist-bulk-label">Changer tout en :</span>
+                  <select
+                    className="waitlist-inline-status-select"
+                    value={eventWaitlistBulkStatus}
+                    onChange={(e) =>
+                      setEventWaitlistBulkStatus(
+                        e.target.value as EventWaitlistEntry["status"]
+                      )
+                    }
+                  >
+                    <option value="pending">{statusLabel.pending}</option>
+                    <option value="contacted">{statusLabel.contacted}</option>
+                    <option value="confirmed">{statusLabel.confirmed}</option>
+                    <option value="cancelled">{statusLabel.cancelled}</option>
+                  </select>
+                  <button
+                    type="button"
+                    className="waitlist-row-btn"
+                    onClick={handleBulkUpdateEventWaitlistStatus}
+                    disabled={updatingEventWaitlistBulk}
+                  >
+                    {updatingEventWaitlistBulk ? "Mise à jour..." : "Appliquer à tous"}
+                  </button>
+                </div>
+              )}
+              <div className="waitlist-table-scroll">
+                <table className="waitlist-table">
+                  <thead>
+                    <tr>
+                      <th>Nom</th>
+                      <th>Email</th>
+                      <th>Téléphone</th>
+                      <th>Message</th>
+                      <th className="event-waitlist-col-status">Statut</th>
+                      <th className="event-waitlist-col-created">Inscrit le</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {eventWaitlistEntries.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="waitlist-empty-cell">
+                          Aucun inscrit pour cet événement.
+                        </td>
+                      </tr>
+                    ) : (
+                      eventWaitlistEntries.map((entry) => (
+                        <tr key={entry.id}>
+                          <td>{entry.nom}</td>
+                          <td className="waitlist-email-cell">{entry.email}</td>
+                          <td>{entry.telephone}</td>
+                          <td>{entry.message || "-"}</td>
+                          <td className="event-waitlist-col-status">
+                            <select
+                              className="waitlist-inline-status-select"
+                              value={entry.status}
+                              onChange={(e) =>
+                                handleUpdateEventWaitlistEntryStatus(
+                                  entry.id,
+                                  e.target.value as EventWaitlistEntry["status"]
+                                )
+                              }
+                              disabled={updatingEventWaitlistEntryId === entry.id}
+                            >
+                              <option value="pending">{statusLabel.pending}</option>
+                              <option value="contacted">{statusLabel.contacted}</option>
+                              <option value="confirmed">{statusLabel.confirmed}</option>
+                              <option value="cancelled">{statusLabel.cancelled}</option>
+                            </select>
+                          </td>
+                          <td className="event-waitlist-col-created">
+                            {new Date(entry.created_at).toLocaleString("fr-FR", {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className="waitlist-row-btn danger"
+                              onClick={() => handleDeleteEventWaitlistEntry(entry.id)}
+                              disabled={deletingEventWaitlistEntryId === entry.id}
+                            >
+                              {deletingEventWaitlistEntryId === entry.id
+                                ? "Suppression..."
+                                : "Supprimer"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
       )}
     </>

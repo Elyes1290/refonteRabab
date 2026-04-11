@@ -2,7 +2,7 @@
 
 /* Section principale */
 .instagram-section {
-  background: #faf1e6;
+  background: var(--color-bg);
   padding: 2rem 1rem;
 }
 

@@ -3,13 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 
 const navLinks = [
-  { to: "/", label: "Constellation", hasIcon: true },
-  { to: "/accueil", label: "Qui je suis", hasIcon: true },
-  { to: "/evenements-et-avis", label: "Événements & Avis", hasIcon: true },
-  {
-    to: "/rendez-vous-et-contact",
-    label: "📅 Rendez-vous & Contact",
-  },
+  { to: "/", label: "Accueil", hasIcon: false },
+  { to: "/approche", label: "L'Approche 3D", hasIcon: false },
+  { to: "/a-propos", label: "À propos", hasIcon: false },
+  { to: "/evenements", label: "Événements", hasIcon: false },
+  { to: "/temoignages", label: "Témoignages", hasIcon: false },
+  { to: "/contact", label: "Contact", hasIcon: false },
 ];
 
 const Header: React.FC = () => {
@@ -27,28 +26,37 @@ const Header: React.FC = () => {
       const timeout = setTimeout(() => setMenuShouldRender(false), 400);
       return () => clearTimeout(timeout);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mobileMenuOpen]);
+
+  const isNavLinkActive = (to: string) => {
+    const aliases: Record<string, string[]> = {
+      "/a-propos": ["/accueil"],
+      "/evenements": ["/evenements-et-avis"],
+    };
+    const paths = [to, ...(aliases[to] || [])];
+    return paths.some(
+      (path) =>
+        location.pathname === path ||
+        (path !== "/" && location.pathname.startsWith(path))
+    );
+  };
 
   return (
     <header className="header-responsive">
       <div className="header-main-row">
         <div className="header-logo-wrap">
           <img
-            src="/images/logo.png"
+            src="/images/logo.png?v=1"
             alt="Logo Rabab Ali"
             className="header-logo-image"
           />
-          <span className="header-logo-text-mobile">
-            Approche & Constellation
-          </span>
         </div>
         {/* Menu desktop */}
         <nav className="header-nav hide-mobile">
           <ul className="header-nav-list">
             {navLinks.map((link) => {
-              const isActive =
-                location.pathname === link.to ||
-                (link.to !== "/" && location.pathname.startsWith(link.to));
+              const isActive = isNavLinkActive(link.to);
               return (
                 <li key={link.to}>
                   <Link
@@ -70,6 +78,12 @@ const Header: React.FC = () => {
               );
             })}
           </ul>
+          <Link
+            to="/rendez-vous"
+            className="header-cta-button"
+          >
+            Prendre rendez-vous
+          </Link>
         </nav>
         {/* Burger menu mobile - 3 traits seulement */}
         {!mobileMenuOpen && (
@@ -102,9 +116,7 @@ const Header: React.FC = () => {
         </button>
         <ul className="header-mobile-nav-list">
           {navLinks.map((link) => {
-            const isActive =
-              location.pathname === link.to ||
-              (link.to !== "/" && location.pathname.startsWith(link.to));
+            const isActive = isNavLinkActive(link.to);
             return (
               <li key={link.to}>
                 <Link
@@ -126,6 +138,15 @@ const Header: React.FC = () => {
               </li>
             );
           })}
+          <li className="header-mobile-cta-wrapper">
+            <Link
+              to="/rendez-vous"
+              className="header-cta-button"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Prendre rendez-vous
+            </Link>
+          </li>
         </ul>
       </div>
     </header>

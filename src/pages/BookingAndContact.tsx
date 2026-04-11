@@ -3,20 +3,31 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { apiService } from "../services/api";
 import StripePayButton from "../components/StripePayButton.tsx";
+import { AnimatedSection } from "../components/AnimatedSection";
 import "../styles/Booking.css";
 import "../styles/Contact.css";
 
 const services = [
   {
     id: 1,
-    titre: "Mon monde intérieur",
-    sousTitre: "Estime de soi - Constellation - EN LIGNE",
-    description: "Disponible en ligne",
-    details: "Séance en ligne",
-    duree: "60 min",
-    prix: "100 CHF",
-    type: "en ligne",
-    couleur: "#5c7671",
+    titre: "Séance en visio",
+    prix60: "100 CHF",
+    prix90: "",
+    type: "visio",
+  },
+  {
+    id: 2,
+    titre: "Séance en présentiel",
+    prix60: "100 CHF",
+    prix90: "",
+    type: "cabinet",
+  },
+  {
+    id: 3,
+    titre: "Séance à domicile",
+    prix60: "",
+    prix90: "180 CHF",
+    type: "domicile",
   },
 ];
 
@@ -38,58 +49,65 @@ const moisNoms = [
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
-function isWednesday(date: Date) {
-  return date.getDay() === 3;
-}
-function isSaturday(date: Date) {
-  return date.getDay() === 6;
-}
-function isSunday(date: Date) {
-  return date.getDay() === 0;
-}
-function isWeekday(date: Date) {
-  const day = date.getDay();
-  // Lundi=1, Mardi=2, Jeudi=4, Vendredi=5
-  return day === 1 || day === 2 || day === 4 || day === 5;
-}
 
-// Nouveaux horaires
-const horairesMercredi = [
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-];
-const horairesSamedi = [
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-];
-const horairesAutresJours = ["15:00", "16:00", "17:00", "18:00", "19:00"]; // Lundi, Mardi, Jeudi, Vendredi
+const toMinutes = (time: string): number => {
+  const [h, m] = time.split(":").map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return -1;
+  return h * 60 + m;
+};
+
+const minutesToTime = (minutes: number): string => {
+  const hh = String(Math.floor(minutes / 60)).padStart(2, "0");
+  const mm = String(minutes % 60).padStart(2, "0");
+  return `${hh}:${mm}`;
+};
+
+const DISPLAY_SLOT_STEP_MINUTES = 30;
+
+const generateSlots = (start: string, end: string, intervalMinutes = DISPLAY_SLOT_STEP_MINUTES): string[] => {
+  const startMin = toMinutes(start);
+  const endMin = toMinutes(end);
+  if (startMin < 0 || endMin < 0 || endMin < startMin) return [];
+  const step = intervalMinutes > 0 ? intervalMinutes : 30;
+  const slots: string[] = [];
+  for (let m = startMin; m <= endMin; m += step) {
+    slots.push(minutesToTime(m));
+  }
+  return slots;
+};
 
 interface Reservation {
   heure_reservation: string;
   service_type: string;
+  duration_minutes?: number;
 }
 
-interface ContactFormData {
-  nom: string;
-  email: string;
-  sujet: string;
-  message: string;
+interface WaitlistSession {
+  id: number;
+  title: string;
+  session_date: string;
+  start_time: string;
+  end_time: string;
+  location: string;
+  price_label: string;
+  capacity?: number | null;
+  status: "draft" | "open" | "closed" | "archived";
+}
+
+interface AvailabilityRule {
+  weekday: number;
+  is_enabled: number;
+  start_time: string;
+  end_time: string;
+  slot_interval_minutes: number;
+}
+
+interface VacationPeriod {
+  id: number;
+  title: string;
+  start_date: string;
+  end_date: string;
+  is_active: number;
 }
 
 // Fonction helper pour formater une date en YYYY-MM-DD sans conversion UTC
@@ -103,41 +121,15 @@ const formatLocalDate = (date: Date): string => {
 const BookingAndContact: React.FC = () => {
   const location = useLocation();
 
-  // État pour la promotion active
-  const [activePromotion, setActivePromotion] = useState<{
-    id: number;
-    titre: string;
-    date_event: string;
-    date_fin: string;
-    prix_promo: string;
-  } | null>(null);
-
-  // Charger la promotion active au montage du composant
-  useEffect(() => {
-    const fetchActivePromotion = async () => {
-      try {
-        const response = await fetch(
-          "https://www.rababali.com/rabab/api/db_connect.php?action=get_active_promotion"
-        );
-        const data = await response.json();
-        if (data.success && data.data) {
-          setActivePromotion(data.data);
-        }
-      } catch (err) {
-        console.error("Erreur lors du chargement de la promotion:", err);
-      }
-    };
-    fetchActivePromotion();
-  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("success") === "1") {
       toast.success(
-        "Paiement effectué avec succès ! Votre rendez-vous est confirmé."
+        "Paiement effectué avec succès ! Votre demande est enregistrée et en attente de confirmation."
       );
     }
-  }, [location]);
+  }, [location.search]);
 
   // États pour Booking
   const [modalOpen, setModalOpen] = useState(false);
@@ -156,22 +148,28 @@ const BookingAndContact: React.FC = () => {
   const [mois, setMois] = useState(today.getMonth());
   const [annee, setAnnee] = useState(today.getFullYear());
   const [selectedService, setSelectedService] = useState<
-    "seance_online" | "seance_presentiel" | null
+    "seance_online" | "seance_presentiel" | "seance_domicile" | null
   >(null);
-  const [reservedSlots, setReservedSlots] = useState<string[]>([]);
-
-  // États pour Contact
-  const [contactFormData, setContactFormData] = useState<ContactFormData>({
+  const allowsNinetyMinutes = selectedService === "seance_domicile";
+  const allowsSixtyMinutes = selectedService !== "seance_domicile";
+  const [selectedDuration, setSelectedDuration] = useState<60 | 90>(60);
+  const [dayReservations, setDayReservations] = useState<Reservation[]>([]);
+  const [availabilityRules, setAvailabilityRules] = useState<AvailabilityRule[]>(
+    []
+  );
+  const [vacationPeriods, setVacationPeriods] = useState<VacationPeriod[]>([]);
+  const [waitlistSessions, setWaitlistSessions] = useState<WaitlistSession[]>([]);
+  const [selectedWaitlistSessionId, setSelectedWaitlistSessionId] = useState<
+    number | null
+  >(null);
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
+  const [waitlistForm, setWaitlistForm] = useState({
     nom: "",
     email: "",
-    sujet: "",
+    telephone: "",
     message: "",
   });
-  const [sending, setSending] = useState(false);
-  const [feedback, setFeedback] = useState<null | {
-    type: "success" | "error";
-    text: string;
-  }>(null);
 
   // Génère les jours du mois
   const daysInMonth = getDaysInMonth(annee, mois);
@@ -210,16 +208,74 @@ const BookingAndContact: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        const reservedHours = data.data.map((res: Reservation) => {
-          return res.heure_reservation.substring(0, 5);
-        });
-        setReservedSlots(reservedHours);
+        const reservations = Array.isArray(data.data) ? data.data : [];
+        setDayReservations(reservations);
       } else {
-        setReservedSlots([]);
+        setDayReservations([]);
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des réservations:", error);
-      setReservedSlots([]);
+      setDayReservations([]);
+    }
+  };
+
+  const fetchOpenWaitlistSessions = async () => {
+    try {
+      const response = await fetch(
+        "https://rababali.com/rabab/api/db_connect.php?action=get_open_waitlist_sessions"
+      );
+      const data = await response.json();
+      if (data.success) {
+        const sessions = Array.isArray(data.data) ? data.data : [];
+        setWaitlistSessions(sessions);
+        setSelectedWaitlistSessionId((prev) => {
+          if (prev && sessions.some((session: WaitlistSession) => session.id === prev)) {
+            return prev;
+          }
+          return sessions.length > 0 ? sessions[0].id : null;
+        });
+      } else {
+        setWaitlistSessions([]);
+        setSelectedWaitlistSessionId(null);
+      }
+    } catch (error) {
+      console.error("Erreur chargement liste d'attente:", error);
+      setWaitlistSessions([]);
+      setSelectedWaitlistSessionId(null);
+    }
+  };
+
+  const fetchAvailabilityRules = async () => {
+    try {
+      const response = await fetch(
+        "https://rababali.com/rabab/api/db_connect.php?action=get_availability_rules"
+      );
+      const data = await response.json();
+      if (data.success && Array.isArray(data.data)) {
+        setAvailabilityRules(data.data);
+      } else {
+        setAvailabilityRules([]);
+      }
+    } catch (error) {
+      console.error("Erreur chargement disponibilités:", error);
+      setAvailabilityRules([]);
+    }
+  };
+
+  const fetchVacationPeriods = async () => {
+    try {
+      const response = await fetch(
+        "https://rababali.com/rabab/api/db_connect.php?action=get_vacation_periods"
+      );
+      const data = await response.json();
+      if (data.success && Array.isArray(data.data)) {
+        setVacationPeriods(data.data);
+      } else {
+        setVacationPeriods([]);
+      }
+    } catch (error) {
+      console.error("Erreur chargement vacances:", error);
+      setVacationPeriods([]);
     }
   };
 
@@ -228,24 +284,88 @@ const BookingAndContact: React.FC = () => {
     if (selectedDate && selectedService) {
       fetchReservationsForDate(selectedDate, selectedService);
     } else {
-      setReservedSlots([]);
+      setDayReservations([]);
     }
   }, [selectedDate, selectedService]);
 
-  // Créneaux disponibles pour le jour sélectionné
+  useEffect(() => {
+    fetchOpenWaitlistSessions();
+    fetchAvailabilityRules();
+    fetchVacationPeriods();
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("open_waitlist") !== "1") return;
+    if (waitlistSessions.length === 0) return;
+
+    const requestedSessionId = Number(params.get("session_id") || "");
+    const targetSession =
+      waitlistSessions.find((session) => session.id === requestedSessionId) ||
+      waitlistSessions[0];
+
+    if (!targetSession) return;
+
+    setSelectedWaitlistSessionId(targetSession.id);
+    setWaitlistForm({ nom: "", email: "", telephone: "", message: "" });
+    setWaitlistModalOpen(true);
+  }, [location.search, waitlistSessions]);
+
+  const isDateInVacation = (date: Date): boolean => {
+    const dateStr = formatLocalDate(date);
+    return vacationPeriods.some((period) => {
+      if (Number(period.is_active) !== 1) return false;
+      return dateStr >= period.start_date && dateStr <= period.end_date;
+    });
+  };
+
+  const nextWaitlistSession =
+    waitlistSessions.length > 0 ? waitlistSessions[0] : null;
+
+  const selectedWaitlistSession =
+    waitlistSessions.find((session) => session.id === selectedWaitlistSessionId) ||
+    nextWaitlistSession;
+
+  // Créneaux du jour (dynamiques)
+  const selectedDayRule =
+    selectedDate
+      ? availabilityRules.find((rule) => rule.weekday === selectedDate.getDay())
+      : undefined;
+
   let horairesDispo: string[] = [];
   if (selectedDate) {
-    if (isSunday(selectedDate)) {
-      // Dimanche fermé
+    if (selectedDayRule && Number(selectedDayRule.is_enabled) === 1) {
+      const start = String(selectedDayRule.start_time).slice(0, 5);
+      const end = String(selectedDayRule.end_time).slice(0, 5);
+      horairesDispo = generateSlots(start, end, DISPLAY_SLOT_STEP_MINUTES);
+      // Retirer les créneaux qui finiraient après l'heure de fermeture
+      const endMin = toMinutes(end);
+      horairesDispo = horairesDispo.filter((slot) => {
+        const startMin = toMinutes(slot);
+        return startMin >= 0 && startMin + selectedDuration <= endMin;
+      });
+    } else {
       horairesDispo = [];
-    } else if (isWednesday(selectedDate)) {
-      horairesDispo = horairesMercredi;
-    } else if (isSaturday(selectedDate)) {
-      horairesDispo = horairesSamedi;
-    } else if (isWeekday(selectedDate)) {
-      horairesDispo = horairesAutresJours;
     }
   }
+
+  // Conflit si les intervalles [debut, fin+buffer] se chevauchent
+  const isSlotBlockedByBuffer = (slot: string): boolean => {
+    const candidateStart = toMinutes(slot);
+    if (candidateStart < 0) return true;
+
+    const BUFFER_MINUTES = Number(selectedDayRule?.slot_interval_minutes) || 30;
+    const candidateEnd = candidateStart + selectedDuration + BUFFER_MINUTES;
+
+    return dayReservations.some((reservation) => {
+      const existingStart = toMinutes(reservation.heure_reservation.substring(0, 5));
+      if (existingStart < 0) return false;
+      const existingDuration = reservation.duration_minutes === 90 ? 90 : 60;
+      const existingEnd = existingStart + existingDuration + BUFFER_MINUTES;
+
+      return candidateStart < existingEnd && existingStart < candidateEnd;
+    });
+  };
 
   // Gestion formulaire Booking
   const handleFormChange = (
@@ -256,12 +376,13 @@ const BookingAndContact: React.FC = () => {
 
   // Ouvre le calendrier pour le service choisi
   const handleOpenModal = (
-    serviceType: "seance_online" | "seance_presentiel"
+    serviceType: "seance_online" | "seance_presentiel" | "seance_domicile"
   ) => {
     setModalOpen(true);
     setSelectedService(serviceType);
     setSelectedDate(null);
     setSelectedHoraire(null);
+    setSelectedDuration(serviceType === "seance_domicile" ? 90 : 60);
     setForm({ nom: "", email: "", tel: "", message: "" });
     setSubmitted(false);
   };
@@ -269,223 +390,186 @@ const BookingAndContact: React.FC = () => {
     setModalOpen(false);
     setSelectedDate(null);
     setSelectedHoraire(null);
+    setSelectedDuration(60);
     setForm({ nom: "", email: "", tel: "", message: "" });
     setSubmitted(false);
   };
 
-  // Gestion formulaire Contact
-  const handleContactChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setContactFormData((prev) => ({ ...prev, [name]: value }));
+  const handleOpenWaitlistModal = () => {
+    if (!nextWaitlistSession) return;
+    setSelectedWaitlistSessionId((prev) => prev ?? nextWaitlistSession.id);
+    setWaitlistForm({ nom: "", email: "", telephone: "", message: "" });
+    setWaitlistModalOpen(true);
   };
 
-  const handleContactSubmit = async (e: React.FormEvent) => {
+  const handleCloseWaitlistModal = () => {
+    setWaitlistModalOpen(false);
+    setWaitlistSubmitting(false);
+  };
+
+  const handleSubmitWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSending(true);
-    setFeedback(null);
-
+    if (!selectedWaitlistSession) return;
+    setWaitlistSubmitting(true);
     try {
-      const apiBase =
-        window.location.hostname === "localhost"
-          ? "http://localhost/RefonteSiteRabab/api"
-          : "https://rababali.com/rabab/api";
+      const formData = new FormData();
+      formData.append("action", "join_waitlist");
+      formData.append("session_id", String(selectedWaitlistSession.id));
+      formData.append("nom", waitlistForm.nom);
+      formData.append("email", waitlistForm.email);
+      formData.append("telephone", waitlistForm.telephone);
+      formData.append("message", waitlistForm.message);
 
-      const response = await fetch(`${apiBase}/send_contact_email.php`, {
+      const response = await fetch("https://rababali.com/rabab/api/db_connect.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(contactFormData),
+        body: formData,
       });
-
       const data = await response.json();
-
       if (data.success) {
-        setFeedback({
-          type: "success",
-          text: data.message,
-        });
-        setContactFormData({ nom: "", email: "", sujet: "", message: "" });
+        toast.success("Vous êtes bien inscrit(e) sur la liste d'attente.");
+        setWaitlistModalOpen(false);
+        fetchOpenWaitlistSessions();
       } else {
-        setFeedback({
-          type: "error",
-          text: data.message || "Erreur lors de l'envoi du message.",
-        });
+        toast.error(data.message || "Impossible de rejoindre la liste d'attente");
       }
     } catch (error) {
-      console.error("Erreur envoi contact:", error);
-      setFeedback({
-        type: "error",
-        text: "Erreur de connexion. Veuillez réessayer plus tard.",
-      });
+      console.error(error);
+      toast.error("Erreur de connexion");
     } finally {
-      setSending(false);
+      setWaitlistSubmitting(false);
     }
   };
 
+  const formatWaitlistDate = (dateStr: string): string => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   return (
-    <div style={{ background: "#faf1e6" }}>
+    <div style={{ background: "#F2E8E1" }}>
       {/* ========== SECTION PRISE DE RENDEZ-VOUS ========== */}
       <section className="booking-page">
         {/* Titre principal */}
-        <div className="booking-header">
-          <h1 className="booking-title">Séance en ligne ou en présentiel</h1>
-          <div className="booking-description">
-            Choisissez la formule qui vous convient le mieux pour votre
-            accompagnement personnalisé
+        <AnimatedSection animationType="fadeUp" delay={120}>
+          <div className="booking-header">
+            <h1 className="booking-title">Séance individuelle</h1>
+            <p className="booking-description-cinzel">
+              Un accompagnement personnalisé pour
+              clarifier vos dynamiques invisibles,
+              comprendre ce qui vous freine et
+              avancer avec clarté et sérénité.
+            </p>
+            <p className="booking-description-cinzel">
+              Réservez votre séance dès maintenant
+              et commencez votre parcours de transformation.
+            </p>
           </div>
-        </div>
+        </AnimatedSection>
 
         {/* Services */}
-        <div className="booking-services-container">
-          {services.map((service) => (
-            <div
-              key={service.id}
-              className={`booking-service-card ${
-                service.type === "en ligne" ? "online" : "presentiel"
-              }`}
-              style={{ position: "relative" }}
-            >
-              {/* Badge Promotion */}
-              {activePromotion && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 50,
-                    right: 10,
-                    background:
-                      "linear-gradient(135deg, #ff9800 0%, #f57c00 100%)",
-                    color: "white",
-                    padding: "6px 12px",
-                    borderRadius: "20px",
-                    fontSize: "0.85rem",
-                    fontWeight: "bold",
-                    boxShadow: "0 2px 8px rgba(255,152,0,0.3)",
-                    zIndex: 10,
-                  }}
-                >
-                  🎉 Offre spéciale
-                </div>
-              )}
-
+        <AnimatedSection animationType="fadeUp" delay={220}>
+          <div className="booking-services-container">
+            {services.map((service) => (
               <div
-                className={`booking-service-badge ${
-                  service.type === "en ligne" ? "online" : "presentiel"
-                }`}
+                key={service.id}
+                className="booking-service-card"
+                style={{ position: "relative" }}
               >
-                {service.type}
-              </div>
-              <div className="booking-service-content">
-                <h2 className="booking-service-title">{service.titre}</h2>
-                <div
-                  className={`booking-service-subtitle ${
-                    service.type === "en ligne" ? "online" : "presentiel"
-                  }`}
-                >
-                  {service.sousTitre}
+                <div className="booking-service-content">
+                  <h2 className="booking-service-title">{service.titre}</h2>
                 </div>
-                <div className="booking-service-description">
-                  {service.description}
-                </div>
-                <div className="booking-service-details">{service.details}</div>
-
-                {/* Affichage de la promotion */}
-                {activePromotion && (
-                  <div
-                    style={{
-                      marginTop: "12px",
-                      padding: "10px",
-                      background: "#fff3e0",
-                      borderRadius: "8px",
-                      border: "1px solid #ff9800",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: "0.85rem",
-                        color: "#f57c00",
-                        fontWeight: "600",
-                      }}
-                    >
-                      📅 Valable jusqu'au{" "}
-                      {new Date(activePromotion.date_fin).toLocaleDateString(
-                        "fr-FR",
-                        {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        }
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="booking-service-footer">
-                <div className="booking-service-pricing">
-                  <div
-                    className={`booking-service-duration ${
-                      service.type === "en ligne" ? "online" : "presentiel"
-                    }`}
-                  >
-                    {service.duree}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-end",
-                      gap: "4px",
-                    }}
-                  >
-                    {activePromotion ? (
-                      <>
-                        <div
-                          style={{
-                            fontSize: "0.9rem",
-                            color: "#999",
-                            textDecoration: "line-through",
-                          }}
-                        >
-                          {service.prix}
-                        </div>
-                        <div
-                          className="booking-service-price"
-                          style={{
-                            color: "#ff9800",
-                            fontSize: "1.8rem",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {activePromotion.prix_promo} CHF
-                        </div>
-                      </>
-                    ) : (
-                      <div className="booking-service-price">
-                        {service.prix}
+                <div className="booking-service-footer">
+                  <div className="booking-service-pricing-dual">
+                    {service.type !== "domicile" && (
+                      <div className="booking-service-price-option">
+                        <div className="booking-service-duration">60 min</div>
+                        <div className="booking-service-price">{service.prix60}</div>
+                      </div>
+                    )}
+                    {service.type === "domicile" && (
+                      <div className="booking-service-price-option">
+                        <div className="booking-service-duration">90 min</div>
+                        <div className="booking-service-price">{service.prix90}</div>
                       </div>
                     )}
                   </div>
+                  <button
+                    onClick={() => {
+                      let serviceType: "seance_online" | "seance_presentiel" | "seance_domicile";
+                      if (service.type === "visio") {
+                        serviceType = "seance_online";
+                      } else if (service.type === "cabinet") {
+                        serviceType = "seance_presentiel";
+                      } else {
+                        serviceType = "seance_domicile";
+                      }
+                      handleOpenModal(serviceType);
+                    }}
+                    className="booking-service-button"
+                  >
+                    Réserver
+                  </button>
                 </div>
-                <button
-                  onClick={() =>
-                    handleOpenModal(
-                      service.type === "en ligne"
-                        ? "seance_online"
-                        : "seance_presentiel"
-                    )
-                  }
-                  className={`booking-service-button ${
-                    service.type === "en ligne" ? "online" : "presentiel"
-                  }`}
-                >
-                  Réserver
-                </button>
+              </div>
+            ))}
+          </div>
+        </AnimatedSection>
+
+        {/* Offre étudiant */}
+        <AnimatedSection animationType="fadeUp" delay={280}>
+          <div className="booking-student-card">
+            <h2 className="booking-student-title">Tarif étudiant(e)</h2>
+            <p className="booking-student-price">80 CHF</p>
+            <p className="booking-student-text">
+              Pour bénéficier du tarif étudiant, merci de contacter directement Rabab.
+            </p>
+            <p className="booking-student-text">
+              Le règlement se fait en cash et la réservation est ensuite ajoutée manuellement depuis l'administration.
+            </p>
+            <a className="booking-student-contact-btn" href="/contact">
+              Contacter Rabab
+            </a>
+          </div>
+        </AnimatedSection>
+
+        {/* Carte constellation familiale */}
+        <AnimatedSection animationType="fadeUp" delay={320}>
+          <div className="booking-constellation-card">
+            <h2 className="booking-constellation-title">
+              Journée de<br />Constellation Familiale
+            </h2>
+            <div className="booking-constellation-info">
+              <div className="booking-constellation-time">
+                {nextWaitlistSession
+                  ? `${String(nextWaitlistSession.start_time || "").slice(0, 5)} à ${String(
+                      nextWaitlistSession.end_time || ""
+                    ).slice(0, 5)}`
+                  : "10h à 16h"}
+              </div>
+              <div className="booking-constellation-price">
+                {nextWaitlistSession?.price_label || "150 CHF"}
               </div>
             </div>
-          ))}
-        </div>
+            <p className="booking-constellation-lieu">
+              Lieu : {nextWaitlistSession?.location || "Grand-Lancy"}
+            </p>
+            <button
+              className="booking-constellation-button"
+              onClick={handleOpenWaitlistModal}
+              disabled={!nextWaitlistSession}
+              style={!nextWaitlistSession ? { opacity: 0.55, cursor: "not-allowed" } : undefined}
+            >
+              {nextWaitlistSession ? "Rejoindre la liste" : "Liste bientôt ouverte"}
+            </button>
+          </div>
+        </AnimatedSection>
 
         {/* Modal calendrier + formulaire */}
         {modalOpen && selectedService && (
@@ -498,8 +582,41 @@ const BookingAndContact: React.FC = () => {
                 &times;
               </button>
               <h2 className="booking-modal-title">
-                Réserver une séance Vision 3D en ligne
+                Réserver une séance Vision 3D
               </h2>
+              
+              {/* Sélecteur de durée */}
+              <div className="booking-duration-selector">
+                {allowsSixtyMinutes && (
+                  <button
+                    onClick={() => {
+                      setSelectedDuration(60);
+                      setSelectedHoraire(null);
+                    }}
+                    className={`booking-duration-option ${
+                      selectedDuration === 60 ? "selected" : ""
+                    }`}
+                  >
+                    <div className="booking-duration-time">60 min</div>
+                    <div className="booking-duration-price">100 CHF</div>
+                  </button>
+                )}
+                {allowsNinetyMinutes && (
+                  <button
+                    onClick={() => {
+                      setSelectedDuration(90);
+                      setSelectedHoraire(null);
+                    }}
+                    className={`booking-duration-option ${
+                      selectedDuration === 90 ? "selected" : ""
+                    }`}
+                  >
+                    <div className="booking-duration-time">90 min</div>
+                    <div className="booking-duration-price">180 CHF</div>
+                  </button>
+                )}
+              </div>
+
               {/* Calendrier */}
               <div className="booking-calendar">
                 <div className="booking-calendar-header">
@@ -528,8 +645,14 @@ const BookingAndContact: React.FC = () => {
                     todayDate.setHours(0, 0, 0, 0); // Reset time to compare only dates
                     date.setHours(0, 0, 0, 0);
 
-                    // Tous les jours sauf dimanche sont sélectionnables, et pas les jours passés
-                    const isSelectable = !isSunday(date) && date >= todayDate;
+                    // Sélectionnable si jour ouvert dans les règles + date non passée
+                    const dayRule = availabilityRules.find(
+                      (rule) => rule.weekday === date.getDay()
+                    );
+                    const isSelectable =
+                      date >= todayDate &&
+                      Boolean(dayRule && Number(dayRule.is_enabled) === 1) &&
+                      !isDateInVacation(date);
                     const isSelected =
                       selectedDate &&
                       date.toDateString() === selectedDate.toDateString();
@@ -565,26 +688,19 @@ const BookingAndContact: React.FC = () => {
                     })}
                   </div>
                   <div className="booking-time-slots-grid">
-                    {horairesDispo.map((h) => {
-                      const isReserved = reservedSlots.includes(h);
-                      return (
+                    {horairesDispo
+                      .filter((h) => !isSlotBlockedByBuffer(h))
+                      .map((h) => (
                         <button
                           key={h}
                           className={`booking-time-slot ${
-                            selectedHoraire === h
-                              ? "selected"
-                              : isReserved
-                              ? "reserved"
-                              : "available"
+                            selectedHoraire === h ? "selected" : "available"
                           }`}
-                          onClick={() => !isReserved && setSelectedHoraire(h)}
-                          disabled={isReserved}
-                          title={isReserved ? "Créneau déjà réservé" : ""}
+                          onClick={() => setSelectedHoraire(h)}
                         >
                           {h}
                         </button>
-                      );
-                    })}
+                      ))}
                   </div>
                 </div>
               )}
@@ -601,7 +717,8 @@ const BookingAndContact: React.FC = () => {
                         await apiService.checkAvailability(
                           formatLocalDate(selectedDate),
                           selectedHoraire,
-                          selectedService
+                          selectedService,
+                          selectedDuration
                         );
                       let isAvailable = false;
                       if ("available" in availabilityResponse) {
@@ -695,33 +812,25 @@ const BookingAndContact: React.FC = () => {
                       selectedHoraire &&
                       selectedService &&
                       (() => {
-                        // Calculer le montant en fonction de la promotion
-                        let amount =
-                          selectedService === "seance_online" ? 10000 : 12000; // Prix normal en centimes
-
-                        // Si promotion active et séance online, utiliser le prix promo
-                        if (
-                          activePromotion &&
-                          selectedService === "seance_online" &&
-                          activePromotion.prix_promo
-                        ) {
-                          const prixPromo = parseFloat(
-                            activePromotion.prix_promo
-                          );
-                          if (!isNaN(prixPromo)) {
-                            amount = Math.round(prixPromo * 100); // Convertir en centimes
-                          }
+                        // Calculer le montant selon le type et la durée
+                        let amount = 0;
+                        let description = "";
+                        
+                        if (selectedService === "seance_online") {
+                          amount = 10000; // 100 CHF fixe (60 min)
+                          description = "Séance Vision 3D en visio (60 min)";
+                        } else if (selectedService === "seance_presentiel") {
+                          amount = 10000; // 100 CHF fixe (60 min)
+                          description = "Séance Vision 3D en cabinet (60 min)";
+                        } else {
+                          amount = selectedDuration === 60 ? 12000 : 18000; // 120 CHF ou 180 CHF
+                          description = `Séance Vision 3D à domicile (${selectedDuration} min)`;
                         }
 
                         return (
                           <StripePayButton
                             amount={amount}
-                            description={
-                              selectedService === "seance_online"
-                                ? "Séance Vision 3D en ligne" +
-                                  (activePromotion ? " (Offre spéciale)" : "")
-                                : "Séance Vision 3D en présentiel"
-                            }
+                            description={description}
                             reservation={{
                               nom: form.nom,
                               email: form.email,
@@ -730,6 +839,7 @@ const BookingAndContact: React.FC = () => {
                               date: formatLocalDate(selectedDate),
                               horaire: selectedHoraire,
                               service: selectedService,
+                              duration_minutes: selectedDuration,
                             }}
                           />
                         );
@@ -741,141 +851,93 @@ const BookingAndContact: React.FC = () => {
           </div>
         )}
 
-        {/* Informations supplémentaires */}
-        <div className="booking-additional-info">
-          <div className="booking-additional-info-content">
-            <p>
-              Chaque séance est adaptée à vos besoins spécifiques. N'hésitez pas
-              à me contacter directement pour toute question.
-            </p>
-            <p>
-              <strong>Tél : +41 77 223 30 30</strong>
-              <br />
-              <strong>Email : rabab@rababali.com</strong>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== SÉPARATEUR ========== */}
-      <div style={{ margin: "3rem 0 2rem 0", textAlign: "center" }}>
-        <span
-          style={{
-            display: "inline-block",
-            width: 120,
-            height: 4,
-            background: "#5c7671",
-            borderRadius: 2,
-            opacity: 0.4,
-          }}
-        />
-      </div>
-
-      {/* ========== SECTION CONTACT ========== */}
-      <section className="contact-page">
-        <div className="contact-form-container">
-          <h1 className="contact-title">📬 Contactez-moi</h1>
-          <p className="contact-description">
-            Une question, un projet, une remarque ? Remplissez le formulaire
-            ci-dessous, je vous répondrai rapidement.
-          </p>
-          {feedback && (
-            <div className={`contact-feedback ${feedback.type}`}>
-              {feedback.text}
-            </div>
-          )}
-          <form onSubmit={handleContactSubmit} autoComplete="off">
-            <div className="contact-form-field">
-              <label className="contact-form-label">Votre nom *</label>
-              <input
-                type="text"
-                name="nom"
-                value={contactFormData.nom}
-                onChange={handleContactChange}
-                required
-                maxLength={100}
-                className="contact-form-input"
-                placeholder="Votre nom ou prénom"
-              />
-            </div>
-            <div className="contact-form-field">
-              <label className="contact-form-label">Votre email *</label>
-              <input
-                type="email"
-                name="email"
-                value={contactFormData.email}
-                onChange={handleContactChange}
-                required
-                maxLength={120}
-                className="contact-form-input"
-                placeholder="exemple@email.com"
-              />
-            </div>
-            <div className="contact-form-field">
-              <label className="contact-form-label">Sujet *</label>
-              <input
-                type="text"
-                name="sujet"
-                value={contactFormData.sujet}
-                onChange={handleContactChange}
-                required
-                maxLength={120}
-                className="contact-form-input"
-                placeholder="Sujet de votre message"
-              />
-            </div>
-            <div className="contact-form-field large">
-              <label className="contact-form-label">Message *</label>
-              <textarea
-                name="message"
-                value={contactFormData.message}
-                onChange={handleContactChange}
-                required
-                rows={6}
-                className="contact-form-textarea"
-                placeholder="Votre message..."
-              />
-            </div>
-            <div className="contact-form-submit-container">
+        {waitlistModalOpen && selectedWaitlistSession && (
+          <div className="booking-waitlist-modal-overlay">
+            <div className="booking-waitlist-modal-content">
               <button
-                type="submit"
-                className="contact-form-submit-btn"
-                style={{
-                  opacity: sending ? 0.7 : 1,
-                  cursor: sending ? "not-allowed" : "pointer",
-                }}
-                disabled={sending}
+                onClick={handleCloseWaitlistModal}
+                className="booking-modal-close"
+                type="button"
               >
-                {sending ? "⏳ Envoi en cours..." : "Envoyer le message"}
+                &times;
               </button>
-            </div>
-          </form>
-          <div className="contact-info">
-            <div className="contact-info-item">
-              <b>Email :</b>{" "}
-              <a href="mailto:rabab@rababali.com" className="contact-info-link">
-                rabab@rababali.com
-              </a>
-            </div>
-            <div className="contact-info-item">
-              <b>Téléphone :</b>{" "}
-              <a href="tel:+41772233030" className="contact-info-link">
-                +41 77 223 30 30
-              </a>
-            </div>
-            <div>
-              <b>Instagram :</b>{" "}
-              <a
-                href="https://www.instagram.com/rabab_rit_a_la_vie"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-info-link"
-              >
-                @rabab_rit_a_la_vie
-              </a>
+              <h2 className="booking-modal-title">Rejoindre la liste d'attente</h2>
+              <div className="booking-waitlist-session-picker">
+                <label htmlFor="waitlist-session-select">Choisissez la date de séance</label>
+                <select
+                  id="waitlist-session-select"
+                  className="booking-form-input"
+                  value={selectedWaitlistSessionId ?? ""}
+                  onChange={(e) => setSelectedWaitlistSessionId(Number(e.target.value))}
+                >
+                  {waitlistSessions.map((session) => (
+                    <option key={session.id} value={session.id}>
+                      {formatWaitlistDate(session.session_date)} -{" "}
+                      {String(session.start_time || "").slice(0, 5)} à{" "}
+                      {String(session.end_time || "").slice(0, 5)} -{" "}
+                      {session.location || "Grand-Lancy"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <p className="booking-waitlist-session-meta">
+                {selectedWaitlistSession.title} - {formatWaitlistDate(selectedWaitlistSession.session_date)}
+              </p>
+              <form onSubmit={handleSubmitWaitlist} className="booking-form">
+                <input
+                  name="nom"
+                  type="text"
+                  placeholder="Nom"
+                  value={waitlistForm.nom}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, nom: e.target.value }))
+                  }
+                  required
+                  className="booking-form-input"
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  value={waitlistForm.email}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, email: e.target.value }))
+                  }
+                  required
+                  className="booking-form-input"
+                />
+                <input
+                  name="telephone"
+                  type="tel"
+                  placeholder="Téléphone"
+                  value={waitlistForm.telephone}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, telephone: e.target.value }))
+                  }
+                  required
+                  className="booking-form-input"
+                />
+                <textarea
+                  name="message"
+                  placeholder="Message (optionnel)"
+                  value={waitlistForm.message}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, message: e.target.value }))
+                  }
+                  className="booking-form-textarea"
+                />
+                <button
+                  type="submit"
+                  disabled={waitlistSubmitting}
+                  className="booking-form-submit"
+                >
+                  {waitlistSubmitting ? "Envoi en cours..." : "Rejoindre la liste"}
+                </button>
+              </form>
             </div>
           </div>
-        </div>
+        )}
+
       </section>
     </div>
   );

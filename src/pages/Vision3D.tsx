@@ -1,24 +1,23 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { AnimatedSection } from "../components/AnimatedSection";
 import "../styles/Vision3D.css";
 
-const pointsCle = [
+const accompagnements = [
   {
-    icon: "/images/signe_rabab.png?v=2",
-    titre: "Transformation durable",
+    titre: "Méthode Vision 3D",
     texte:
-      "Libérez-vous des schémas répétitifs et avancez vers une vie plus sereine et alignée.",
+      "Une mise en perspective concrète de votre situation pour clarifier rapidement ce qui se joue et identifier les ajustements nécessaires.",
   },
   {
-    icon: "/images/signe_rabab.png?v=2",
-    titre: "Clarté intérieure",
+    titre: "Constellation Familiale",
     texte:
-      "Prenez du recul sur votre histoire et vos émotions pour mieux comprendre vos besoins profonds.",
+      "Un travail systémique centré sur les liens et les héritages relationnels afin de rétablir un équilibre plus juste dans votre positionnement.",
   },
   {
-    icon: "/images/signe_rabab.png?v=2",
-    titre: "Approche intuitive",
+    titre: "Suivi Personnalisé",
     texte:
-      "Bénéficiez d'un accompagnement sur-mesure, alliant intuition, symbolique et bienveillance.",
+      "Un accompagnement dans la durée pour soutenir l'intégration des changements et favoriser une évolution stable et alignée.",
   },
 ];
 
@@ -26,142 +25,95 @@ const Vision3D: React.FC = () => {
   return (
     <section className="vision3d-page">
       {/* Section héro */}
-      <div className="vision3d-hero">
-        <h1 className="vision3d-title">Constellation & méthode vision 3D</h1>
-        {/* vision0.png : forme normale */}
-        <img
-          src="/images/vision0.jpeg?v=3"
-          alt="Vision 3D illustration principale"
-          className="vision3d-hero-image"
-        />
-        <div className="vision3d-subtitle">
-          Un accompagnement individuel unique qui travaille à la fois sur le
-          conscient, l'inconscient et les émotions grâce à des figurines
-          symboliques.
-          <br />
-          Une expérience concrète, visuelle et transformative pour libérer ce
-          qui bloque et créer la vie que tu souhaites.
+      <AnimatedSection animationType="fadeUp" delay={120}>
+        <div className="vision3d-hero">
+          <h1 className="vision3d-title">Méthode Vision 3D</h1>
+          <h2 className="vision3d-subtitle">
+            Explorer et transformer
+            <br />
+            Vos dynamiques profondes
+            <br />
+            Et schémas inconscients
+          </h2>
         </div>
-      </div>
+      </AnimatedSection>
 
-      {/* Séparateur */}
-      <hr className="vision3d-separator" />
-
-      {/* Présentation de la méthode - 4 étapes unifiées */}
-      <div className="vision3d-section">
-        <div className="vision3d-content">
-          <h2 className="vision3d-section-title">Comment ça marche ?</h2>
-          <p className="vision3d-section-text">
-            <strong>Étape 1 : Identifier ta problématique</strong>
-            <br />
-            On commence par poser ce qui te freine aujourd'hui, stress, peur,
-            anxiété, ou autre, en le nommant simplement.
+      {/* Section description */}
+      <AnimatedSection animationType="fadeUp" delay={220}>
+        <div className="vision3d-description">
+          <p>
+            La Vision 3D est une approche immersive qui permet de rendre visibles
+            les dynamiques profondes qui influencent votre vie.
           </p>
-          <p className="vision3d-section-text">
-            <strong>Étape 2 : Donner vie à ta situation</strong>
-            <br />
-            Grâce à des figurines, tu places intuitivement les émotions, les
-            peurs, ou les personnes importantes autour de toi sur un plateau,
-            sans forcément savoir ce que ça représente. C'est ton intuition qui
-            guide.
+          <p>
+            Certaines difficultés, qu'elles soient relationnelles, émotionnelles
+            ou décisionnelles, semblent se répéter sans que l'on en comprenne
+            pleinement l'origine. Derrière ces situations se trouvent souvent des
+            mécanismes inconscients, des loyautés invisibles ou des déséquilibres
+            systémiques qui agissent en arrière-plan.
           </p>
-          <p className="vision3d-section-text">
-            <strong>Étape 3 : Observer et comprendre</strong>
-            <br />
-            Je t'aide à voir clairement ce qui prend trop de place, ce qui
-            influence ta vie, comme un puzzle vivant, ta propre pièce de
-            théâtre. Cette visualisation permet d'engager à la fois
-            l'inconscient et le conscient, offrant une compréhension profonde de
-            ta situation.
+          <p>
+            La Vision 3D permet de matérialiser ces dynamiques grâce à une
+            représentation concrète dans l'espace. À l'aide de figurines et d'une
+            mise en perspective tridimensionnelle, ce qui était abstrait devient
+            perceptible. Les interactions, tensions et positions se révèlent avec
+            clarté.
           </p>
-          <p className="vision3d-section-text no-margin">
-            <strong>Étape 4 : Transformer et libérer</strong>
-            <br />
-            On remplace ensemble les émotions lourdes par des affirmations
-            positives et tu repars avec une phrase-pilier créée pour toi, ancrée
-            dans ta réalité et tes objectifs.
+          <p>
+            Cette approche s'appuie sur les principes des constellations
+            familiales, méthode reconnue pour explorer les systèmes relationnels
+            et transgénérationnels.
+          </p>
+          <p>
+            Voir autrement permet souvent de comprendre différemment. Et
+            comprendre ouvre la voie à la transformation.
+          </p>
+          <p>
+            Je vous accompagne dans ce processus de clarification et de
+            rééquilibrage, en séance individuelle ou en visio, dans un cadre
+            bienveillant, confidentiel et respectueux de votre rythme.
+          </p>
+          <p>
+            La Vision 3D n'est pas seulement un outil d'exploration. C'est une
+            expérience de prise de conscience profonde et de repositionnement
+            intérieur.
           </p>
         </div>
-        {/* vision2.jpeg : cercle + flottement */}
-        <div className="vision3d-circular-container">
-          <img
-            src="/images/vision2.jpeg?v=2"
-            alt="Vision 3D illustration 2"
-            className="vision3d-circular-image"
-          />
+      </AnimatedSection>
+
+      {/* Section Mes accompagnements */}
+      <AnimatedSection animationType="fadeUp" delay={320}>
+        <div className="vision3d-accompagnements">
+          <h2 className="vision3d-accompagnements-title">Mes accompagnements</h2>
+          <div className="vision3d-accompagnements-grid">
+            {accompagnements.map((item, idx) => (
+              <div key={idx} className="vision3d-accompagnement-card">
+                <h3 className="vision3d-accompagnement-card-title">
+                  {item.titre}
+                </h3>
+                <p className="vision3d-accompagnement-card-text">{item.texte}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </AnimatedSection>
 
-      {/* Séparateur */}
-      <hr className="vision3d-separator" />
-
-      {/* Section Fonctionnement */}
-      <div className="vision3d-section reverse">
-        <div className="vision3d-content">
-          <h2 className="vision3d-section-title">Fonctionnement</h2>
-          <p className="vision3d-section-text">
-            <strong>Durée :</strong> Environ 1h, une séance intense et légère à
-            la fois.
-            <br />
-            <br />
-            <strong>Pour qui ?</strong>
-            <br />
-            Pour toute personne qui veut avancer en douceur, même sans
-            expérience de thérapie, et retrouver clarté et sérénité.
-          </p>
-          <p className="vision3d-section-text no-margin">
-            <strong>Pourquoi cette méthode fonctionne ?</strong>
-            <br />
-            Elle passe par le corps, l'émotion et la conscience. Grâce aux
-            outils symboliques, aux mots, aux ressentis et à la visualisation,
-            la personne ne reste pas dans le mental. Elle ressent, elle voit,
-            elle vit, la problématique, ce qui permet une vraie prise de
-            conscience.
-          </p>
+      {/* Boutons d'action */}
+      <AnimatedSection animationType="scale" delay={380}>
+        <div className="vision3d-actions">
+          <Link to="/rendez-vous" className="vision3d-cta-button">
+            Prendre rendez-vous
+          </Link>
+          <a
+            href="https://www.instagram.com/rabab_rit_a_la_vie"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="vision3d-instagram-button"
+          >
+            Suivre @rabab_rit_a_la_vie
+          </a>
         </div>
-        {/* vision1.jpg : cercle + flottement */}
-        <img
-          src="/images/vision1.jpg?v=2"
-          alt="Vision 3D illustration 1"
-          className="vision3d-circular-simple slow"
-        />
-      </div>
-
-      {/* Séparateur */}
-      <hr className="vision3d-separator" />
-
-      {/* Bloc Pourquoi choisir la Vision 3D ? */}
-      <div className="vision3d-main-block">
-        <h3 className="vision3d-main-title">
-          Viens découvrir mon accompagnement
-        </h3>
-        <div className="vision3d-points-grid">
-          {pointsCle.map((pt, idx) => (
-            <div key={idx} className="vision3d-point-card">
-              <img
-                src={pt.icon}
-                alt={pt.titre}
-                className="vision3d-point-icon-img"
-              />
-              <div className="vision3d-point-title">{pt.titre}</div>
-              <div className="vision3d-point-text">{pt.texte}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Séparateur */}
-      <hr className="vision3d-separator" />
-
-      {/* Appel à l'action */}
-      <div className="vision3d-cta">
-        <div className="vision3d-cta-text">
-          Prends rendez-vous dès maintenant !
-        </div>
-        <a href="/rendez-vous" className="vision3d-cta-button">
-          Prendre rendez-vous
-        </a>
-      </div>
+      </AnimatedSection>
     </section>
   );
 };

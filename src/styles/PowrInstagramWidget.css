@@ -1,8 +1,8 @@
 /* Widget Instagram POWR */
 .powr-instagram-widget {
   padding: 4rem 2rem;
-  text-align: center;
-  background: linear-gradient(135deg, #faf1e6 0%, #faf1e6 100%);
+  text-align: center !important;
+  background: var(--color-bg);
   border-radius: 20px;
   margin: 3rem 0;
   width: 100%;
@@ -10,21 +10,26 @@
 
 .powr-header {
   margin-bottom: 3rem;
+  text-align: center !important;
 }
 
 .powr-title {
   font-size: 2.2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text);
   margin-bottom: 0.5rem;
-  font-family: var(--font-heading, "Avenir", sans-serif);
+  font-family: var(--font-headings);
+  text-align: center !important;
 }
 
 .powr-subtitle {
   font-size: 1.2rem;
-  color: #666;
-  margin-bottom: 0;
+  color: var(--color-text);
+  margin: 0 auto !important;
   line-height: 1.5;
+  text-align: center !important;
+  display: block !important;
+  width: 100% !important;
 }
 
 /* Container pour le widget POWR - Agrandir pour les vidéos */
@@ -81,6 +86,7 @@
 /* Footer avec bouton suivre */
 .powr-footer {
   margin-top: 3rem;
+  text-align: center !important;
 }
 
 .powr-follow-btn {
@@ -101,6 +107,7 @@
   font-size: 1.1rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center !important;
 }
 
 .powr-follow-btn:hover {

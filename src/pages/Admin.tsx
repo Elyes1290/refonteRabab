@@ -5,7 +5,8 @@ import "../styles/Admin.css";
 import EventsTab from "../components/admin/EventsTab";
 import AppointmentsTab from "../components/admin/AppointmentsTab";
 import ExperiencesTab from "../components/admin/ExperiencesTab";
-import VideoEditorTab from "../components/admin/VideoEditorTab";
+import WaitlistTab from "../components/admin/WaitlistTab";
+import AvailabilityTab from "../components/admin/AvailabilityTab";
 
 // Utiliser toujours rababali.com (API configurée avec CORS)
 const API_BASE = "https://www.rababali.com";
@@ -20,6 +21,7 @@ interface EventForm {
   devise: string;
   image: File | null;
   url_inscription?: string;
+  video_urls?: string[];
   is_promotion?: number;
   prix_promo?: string;
 }
@@ -39,6 +41,7 @@ interface EventItem {
   lieu?: string;
   texte?: string;
   url_inscription?: string;
+  video_urls?: string[];
   is_promotion?: number;
   prix_promo?: string;
 }
@@ -80,7 +83,7 @@ const Admin: React.FC = () => {
 
   // États des onglets
   const [activeTab, setActiveTab] = useState<
-    "events" | "experiences" | "appointments" | "videos"
+    "events" | "experiences" | "appointments" | "waitlist"
   >("events");
 
   // États pour les événements
@@ -99,6 +102,7 @@ const Admin: React.FC = () => {
     devise: "€",
     image: null,
     url_inscription: "",
+    video_urls: [""],
     is_promotion: 0,
     prix_promo: "",
   });
@@ -526,7 +530,7 @@ const Admin: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#faf1e6",
+          background: "#F2E8E1",
           padding: "1rem",
         }}
       >
@@ -708,89 +712,36 @@ const Admin: React.FC = () => {
           ? "des événements"
           : activeTab === "experiences"
           ? "des témoignages/avis"
-          : activeTab === "videos"
-          ? "de l'éditeur vidéo"
+          : activeTab === "waitlist"
+          ? "de la liste d'attente"
           : "des rendez-vous"}
       </h1>
 
       {/* Onglets de navigation */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          margin: "2rem 0 2.5rem",
-        }}
-      >
+      <div className="admin-tabs">
         <button
           onClick={() => setActiveTab("events")}
-          style={{
-            padding: "10px 24px",
-            borderRadius: "8px 0 0 8px",
-            border: "2px solid #4682B4",
-            background: activeTab === "events" ? "#4682B4" : "#fff",
-            color: activeTab === "events" ? "#fff" : "#4682B4",
-            fontWeight: 700,
-            fontSize: "1rem",
-            cursor: "pointer",
-            outline: "none",
-            transition: "background 0.2s, color 0.2s",
-          }}
+          className={`admin-tab-btn ${activeTab === "events" ? "active" : ""}`}
         >
           Événements
         </button>
         <button
           onClick={() => setActiveTab("experiences")}
-          style={{
-            padding: "10px 24px",
-            borderRadius: "0",
-            border: "2px solid #4682B4",
-            borderLeft: "none",
-            background: activeTab === "experiences" ? "#4682B4" : "#fff",
-            color: activeTab === "experiences" ? "#fff" : "#4682B4",
-            fontWeight: 700,
-            fontSize: "1rem",
-            cursor: "pointer",
-            outline: "none",
-            transition: "background 0.2s, color 0.2s",
-          }}
+          className={`admin-tab-btn ${activeTab === "experiences" ? "active" : ""}`}
         >
           Témoignages
         </button>
         <button
           onClick={() => setActiveTab("appointments")}
-          style={{
-            padding: "10px 24px",
-            borderRadius: "0",
-            border: "2px solid #4682B4",
-            borderLeft: "none",
-            background: activeTab === "appointments" ? "#4682B4" : "#fff",
-            color: activeTab === "appointments" ? "#fff" : "#4682B4",
-            fontWeight: 700,
-            fontSize: "1rem",
-            cursor: "pointer",
-            outline: "none",
-            transition: "background 0.2s, color 0.2s",
-          }}
+          className={`admin-tab-btn ${activeTab === "appointments" ? "active" : ""}`}
         >
           Rendez-vous
         </button>
         <button
-          onClick={() => setActiveTab("videos")}
-          style={{
-            padding: "10px 24px",
-            borderRadius: "0 8px 8px 0",
-            border: "2px solid #4682B4",
-            borderLeft: "none",
-            background: activeTab === "videos" ? "#4682B4" : "#fff",
-            color: activeTab === "videos" ? "#fff" : "#4682B4",
-            fontWeight: 700,
-            fontSize: "1rem",
-            cursor: "pointer",
-            outline: "none",
-            transition: "background 0.2s, color 0.2s",
-          }}
+          onClick={() => setActiveTab("waitlist")}
+          className={`admin-tab-btn ${activeTab === "waitlist" ? "active" : ""}`}
         >
-          🎬 Vidéos
+          ⏳ Liste d'attente
         </button>
       </div>
 
@@ -821,23 +772,26 @@ const Admin: React.FC = () => {
         )}
 
         {activeTab === "appointments" && (
-          <AppointmentsTab
-            appointments={appointments}
-            loadingAppointments={loadingAppointments}
-            showAppointmentModal={showAppointmentModal}
-            setShowAppointmentModal={setShowAppointmentModal}
-            editingAppointment={editingAppointment}
-            setEditingAppointment={setEditingAppointment}
-            appointmentForm={appointmentForm}
-            setAppointmentForm={setAppointmentForm}
-            onRefreshAppointments={fetchAppointments}
-            API_BASE={API_BASE}
-            statsExpanded={statsExpanded}
-            setStatsExpanded={setStatsExpanded}
-            onAddAppointment={handleAddAppointment}
-            onPrintReport={handlePrintReport}
-            onExportCSV={handleExportCSV}
-          />
+          <>
+            <AppointmentsTab
+              appointments={appointments}
+              loadingAppointments={loadingAppointments}
+              showAppointmentModal={showAppointmentModal}
+              setShowAppointmentModal={setShowAppointmentModal}
+              editingAppointment={editingAppointment}
+              setEditingAppointment={setEditingAppointment}
+              appointmentForm={appointmentForm}
+              setAppointmentForm={setAppointmentForm}
+              onRefreshAppointments={fetchAppointments}
+              API_BASE={API_BASE}
+              statsExpanded={statsExpanded}
+              setStatsExpanded={setStatsExpanded}
+              onAddAppointment={handleAddAppointment}
+              onPrintReport={handlePrintReport}
+              onExportCSV={handleExportCSV}
+            />
+            <AvailabilityTab API_BASE={API_BASE} />
+          </>
         )}
 
         {activeTab === "experiences" && (
@@ -849,7 +803,7 @@ const Admin: React.FC = () => {
           />
         )}
 
-        {activeTab === "videos" && <VideoEditorTab />}
+        {activeTab === "waitlist" && <WaitlistTab API_BASE={API_BASE} />}
       </div>
     </div>
   );

@@ -5,9 +5,17 @@
 
 /* === STYLES DE BASE EXACTS === */
 
-/* Header principal */
+/* Header principal - sticky au scroll */
 .header-responsive {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
 }
 
 /* Container principal - comme les styles inline originaux */
@@ -16,6 +24,7 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
+  padding: 0.5rem 0;
 }
 
 /* Logo wrap - comme les styles inline originaux */
@@ -26,33 +35,39 @@
   justify-content: center;
   height: 100%;
   margin-left: 32px;
+  flex-shrink: 0;
 }
 
-/* Logo image - comme les styles inline originaux */
+/* Logo image - agrandi pour meilleure visibilité */
 .header-logo-image {
-  height: 56px;
+  width: 140px;
+  height: 100px;
   display: block;
-  margin: 20px;
+  margin: 0;
   padding: 0;
 }
 
 /* Navigation desktop - responsive et sans soulignement */
 .header-nav {
-  margin-right: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  justify-content: center;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 1rem;
   align-items: center;
+  margin-left: auto;
+  width: auto;
 }
 
 .header-nav-list {
   display: flex;
-  gap: 1.2rem;
+  gap: 1rem;
   list-style: none;
   margin: 0;
   padding: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex-shrink: 0;
+  width: auto;
 }
 
 .header-nav li {
@@ -65,40 +80,49 @@
   color: var(--color-text);
   background: none;
   text-decoration: none !important;
-  font-weight: 600;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
   border-radius: 20px;
   position: relative;
-  font-size: clamp(0.7rem, 1vw, 1.1rem);
-  padding: 0.7vw 2vw;
+  font-size: 13px;
+  padding: 0.6rem 1rem;
   transition: all 0.3s ease;
-  min-width: 0;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 /* Icône dans les liens de navigation */
 .header-nav-icon {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
   display: inline-block;
   vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Hover des liens - vert/gris */
+.header-nav-link:hover {
+  color: var(--color-accent);
 }
 
 /* État actif des liens - SANS soulignement */
 .header-nav-link.active-link {
-  color: #5c7671;
-  background: #f5f5dc;
+  color: var(--color-accent);
+  background: rgba(92, 118, 113, 0.1);
   text-decoration: none !important;
 }
 
-/* Liens spéciaux - SANS soulignement */
+/* Liens spéciaux - Bouton Prendre rendez-vous */
 .header-nav-link.special {
-  color: white;
-  background: linear-gradient(45deg, #5c7671, #4a5e5a);
-  box-shadow: 0 2px 8px rgba(92, 118, 113, 0.3);
+  color: #fff !important;
+  background: var(--color-accent);
+  border-radius: 100px !important;
+  padding: 0.4rem 1.2rem !important;
+  box-shadow: none;
   overflow: hidden;
   white-space: nowrap;
   text-decoration: none !important;
@@ -129,7 +153,7 @@
   font-size: 2.2rem;
   cursor: pointer;
   z-index: 101;
-  color: #5c7671;
+  color: var(--color-accent);
   outline: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -185,9 +209,10 @@
   color: var(--color-text);
   background: none;
   text-decoration: none !important;
-  font-weight: 600;
+  font-weight: 400;
+  font-size: 17px;
   padding: 12px 18px;
-  border-radius: 20px;
+  border-radius: 8px;
   transition: all 0.3s ease;
   position: relative;
   display: inline-flex;
@@ -195,29 +220,37 @@
   gap: 8px;
 }
 
+.header-mobile-nav-link:hover {
+  color: var(--color-accent);
+  background: rgba(92, 118, 113, 0.05);
+}
+
 /* État actif des liens mobiles - SANS soulignement */
 .header-mobile-nav-link.active-link {
-  color: #5c7671;
-  background: #f5f5dc;
+  color: var(--color-accent);
+  background: rgba(92, 118, 113, 0.1);
   text-decoration: none !important;
 }
 
 /* Liens spéciaux mobiles - SANS soulignement */
 .header-mobile-nav-link.special {
   color: white;
-  background: linear-gradient(45deg, #5c7671, #4a5e5a);
-  font-size: 15px;
+  background: var(--color-accent);
+  font-size: 16px;
   box-shadow: 0 2px 8px rgba(92, 118, 113, 0.3);
   overflow: hidden;
   white-space: nowrap;
   text-decoration: none !important;
+  border-radius: 50px;
+  padding: 12px 24px;
+  justify-content: center;
 }
 
 /* === RESPONSIVE CORRECT === */
 
 /* Classes utilitaires de base */
 .hide-mobile {
-  display: block;
+  display: flex;
 }
 
 .show-mobile {
@@ -272,37 +305,42 @@
 
   /* Header responsive */
   .header-responsive {
-    min-height: clamp(70px, 10vw, 90px);
-    padding: 0.5rem 1rem;
+    min-height: 108px !important;
+    height: auto !important;
+    padding: 0.7rem 0.9rem !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
-  .header-responsive img {
-    height: clamp(50px, 8vw, 70px) !important;
-    max-width: clamp(120px, 20vw, 160px);
-    width: auto;
+  .header-main-row {
+    align-items: center;
   }
 
-  .header-responsive span {
-    font-size: clamp(1rem, 2.5vw, 1.3rem) !important;
-    margin-top: clamp(6px, 1vw, 10px) !important;
-    white-space: nowrap;
+  .header-logo-wrap {
+    margin-left: 0.5rem !important;
+  }
+
+  .header-logo-wrap img,
+  .header-logo-image {
+    height: 96px !important;
+    width: auto !important;
+    max-width: 220px !important;
+    min-width: auto !important;
   }
 
   /* Style du burger (3 traits) - reste dans le header */
   .header-burger {
     display: block !important;
-    position: absolute;
-    top: 28px;
-    right: 10px;
-    transform: none;
-    z-index: 50;
-    color: #5c7671 !important;
-    text-shadow: 0 1px 4px #fff, 0 0 2px #5c7671;
-    background: none;
-    border: none;
-    font-size: 2.1rem !important;
-    line-height: 1;
-    filter: drop-shadow(0 1px 2px #fff8);
+    position: absolute !important;
+    top: 50% !important;
+    right: 1rem !important;
+    transform: translateY(-50%) !important;
+    z-index: 50 !important;
+    color: var(--color-accent) !important;
+    background: none !important;
+    border: none !important;
+    font-size: 1.75rem !important;
+    line-height: 1 !important;
     transition: color 0.2s;
     /* Supprimer le carré bleu sur mobile */
     outline: none !important;
@@ -310,6 +348,10 @@
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+  }
+
+  .header-burger span {
+    font-size: 1.75rem !important;
   }
 
   .header-burger:focus {
@@ -324,7 +366,7 @@
   }
 
   .header-burger span {
-    color: #5c7671 !important;
+    color: var(--color-accent) !important;
     font-size: 2.1rem !important;
   }
 
@@ -335,19 +377,21 @@
 
   /* Menu mobile responsive */
   .header-mobile-menu {
-    background: var(--color-header-bg) !important;
-    width: 70vw !important;
-    max-width: 260px !important;
-    min-width: 180px;
-    box-shadow: -2px 0 16px #0002;
+    background: var(--color-bg) !important;
+    width: 78vw !important;
+    max-width: 340px !important;
+    min-width: 200px;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
     padding-top: 64px !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    padding-bottom: 18px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-bottom: 24px !important;
     z-index: 100;
     transform: translateX(100%);
     opacity: 0;
-    transition: transform 0.35s cubic-bezier(0.77, 0, 0.18, 1), opacity 0.25s;
+    transition:
+      transform 0.35s cubic-bezier(0.77, 0, 0.18, 1),
+      opacity 0.25s;
   }
 
   .header-mobile-menu.show-mobile {
@@ -364,28 +408,23 @@
     margin-top: 0 !important;
   }
 
-  /* Logo responsive */
+  /* Logo responsive - FORCÉ */
   .header-logo-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    height: 100%;
-    min-width: 0;
-    flex-shrink: 1;
-    flex-basis: auto;
-    width: auto;
-    margin-left: 1vw;
-    flex: 0 0 auto;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    height: 100% !important;
+    margin-left: 0.5rem !important;
   }
 
   .header-logo-wrap img {
-    width: auto;
-    height: 4vw !important;
-    max-width: 8vw;
-    min-width: 24px;
-    margin-bottom: 0;
-    padding: 0;
+    height: 120px !important;
+    width: auto !important;
+    max-width: 250px !important;
+    min-width: auto !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
   }
 
   /* Main row responsive */
@@ -453,29 +492,136 @@
 /* Media query supplémentaire pour très petits écrans */
 @media (max-width: 600px) {
   .header-responsive {
-    min-height: 60px;
-    padding: 0.3rem 0.5rem;
+    min-height: 110px !important;
+    height: auto !important;
+    padding: 0.75rem !important;
   }
 
-  .header-responsive img {
-    height: 45px !important;
-    max-width: 110px;
-  }
-
-  .header-responsive span {
-    font-size: 0.9rem !important;
-    margin-top: 4px !important;
+  .header-logo-wrap img,
+  .header-logo-image {
+    height: 100px !important;
+    width: auto !important;
+    max-width: 200px !important;
   }
 
   .header-burger {
-    top: 18px !important;
-    right: 8px !important;
-    font-size: 1.8rem !important;
+    top: 50% !important;
+    right: 0.75rem !important;
+    transform: translateY(-50%) !important;
+    font-size: 1.5rem !important;
+  }
+
+  .header-burger span {
+    font-size: 1.5rem !important;
   }
 
   .header-burger-close {
     top: 15px !important;
     right: 12px !important;
     font-size: 2rem !important;
+  }
+}
+
+/* ========================================
+   BOUTON CTA "PRENDRE RENDEZ-VOUS"
+   ======================================== */
+
+.header-cta-button {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+  color: #fff !important;
+  padding: 0.55rem 1.25rem;
+  border-radius: 100px;
+  text-decoration: none !important;
+  font-weight: 700;
+  font-family: "Lato", sans-serif;
+  font-size: 13px;
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+  display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 8px 20px rgba(29, 163, 149, 0.35);
+}
+
+/* Décalage du contenu car header fixe */
+.app-main-with-header {
+  padding-top: 120px;
+}
+
+@media (max-width: 1100px) {
+  .app-main-with-header {
+    padding-top: 92px;
+  }
+}
+
+.header-cta-button:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(29, 163, 149, 0.45);
+}
+
+/* CTA dans menu mobile */
+.header-mobile-cta-wrapper {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(92, 118, 113, 0.15);
+  display: flex;
+  justify-content: center;
+}
+
+.header-mobile-cta-wrapper .header-cta-button {
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+  background: var(--color-accent);
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+.header-mobile-cta-wrapper .header-cta-button:hover {
+  background: var(--color-accent-hover);
+}
+
+/* Responsive pour petits écrans desktop */
+@media (max-width: 1300px) and (min-width: 1101px) {
+  .header-logo-image {
+    width: 120px;
+    height: 86px;
+  }
+
+  .header-logo-wrap {
+    margin-left: 20px;
+  }
+
+  .header-nav {
+    gap: 0.8rem;
+    margin-left: 1.5rem;
+  }
+
+  .header-nav-list {
+    gap: 0.8rem;
+  }
+
+  .header-nav-link {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .header-nav-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .header-cta-button {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.4rem;
+    margin-right: 20px;
   }
 }

@@ -1,266 +1,150 @@
 import React, { useState } from "react";
-import BannerSection from "../components/BannerSection";
-import PresentationSection from "../components/PresentationSection";
-import RendezVousSection from "../components/RendezVousSection";
 import { AnimatedSection } from "../components/AnimatedSection";
-import { WaveTransition } from "../components/WaveTransition";
+import "../styles/About.css";
 
 const Home: React.FC = () => {
   const [showCertifModal, setShowCertifModal] = useState(false);
   const [showCertifModal2, setShowCertifModal2] = useState(false);
 
   return (
-    <>
-      <AnimatedSection animationType="fadeUp" delay={200}>
-        <BannerSection />
-      </AnimatedSection>
-
-      <WaveTransition color="#87CEEB" height="80px" />
-
-      <AnimatedSection animationType="fadeLeft" delay={300}>
-        <PresentationSection />
-      </AnimatedSection>
-
-      <WaveTransition color="#4682B4" height="100px" />
-
-      {/* Section Diplômes & Certificats */}
-      <section
-        style={{
-          background: "#faf1e6",
-          padding: "3rem 0",
-        }}
-      >
-        <div style={{ margin: "1rem 0 2rem 0", textAlign: "center" }}>
-          <span
-            style={{
-              display: "inline-block",
-              width: 80,
-              height: 3,
-              background: "var(--color-primary)",
-              borderRadius: 2,
-              opacity: 0.5,
-            }}
+    <section className="about-page">
+      {/* Section héro */}
+      <AnimatedSection animationType="fadeUp" delay={120}>
+        <div className="about-hero">
+        <h1 className="about-title">Rabab Ali</h1>
+        <div className="about-photo-wrap">
+          <img
+            src="/images/image18.jpeg"
+            alt="Rabab Ali"
+            className="about-photo"
           />
         </div>
-        <div
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto 3rem auto",
-            padding: "0 1rem",
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: "Playfair Display, serif",
-              fontSize: 28,
-              color: "var(--color-primary-dark)",
-              marginBottom: 24,
-              textAlign: "center",
-              letterSpacing: 1,
-            }}
-          >
-            🎓 Diplômes & Certificats
-          </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: 32,
-              justifyContent: "center",
-              alignItems: "stretch",
-              margin: "0 auto",
-              maxWidth: 1000,
-            }}
-          >
-            {/* Certificat Art-thérapie */}
-            <div
-              style={{
-                background: "#fff",
-                borderRadius: 18,
-                boxShadow: "0 4px 18px #0001",
-                padding: 18,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: 320,
-                border: "2px solid #e0d2b8",
-              }}
-            >
-              <img
-                src="/images/certificat1.jpeg"
-                alt="Certificat Art-thérapie - Enfants et Adolescents"
-                style={{
-                  width: "100%",
-                  maxWidth: 220,
-                  height: "auto",
-                  borderRadius: 12,
-                  marginBottom: 16,
-                  boxShadow: "0 2px 8px #0002",
-                  background: "#faf1e6",
-                  cursor: "zoom-in",
-                  transition: "box-shadow 0.2s",
-                  opacity: 0.95,
-                }}
-                onClick={() => setShowCertifModal(true)}
-                title="Cliquer pour agrandir"
-              />
-              {showCertifModal && (
-                <div
-                  onClick={() => setShowCertifModal(false)}
-                  style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    background: "rgba(0,0,0,0.7)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 1000,
-                    cursor: "zoom-out",
-                  }}
-                >
-                  <img
-                    src="/images/certificat1.jpeg"
-                    alt="Certificat Art-thérapie - Enfants et Adolescents (agrandi)"
-                    style={{
-                      maxWidth: "90vw",
-                      maxHeight: "90vh",
-                      borderRadius: 18,
-                      boxShadow: "0 8px 32px #000a",
-                      background: "#fff",
-                      padding: 8,
-                    }}
-                  />
-                </div>
-              )}
-              <div
-                style={{
-                  fontWeight: 700,
-                  color: "var(--color-primary-dark)",
-                  fontSize: 18,
-                  marginBottom: 6,
-                  textAlign: "center",
-                }}
-              >
-                Certificat de stage : Art-thérapie – Enfants et Adolescents
-              </div>
-              <div
-                style={{
-                  color: "#888",
-                  fontSize: 15,
-                  marginBottom: 4,
-                  textAlign: "center",
-                }}
-              >
-                Délivré par Amélie Jory, art-thérapeute
-              </div>
-              <div style={{ color: "#888", fontSize: 14, textAlign: "center" }}>
-                Fait à Montreux, juin 2025
-              </div>
-            </div>
+        <p className="about-quote">"J'aime rire à la vie."</p>
+        </div>
+      </AnimatedSection>
 
-            {/* Certificat Théorie des Constellations Familiales */}
-            <div
-              style={{
-                background: "#fff",
-                borderRadius: 18,
-                boxShadow: "0 4px 18px #0001",
-                padding: 18,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: 320,
-                border: "2px solid #e0d2b8",
-              }}
-            >
-              <img
-                src="/images/Théorie des constellations familiales.jpg"
-                alt="Module 1: Théorie des Constellations Familiales"
-                style={{
-                  width: "100%",
-                  maxWidth: 220,
-                  height: "auto",
-                  borderRadius: 12,
-                  marginBottom: 16,
-                  boxShadow: "0 2px 8px #0002",
-                  background: "#faf1e6",
-                  cursor: "zoom-in",
-                  transition: "box-shadow 0.2s",
-                  opacity: 0.95,
-                }}
-                onClick={() => setShowCertifModal2(true)}
-                title="Cliquer pour agrandir"
-              />
-              {showCertifModal2 && (
-                <div
-                  onClick={() => setShowCertifModal2(false)}
-                  style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    background: "rgba(0,0,0,0.7)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 1000,
-                    cursor: "zoom-out",
-                  }}
-                >
-                  <img
-                    src="/images/Théorie des constellations familiales.jpg"
-                    alt="Module 1: Théorie des Constellations Familiales (agrandi)"
-                    style={{
-                      maxWidth: "90vw",
-                      maxHeight: "90vh",
-                      borderRadius: 18,
-                      boxShadow: "0 8px 32px #000a",
-                      background: "#fff",
-                      padding: 8,
-                    }}
-                  />
-                </div>
-              )}
-              <div
-                style={{
-                  fontWeight: 700,
-                  color: "var(--color-primary-dark)",
-                  fontSize: 18,
-                  marginBottom: 6,
-                  textAlign: "center",
-                }}
-              >
-                Module 1: Théorie des Constellations Familiales
-              </div>
-              <div
-                style={{
-                  color: "#888",
-                  fontSize: 15,
-                  marginBottom: 4,
-                  textAlign: "center",
-                }}
-              >
-                Délivré par Amélie Jory, art-thérapeute
-              </div>
-              <div style={{ color: "#888", fontSize: 14, textAlign: "center" }}>
-                Fait à Montreux, avril 2025
-              </div>
-            </div>
+      {/* Section texte */}
+      <AnimatedSection animationType="fadeUp" delay={220}>
+        <div className="about-text-section">
+        <p>
+          Ce n'est pas juste une phrase, c'est un état d'esprit. Une manière de
+          traverser les tempêtes avec légèreté, de transformer les épreuves en
+          enseignements, et de cultiver la joie, même dans les zones d'ombre.
+        </p>
+        <p>
+          Guidée par une quête de paix intérieure et d'amour vrai, je suis une
+          femme, une maman, une âme en chemin.
+        </p>
+        <p>
+          Née dans une famille musulmane, j'ai grandi avec un esprit curieux,
+          libre et ouvert, toujours à l'écoute de l'invisible.
+        </p>
+        <p>Avec le temps, cette sensibilité est devenue une force.</p>
+        <p>
+          Maman de trois enfants, autodidacte et passionnée par la
+          transformation intérieure, j'ai moi-même traversé et apaisé de
+          nombreux schémas répétitifs, pour revenir à l'essentiel : l'amour de
+          soi, la liberté intérieure, l'harmonie.
+        </p>
+        <p>
+          Aujourd'hui, j'accompagne les personnes en quête de sens, d'équilibre
+          ou de reconnexion à elles-mêmes. J'utilise une approche intuitive et
+          symbolique, où l'on travaille sur les émotions, les énergies, les
+          mémoires, avec douceur et profondeur.
+        </p>
+        <p>
+          Ma mission : <br /> t'aider à voir plus clair, à libérer ce qui
+          bloque, et à faire circuler pleinement ton énergie de vie pour que,
+          toi aussi, tu puisses rire à la vie.
+        </p>
+        </div>
+      </AnimatedSection>
+
+      {/* Section Mes Valeurs */}
+      <AnimatedSection animationType="fadeUp" delay={300}>
+        <div className="about-valeurs">
+        <h2 className="about-valeurs-title">Mes Valeurs</h2>
+        <div className="about-valeurs-list">
+          <div className="about-valeur-card">
+            <h3 className="about-valeur-name">Bienveillance</h3>
+            <p className="about-valeur-text">Un accueil chaleureux et sans jugement</p>
+          </div>
+          <div className="about-valeur-card">
+            <h3 className="about-valeur-name">Confidentialité</h3>
+            <p className="about-valeur-text">Un espace sécurisé pour vous exprimer</p>
+          </div>
+          <div className="about-valeur-card">
+            <h3 className="about-valeur-name">Authenticité</h3>
+            <p className="about-valeur-text">Une relation vraie et sincère</p>
           </div>
         </div>
-      </section>
-
-      <WaveTransition color="#FFF8DC" height="70px" flip />
-
-      <AnimatedSection animationType="fadeUp" delay={600}>
-        <RendezVousSection />
+        </div>
       </AnimatedSection>
-    </>
+
+      {/* Section Diplômes & Certificats */}
+      <AnimatedSection animationType="fadeUp" delay={360}>
+        <div className="about-certifs">
+        <h2 className="about-certifs-title">Diplômes & Certificats</h2>
+        <div className="about-certifs-grid">
+          <div className="about-certif-card">
+            <img
+              src="/images/certificat1.jpeg"
+              alt="Certificat Art-thérapie"
+              className="about-certif-img"
+              onClick={() => setShowCertifModal(true)}
+            />
+            {showCertifModal && (
+              <div
+                className="about-certif-modal"
+                onClick={() => setShowCertifModal(false)}
+              >
+                <img
+                  src="/images/certificat1.jpeg"
+                  alt="Certificat agrandi"
+                  className="about-certif-modal-img"
+                />
+              </div>
+            )}
+            <div className="about-certif-name">
+              Certificat de stage : Art-thérapie – Enfants et Adolescents
+            </div>
+            <div className="about-certif-info">
+              Délivré par Amélie Jory, art-thérapeute
+            </div>
+            <div className="about-certif-info">Fait à Montreux, juin 2025</div>
+          </div>
+
+          <div className="about-certif-card">
+            <img
+              src="/images/Théorie des constellations familiales.jpg"
+              alt="Module 1: Théorie des Constellations Familiales"
+              className="about-certif-img"
+              onClick={() => setShowCertifModal2(true)}
+            />
+            {showCertifModal2 && (
+              <div
+                className="about-certif-modal"
+                onClick={() => setShowCertifModal2(false)}
+              >
+                <img
+                  src="/images/Théorie des constellations familiales.jpg"
+                  alt="Certificat agrandi"
+                  className="about-certif-modal-img"
+                />
+              </div>
+            )}
+            <div className="about-certif-name">
+              Module 1: Théorie des Constellations Familiales
+            </div>
+            <div className="about-certif-info">
+              Délivré par Amélie Jory, art-thérapeute
+            </div>
+            <div className="about-certif-info">Fait à Montreux, avril 2025</div>
+          </div>
+        </div>
+        </div>
+      </AnimatedSection>
+    </section>
   );
 };
 

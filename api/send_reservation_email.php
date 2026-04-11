@@ -6,157 +6,234 @@ require_once __DIR__ . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-function sendReservationNotificationEmail($reservationData) {
-    // Configuration email depuis les variables d'environnement
-    $smtpHost = $_ENV['SMTP_HOST'] ?? 'mail.infomaniak.com';
-    $smtpUsername = $_ENV['SMTP_USERNAME'] ?? 'rabab@rababali.com';
-    $smtpPassword = $_ENV['SMTP_PASSWORD'] ?? '';
-    $fromEmail = $_ENV['SMTP_FROM_EMAIL'] ?? 'rabab@rababali.com';
-    $fromName = $_ENV['SMTP_FROM_NAME'] ?? 'Site Rabab Ali';
-    $toEmail = $_ENV['CONTACT_EMAIL'] ?? 'rabab@rababali.com';
-    $clientEmail = $reservationData['email'] ?? '';
-    
-    // Formatage des données
-    $nomComplet = $reservationData['prenom'] . ' ' . $reservationData['nom'];
-    $serviceType = $reservationData['service_type'] === 'seance_online' ? 'Séance en ligne' : 'Séance présentielle';
-    $montant = number_format($reservationData['montant'], 2, ',', ' ') . ' CHF';
-    $dateFormatted = date('d/m/Y', strtotime($reservationData['date_reservation']));
-    
-    // Sujet de l'email pour Rabab
-    $subjectRabab = "Nouvelle réservation confirmée - {$nomComplet}";
-    
-    // Corps de l'email pour Rabab
-    $messageRabab = "
-    <html>
-    <head>
-        <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .header { background-color: #4682B4; color: white; padding: 20px; text-align: center; }
-            .content { padding: 20px; }
-            .reservation-details { background-color: #f9f9f9; padding: 15px; margin: 15px 0; border-left: 4px solid #4682B4; }
-            .highlight { font-weight: bold; color: #4682B4; }
-            .footer { background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666; }
-        </style>
-    </head>
-    <body>
-        <div class='header'>
-            <h2>🎉 Nouvelle réservation confirmée !</h2>
-        </div>
-        
-        <div class='content'>
-            <p>Bonjour Rabab,</p>
-            
-            <p>Une nouvelle réservation a été confirmée et payée sur ton site :</p>
-            
-            <div class='reservation-details'>
-                <h3>📋 Détails de la réservation</h3>
-                <p><span class='highlight'>Nom :</span> {$nomComplet}</p>
-                <p><span class='highlight'>Email :</span> {$reservationData['email']}</p>
-                <p><span class='highlight'>Téléphone :</span> {$reservationData['telephone']}</p>
-                <p><span class='highlight'>Service :</span> {$serviceType}</p>
-                <p><span class='highlight'>Date :</span> {$dateFormatted}</p>
-                <p><span class='highlight'>Heure :</span> {$reservationData['heure_reservation']}</p>
-                <p><span class='highlight'>Montant :</span> {$montant}</p>
-            </div>
-            
-            <div class='reservation-details'>
-                <h3>💬 Message du client</h3>
-                <p>" . nl2br(htmlspecialchars($reservationData['notes'] ?? 'Aucun message')) . "</p>
-            </div>
-            
-            <p>Cette réservation a été automatiquement ajoutée à ton calendrier d'administration.</p>
-            
-            <p>À bientôt !<br>
-            <em>Ton site web</em></p>
-        </div>
-        
-        <div class='footer'>
-            <p>Cet email a été envoyé automatiquement par le système de réservation de rababali.com</p>
-        </div>
-    </body>
-    </html>";
-    
-    // Sujet de l'email pour la cliente
-    $subjectClient = "Confirmation de votre réservation - Rabab Ali";
-    
-    // Corps de l'email pour la cliente
-    $messageClient = "
-    <html>
-    <head>
-        <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .header { background-color: #4682B4; color: white; padding: 20px; text-align: center; }
-            .content { padding: 20px; }
-            .reservation-details { background-color: #f9f9f9; padding: 15px; margin: 15px 0; border-left: 4px solid #4682B4; }
-            .highlight { font-weight: bold; color: #4682B4; }
-            .footer { background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666; }
-            .cta { background-color: #4682B4; color: white; padding: 15px; text-align: center; margin: 20px 0; border-radius: 5px; }
-        </style>
-    </head>
-    <body>
-        <div class='header'>
-            <h2>🎉 Votre réservation est confirmée !</h2>
-        </div>
-        
-        <div class='content'>
-            <p>Bonjour {$reservationData['prenom']},</p>
-            
-            <p>Merci pour votre réservation ! Votre séance d'accompagnement est confirmée.</p>
-            
-            <div class='reservation-details'>
-                <h3>📋 Détails de votre réservation</h3>
-                <p><span class='highlight'>Nom :</span> {$nomComplet}</p>
-                <p><span class='highlight'>Service :</span> {$serviceType}</p>
-                <p><span class='highlight'>Date :</span> {$dateFormatted}</p>
-                <p><span class='highlight'>Heure :</span> {$reservationData['heure_reservation']}</p>
-                <p><span class='highlight'>Montant payé :</span> {$montant}</p>
-            </div>
-            
-            <div class='cta'>
-                <h3>📞 Contact</h3>
-                <p>Pour toute question, contactez Rabab :</p>
-                <p><strong>Email :</strong> rabab@rababali.com</p>
-                <p><strong>Site :</strong> rababali.com</p>
-            </div>
-            
-            <p><strong>À très bientôt pour votre séance !</strong></p>
-            
-            <p>Cordialement,<br>
-            <em>Rabab Ali</em></p>
-        </div>
-        
-        <div class='footer'>
-            <p>Cet email a été envoyé automatiquement par le système de réservation de rababali.com</p>
-        </div>
-    </body>
-    </html>";
-    
-    // Headers pour l'email HTML
-    $headers = [
-        'MIME-Version: 1.0',
-        'Content-Type: text/html; charset=UTF-8',
-        'From: ' . $fromName . ' <' . $fromEmail . '>',
-        'Reply-To: ' . $fromEmail,
-        'X-Mailer: PHP/' . phpversion()
+function getReservationMailerConfig() {
+    return [
+        'resend_api_key' => trim($_ENV['RESEND_API_KEY'] ?? ($_SERVER['RESEND_API_KEY'] ?? '')),
+        'from_email' => trim($_ENV['RESEND_FROM_EMAIL'] ?? ($_SERVER['RESEND_FROM_EMAIL'] ?? ($_ENV['SMTP_FROM_EMAIL'] ?? ($_SERVER['SMTP_FROM_EMAIL'] ?? 'onboarding@resend.dev')))),
+        'from_name' => trim($_ENV['RESEND_FROM_NAME'] ?? ($_SERVER['RESEND_FROM_NAME'] ?? ($_ENV['SMTP_FROM_NAME'] ?? ($_SERVER['SMTP_FROM_NAME'] ?? 'Site Rabab Ali')))),
+        'admin_email' => trim($_ENV['CONTACT_EMAIL'] ?? ($_SERVER['CONTACT_EMAIL'] ?? 'rabab@rababali.com')),
     ];
-    
-    // Envoi de l'email à Rabab
-    $mailSentRabab = mail($toEmail, $subjectRabab, $messageRabab, implode("\r\n", $headers));
-    
-    // Envoi de l'email à la cliente (si email valide)
-    $mailSentClient = false;
-    if (!empty($clientEmail) && filter_var($clientEmail, FILTER_VALIDATE_EMAIL)) {
-        $mailSentClient = mail($clientEmail, $subjectClient, $messageClient, implode("\r\n", $headers));
+}
+
+function getReservationMeta($reservationData) {
+    $nomComplet = trim(($reservationData['prenom'] ?? '') . ' ' . ($reservationData['nom'] ?? ''));
+    $serviceType = ($reservationData['service_type'] ?? '') === 'seance_online' ? 'Séance en ligne' : 'Séance présentielle';
+    if (($reservationData['service_type'] ?? '') === 'seance_domicile') {
+        $serviceType = 'Séance à domicile';
     }
-    
-    // Log de l'envoi
-    $logMessage = date('Y-m-d H:i:s') . " - Email réservation envoyé à {$toEmail} pour {$nomComplet} - " . ($mailSentRabab ? 'SUCCÈS' : 'ÉCHEC') . "\n";
-    if (!empty($clientEmail)) {
-        $logMessage .= date('Y-m-d H:i:s') . " - Email confirmation envoyé à {$clientEmail} pour {$nomComplet} - " . ($mailSentClient ? 'SUCCÈS' : 'ÉCHEC') . "\n";
+    $durationMinutes = intval($reservationData['duration_minutes'] ?? 60);
+    if (!in_array($durationMinutes, [60, 90], true)) {
+        $durationMinutes = 60;
     }
-    file_put_contents(__DIR__ . '/email_log.txt', $logMessage, FILE_APPEND);
-    
-    return $mailSentRabab && $mailSentClient;
+    $montant = number_format(floatval($reservationData['montant'] ?? 0), 2, ',', ' ') . ' CHF';
+    $dateFormatted = date('d/m/Y', strtotime($reservationData['date_reservation'] ?? 'now'));
+    $heure = $reservationData['heure_reservation'] ?? '';
+    return [
+        'nom_complet' => $nomComplet,
+        'service_type' => $serviceType,
+        'duration' => $durationMinutes,
+        'montant' => $montant,
+        'date' => $dateFormatted,
+        'heure' => $heure,
+        'email_client' => trim($reservationData['email'] ?? ''),
+        'telephone' => trim($reservationData['telephone'] ?? ''),
+        'message' => trim($reservationData['notes'] ?? ''),
+        'prenom' => trim($reservationData['prenom'] ?? ''),
+    ];
+}
+
+function sendReservationEmailSmtp($toEmail, $toName, $subject, $htmlBody, $altBody, $replyToEmail = '', $replyToName = '') {
+    $cfg = getReservationMailerConfig();
+    if ($cfg['resend_api_key'] === '' || $toEmail === '') {
+        error_log("Erreur email réservation: RESEND_API_KEY manquante ou destinataire vide");
+        return false;
+    }
+
+    try {
+        $payload = [
+            'from' => trim($cfg['from_name']) !== '' ? ($cfg['from_name'] . ' <' . $cfg['from_email'] . '>') : $cfg['from_email'],
+            'to' => [trim($toEmail)],
+            'subject' => $subject,
+            'html' => $htmlBody,
+            'text' => $altBody,
+        ];
+        if ($replyToEmail !== '' && filter_var($replyToEmail, FILTER_VALIDATE_EMAIL)) {
+            $payload['reply_to'] = trim($replyToName) !== '' ? ($replyToName . ' <' . $replyToEmail . '>') : $replyToEmail;
+        }
+
+        $requestBody = json_encode($payload, JSON_UNESCAPED_UNICODE);
+        if ($requestBody === false) {
+            return false;
+        }
+
+        $statusCode = 0;
+        $responseRaw = '';
+        if (function_exists('curl_init')) {
+            $ch = curl_init('https://api.resend.com/emails');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . $cfg['resend_api_key'],
+                'Content-Type: application/json',
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            $responseRaw = curl_exec($ch);
+            $statusCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($responseRaw === false) {
+                error_log('Erreur Resend cURL: ' . curl_error($ch));
+            }
+            curl_close($ch);
+        } else {
+            $context = stream_context_create([
+                'http' => [
+                    'method' => 'POST',
+                    'header' => "Authorization: Bearer {$cfg['resend_api_key']}\r\nContent-Type: application/json\r\n",
+                    'content' => $requestBody,
+                    'timeout' => 15,
+                ],
+            ]);
+            $responseRaw = @file_get_contents('https://api.resend.com/emails', false, $context);
+            if (isset($http_response_header) && is_array($http_response_header) && isset($http_response_header[0])) {
+                if (preg_match('/\s(\d{3})\s/', $http_response_header[0], $m)) {
+                    $statusCode = (int)$m[1];
+                }
+            }
+        }
+
+        if ($statusCode >= 200 && $statusCode < 300) {
+            return true;
+        }
+
+        error_log('Erreur Resend API (status ' . $statusCode . '): ' . ($responseRaw ?: 'no response body'));
+        return false;
+    } catch (Exception $e) {
+        error_log("Erreur Resend réservation: " . $e->getMessage());
+        return false;
+    }
+}
+
+function sendReservationPendingConfirmationEmail($reservationData) {
+    $cfg = getReservationMailerConfig();
+    $meta = getReservationMeta($reservationData);
+
+    $subjectAdmin = "Nouvelle réservation payée à confirmer - {$meta['nom_complet']}";
+    $bodyAdmin = "
+    <h2>Nouvelle réservation payée</h2>
+    <p>Un client a payé sa séance. Merci de confirmer, annuler ou reporter depuis l'admin.</p>
+    <p><strong>Client:</strong> {$meta['nom_complet']}<br>
+    <strong>Email:</strong> {$meta['email_client']}<br>
+    <strong>Téléphone:</strong> {$meta['telephone']}<br>
+    <strong>Service:</strong> {$meta['service_type']} ({$meta['duration']} min)<br>
+    <strong>Date:</strong> {$meta['date']} à {$meta['heure']}<br>
+    <strong>Montant payé:</strong> {$meta['montant']}</p>
+    <p><strong>Message client:</strong><br>" . nl2br(htmlspecialchars($meta['message'] !== '' ? $meta['message'] : 'Aucun message')) . "</p>";
+    $altAdmin = "Nouvelle réservation payée à confirmer: {$meta['nom_complet']} - {$meta['date']} {$meta['heure']}";
+
+    $sentAdmin = sendReservationEmailSmtp(
+        $cfg['admin_email'],
+        'Rabab Ali',
+        $subjectAdmin,
+        $bodyAdmin,
+        $altAdmin,
+        $meta['email_client'],
+        $meta['nom_complet']
+    );
+
+    $sentClient = true;
+    if ($meta['email_client'] !== '' && filter_var($meta['email_client'], FILTER_VALIDATE_EMAIL)) {
+        $subjectClient = "Paiement reçu - en attente de confirmation";
+        $bodyClient = "
+        <h2>Merci, votre paiement est bien reçu</h2>
+        <p>Bonjour {$meta['prenom']},</p>
+        <p>Votre demande de rendez-vous a bien été payée. Rabab va confirmer votre créneau sous peu.</p>
+        <p><strong>Créneau demandé:</strong> {$meta['date']} à {$meta['heure']}<br>
+        <strong>Service:</strong> {$meta['service_type']} ({$meta['duration']} min)<br>
+        <strong>Montant payé:</strong> {$meta['montant']}</p>
+        <p>Vous recevrez un email de confirmation (ou de report) après validation.</p>";
+        $altClient = "Paiement reçu. Votre réservation est en attente de confirmation.";
+        $sentClient = sendReservationEmailSmtp(
+            $meta['email_client'],
+            $meta['prenom'] !== '' ? $meta['prenom'] : $meta['nom_complet'],
+            $subjectClient,
+            $bodyClient,
+            $altClient,
+            $cfg['admin_email'],
+            'Rabab Ali'
+        );
+    }
+
+    return $sentAdmin && $sentClient;
+}
+
+function sendReservationDecisionEmail($reservationData, $decisionStatus) {
+    $cfg = getReservationMailerConfig();
+    $meta = getReservationMeta($reservationData);
+    if ($meta['email_client'] === '' || !filter_var($meta['email_client'], FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+
+    $decisionLabel = 'mis à jour';
+    $subject = "Mise à jour de votre rendez-vous";
+    $body = "<h2>Mise à jour de votre rendez-vous</h2>";
+    $alt = "Mise à jour de votre rendez-vous";
+
+    if ($decisionStatus === 'confirmee') {
+        $decisionLabel = 'confirmé';
+        $subject = "Votre rendez-vous est confirmé";
+        $body = "
+        <h2>Votre rendez-vous est confirmé</h2>
+        <p>Bonjour {$meta['prenom']},</p>
+        <p>Votre réservation est confirmée pour <strong>{$meta['date']} à {$meta['heure']}</strong>.</p>
+        <p><strong>Facture (récapitulatif):</strong><br>
+        Service: {$meta['service_type']} ({$meta['duration']} min)<br>
+        Montant payé: {$meta['montant']}</p>
+        <p>Merci et à très bientôt.</p>";
+        $alt = "Rendez-vous confirmé pour {$meta['date']} à {$meta['heure']}. Facture: {$meta['montant']}.";
+    } elseif ($decisionStatus === 'annulee') {
+        $decisionLabel = 'annulé';
+        $subject = "Votre rendez-vous a été annulé";
+        $body = "
+        <h2>Votre rendez-vous a été annulé</h2>
+        <p>Bonjour {$meta['prenom']},</p>
+        <p>Votre rendez-vous prévu le <strong>{$meta['date']} à {$meta['heure']}</strong> a été annulé.</p>
+        <p>Rabab va vous proposer une nouvelle date de rendez-vous très prochainement.</p>";
+        $alt = "Rendez-vous annulé. Une nouvelle date vous sera proposée.";
+    } elseif ($decisionStatus === 'reportee') {
+        $decisionLabel = 'reporté';
+        $subject = "Votre rendez-vous a été reporté";
+        $body = "
+        <h2>Votre rendez-vous a été reporté</h2>
+        <p>Bonjour {$meta['prenom']},</p>
+        <p>Suite à votre échange avec Rabab, la nouvelle date proposée est:</p>
+        <p><strong>{$meta['date']} à {$meta['heure']}</strong></p>
+        <p>Merci de confirmer si ce créneau vous convient.</p>";
+        $alt = "Rendez-vous reporté. Nouvelle date: {$meta['date']} {$meta['heure']}.";
+    }
+
+    $sentClient = sendReservationEmailSmtp(
+        $meta['email_client'],
+        $meta['prenom'] !== '' ? $meta['prenom'] : $meta['nom_complet'],
+        $subject,
+        $body,
+        $alt,
+        $cfg['admin_email'],
+        'Rabab Ali'
+    );
+
+    if ($sentClient) {
+        $subjectAdmin = "Notification client envoyée ({$decisionLabel}) - {$meta['nom_complet']}";
+        $bodyAdmin = "<p>Notification {$decisionLabel} envoyée au client {$meta['nom_complet']} ({$meta['email_client']}).</p>";
+        $altAdmin = "Notification client envoyée ({$decisionLabel})";
+        sendReservationEmailSmtp($cfg['admin_email'], 'Rabab Ali', $subjectAdmin, $bodyAdmin, $altAdmin);
+    }
+
+    return $sentClient;
+}
+
+// Compatibilité: ancien nom de fonction
+function sendReservationNotificationEmail($reservationData) {
+    return sendReservationPendingConfirmationEmail($reservationData);
 }
 
 // Fonction pour vérifier si c'est une réservation via le site (pas admin)

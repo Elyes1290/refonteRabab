@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ScrollReveal } from "../components/ScrollReveal";
 import { AnimatedSection } from "../components/AnimatedSection";
-import PowrInstagramWidget from "../components/PowrInstagramWidget";
 import { fetchWithRetry } from "../utils/fetchWithRetry";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "../styles/Events.css";
-import "../styles/Experiences.css";
 
 // Utiliser toujours rababali.com (API configurée avec CORS)
 const DOMAIN = "https://rababali.com";
-const API_BASE = "https://rababali.com";
 
 interface Event {
   id: number;
@@ -23,45 +18,131 @@ interface Event {
   type?: string;
   devise?: string;
   url_inscription?: string;
+  video_urls?: string[];
 }
 
-interface Experience {
+interface WaitlistSession {
   id: number;
-  nom: string;
-  titre: string;
-  message: string;
-  date_creation: string;
+  title: string;
+  session_date: string;
+  start_time: string;
+  end_time: string;
+  location?: string;
+  status?: string;
 }
 
-interface FormData {
-  nom: string;
-  titre: string;
-  message: string;
+interface VideoEmbedInfo {
+  embedUrl: string;
+  provider: "youtube" | "vimeo";
 }
+
+const getInstagramUrl = (rawUrl: string): string | null => {
+  try {
+    const parsed = new URL(rawUrl.trim());
+    const host = parsed.hostname.replace(/^www\./, "");
+    const path = parsed.pathname;
+    if (host === "instagram.com" || host === "m.instagram.com") {
+      const parts = path.split("/").filter(Boolean);
+      const type = parts[0];
+      const code = parts[1];
+      if ((type === "reel" || type === "p" || type === "tv") && code) {
+        return `https://www.instagram.com/${type}/${code}/`;
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+};
+
+const openCenteredPopup = (url: string) => {
+  const width = 520;
+  const height = 760;
+  const left = window.screenX + (window.outerWidth - width) / 2;
+  const top = window.screenY + (window.outerHeight - height) / 2;
+  window.open(
+    url,
+    "_blank",
+    `popup=yes,width=${width},height=${height},left=${Math.max(0, Math.floor(left))},top=${Math.max(0, Math.floor(top))},resizable=yes,scrollbars=yes`
+  );
+};
+
+const getVideoEmbedInfo = (rawUrl: string): VideoEmbedInfo | null => {
+  try {
+    const parsed = new URL(rawUrl.trim());
+    const host = parsed.hostname.replace(/^www\./, "");
+    const path = parsed.pathname;
+
+    if (host === "youtube.com" || host === "m.youtube.com" || host === "youtu.be") {
+      let videoId = "";
+      if (host === "youtu.be") {
+        videoId = path.split("/").filter(Boolean)[0] || "";
+      } else if (path.startsWith("/watch")) {
+        videoId = parsed.searchParams.get("v") || "";
+      } else if (path.startsWith("/shorts/")) {
+        videoId = path.split("/")[2] || "";
+      } else if (path.startsWith("/embed/")) {
+        videoId = path.split("/")[2] || "";
+      }
+      if (videoId) {
+        return {
+          embedUrl: `https://www.youtube.com/embed/${videoId}`,
+          provider: "youtube",
+        };
+      }
+    }
+
+    if (host === "vimeo.com" || host === "player.vimeo.com") {
+      const parts = path.split("/").filter(Boolean);
+      const videoId = parts[parts.length - 1] || "";
+      if (/^\d+$/.test(videoId)) {
+        return {
+          embedUrl: `https://player.vimeo.com/video/${videoId}`,
+          provider: "vimeo",
+        };
+      }
+    }
+
+  } catch {
+    return null;
+  }
+  return null;
+};
 
 const EventsAndExperiences: React.FC = () => {
   // État pour les événements
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
-  const [modalImg, setModalImg] = useState<string | null>(null);
-  const [modalAlt, setModalAlt] = useState<string>("");
-
-  // État pour les expériences
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [experiencesLoading, setExperiencesLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
-
-  const [formData, setFormData] = useState<FormData>({
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [waitlistEvent, setWaitlistEvent] = useState<Event | null>(null);
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
+  const [openConstellationSessions, setOpenConstellationSessions] = useState<
+    WaitlistSession[]
+  >([]);
+  const [openSessionsLoading, setOpenSessionsLoading] = useState(true);
+  const [openSessionsError, setOpenSessionsError] = useState<string | null>(null);
+  const [waitlistForm, setWaitlistForm] = useState({
     nom: "",
-    titre: "",
+    email: "",
+    telephone: "",
     message: "",
   });
+
+  const formatWaitlistDate = (date: string) => {
+    try {
+      const d = new Date(date);
+      return d.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    } catch {
+      return date;
+    }
+  };
 
   // Charger les événements
   useEffect(() => {
@@ -95,138 +176,103 @@ const EventsAndExperiences: React.FC = () => {
       });
   }, []);
 
-  // Charger les expériences
   useEffect(() => {
-    const fetchExperiences = async () => {
-      try {
-        const response = await fetchWithRetry(
-          `${API_BASE}/rabab/api/db_connect.php?action=get_experiences`,
-          {},
-          {
-            retries: 3,
-            retryDelay: 1000,
-            timeout: 15000,
-          }
-        );
-        const data = await response.json();
-
+    fetchWithRetry(
+      `${DOMAIN}/rabab/api/db_connect.php?action=get_open_waitlist_sessions`,
+      {},
+      { retries: 2, retryDelay: 800, timeout: 12000 }
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error("Erreur lors du chargement des sessions");
+        return res.json();
+      })
+      .then((data) => {
         if (data.success) {
-          setExperiences(data.data);
+          const sessions = Array.isArray(data.data) ? data.data : [];
+          setOpenConstellationSessions(sessions);
+          setOpenSessionsError(null);
         } else {
-          console.error(
-            "Erreur lors du chargement des expériences:",
-            data.message
-          );
+          setOpenConstellationSessions([]);
+          setOpenSessionsError(data.message || "Aucune session disponible");
         }
-      } catch (error) {
-        console.error("Erreur réseau:", error);
-      } finally {
-        setExperiencesLoading(false);
-      }
-    };
-
-    fetchExperiences();
+      })
+      .catch((error) => {
+        setOpenConstellationSessions([]);
+        setOpenSessionsError(error?.message || "Erreur de chargement");
+      })
+      .finally(() => {
+        setOpenSessionsLoading(false);
+      });
   }, []);
 
-  // Gérer la soumission du formulaire d'expérience
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setMessage(null);
-
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("action", "add_experience");
-      formDataToSend.append("nom", formData.nom);
-      formDataToSend.append("titre", formData.titre);
-      formDataToSend.append("message", formData.message);
-
-      const response = await fetchWithRetry(
-        `${API_BASE}/rabab/api/db_connect.php`,
-        {
-          method: "POST",
-          body: formDataToSend,
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success(
-          "Votre expérience a été partagée avec succès ! Elle sera visible après modération."
-        );
-        setFormData({ nom: "", titre: "", message: "" });
-        setShowForm(false);
-
-        // Recharger les expériences
-        const refreshResponse = await fetchWithRetry(
-          `${API_BASE}/rabab/api/db_connect.php?action=get_experiences`,
-          {},
-          {
-            retries: 2,
-            retryDelay: 500,
-            timeout: 10000,
-          }
-        );
-        const refreshData = await refreshResponse.json();
-        if (refreshData.success) {
-          setExperiences(refreshData.data);
-        }
-      } else {
-        toast.error(data.message || "Une erreur est survenue");
-      }
-    } catch {
-      toast.error("Erreur de connexion. Veuillez réessayer.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // Gérer les changements dans le formulaire
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Formater la date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+  const openEventWaitlistModal = (event: Event) => {
+    setWaitlistEvent(event);
+    setWaitlistForm({
+      nom: "",
+      email: "",
+      telephone: "",
+      message: "",
     });
   };
 
+  const closeEventWaitlistModal = () => {
+    setWaitlistEvent(null);
+    setWaitlistSubmitting(false);
+  };
+
+  const submitEventWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!waitlistEvent) return;
+    setWaitlistSubmitting(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("action", "join_event_waitlist");
+      formData.append("event_id", String(waitlistEvent.id));
+      formData.append("nom", waitlistForm.nom);
+      formData.append("email", waitlistForm.email);
+      formData.append("telephone", waitlistForm.telephone);
+      formData.append("message", waitlistForm.message);
+
+      const response = await fetch(`${DOMAIN}/rabab/api/db_connect.php`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Vous êtes bien inscrit(e) sur la liste d'attente.");
+        closeEventWaitlistModal();
+      } else {
+        toast.error(data.message || "Impossible de rejoindre la liste d'attente");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur de connexion");
+    } finally {
+      setWaitlistSubmitting(false);
+    }
+  };
+
   return (
-    <div style={{ background: "#faf1e6" }}>
+    <div style={{ background: "#F2E8E1" }}>
       {/* ========== SECTION ÉVÉNEMENTS ========== */}
       <section className="events-page">
-        <h1 className="events-title">
-          <img
-            src="/images/signe_rabab.png?v=2"
-            alt=""
-            style={{
-              width: 40,
-              height: 40,
-              objectFit: "contain",
-              display: "inline-block",
-              verticalAlign: "middle",
-              marginRight: 10,
-            }}
-          />
-          Activités & Événements
-        </h1>
-        <p className="events-description">
-          Retrouvez ici tous les événements à venir et passés. Pour toute
-          question ou pour organiser un événement sur-mesure, contactez-moi
-          directement !
-        </p>
+        <AnimatedSection animationType="fadeUp" delay={120}>
+          <h1 className="events-title">Événements</h1>
+          <p className="events-description">
+            Retrouvez ici toutes mes retraites spirituelles, ateliers et
+            constellations familiales à venir.
+          </p>
+          <p className="events-description">
+            Chaque événement est conçu pour vous accompagner dans la
+            découverte, la transformation et l'épanouissement personnel.
+          </p>
+          <p className="events-description">
+            Pour toute question ou pour organiser un événement sur-mesure,
+            contactez-moi directement.
+          </p>
+        </AnimatedSection>
         {eventsLoading && (
           <div className="events-loading">Chargement des événements…</div>
         )}
@@ -238,34 +284,186 @@ const EventsAndExperiences: React.FC = () => {
             </div>
           </div>
         )}
-        <div className="events-grid">
-          {events.map((evt) => (
-            <div key={evt.id} className="event-card">
-              {evt.image_url && (
-                <img
-                  src={`${DOMAIN}${evt.image_url}`}
-                  alt={evt.titre}
-                  className={`event-card-image ${
-                    evt.type === "flyer" ? "flyer" : "regular"
-                  }`}
-                  onClick={() => {
-                    setModalImg(`${DOMAIN}${evt.image_url}`);
-                    setModalAlt(evt.titre);
+        <AnimatedSection animationType="fadeUp" delay={220}>
+          <div className="events-grid">
+            {events.map((evt) => (
+              <div 
+                key={evt.id} 
+                className="event-card"
+                onClick={() => setSelectedEvent(evt)}
+                style={{ cursor: "pointer" }}
+              >
+                {evt.image_url && (
+                  <img
+                    src={`${DOMAIN}${evt.image_url}`}
+                    alt={evt.titre}
+                    className={`event-card-image ${
+                      evt.type === "flyer" ? "flyer" : "regular"
+                    }`}
+                  />
+                )}
+                <h2 className="event-card-title">{evt.titre}</h2>
+                {evt.prix && (
+                  <div className="event-card-price">
+                    💶 {evt.prix}
+                    {evt.devise ? ` ${evt.devise}` : ""}
+                  </div>
+                )}
+                <div className="event-card-date">
+                  {(() => {
+                    const dateDebut = new Date(evt.date_event);
+                    const dateFin = evt.date_fin ? new Date(evt.date_fin) : null;
+
+                    const formatDate = (date: Date) =>
+                      date.toLocaleDateString("fr-FR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      });
+
+                    if (!dateFin || dateDebut.getTime() === dateFin.getTime()) {
+                      return formatDate(dateDebut);
+                    }
+
+                    if (
+                      dateDebut.getMonth() === dateFin.getMonth() &&
+                      dateDebut.getFullYear() === dateFin.getFullYear()
+                    ) {
+                      return `${dateDebut.getDate()} - ${formatDate(dateFin)}`;
+                    }
+
+                    return `${formatDate(dateDebut)} - ${formatDate(dateFin)}`;
+                  })()}
+                </div>
+                {evt.url_inscription && (
+                  <a
+                    href={evt.url_inscription}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="event-card-register-btn"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      display: "inline-block",
+                      background: "#1DA395",
+                      color: "#fff",
+                      padding: "0.7rem 1.5rem",
+                      borderRadius: "8px",
+                      textDecoration: "none",
+                      fontWeight: "400",
+                      marginTop: "1rem",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#178a7e";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#1DA395";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    S'inscrire
+                  </a>
+                )}
+                <button
+                  type="button"
+                  className="event-card-waitlist-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEventWaitlistModal(evt);
                   }}
+                >
+                  S'inscrire à la liste d'attente
+                </button>
+              </div>
+            ))}
+          </div>
+        </AnimatedSection>
+        <AnimatedSection animationType="fadeUp" delay={260}>
+          <div className="events-open-sessions">
+            <h2 className="events-open-sessions-title">
+              Journees de constellation familiale disponibles
+            </h2>
+
+            {openSessionsLoading && (
+              <p className="events-open-sessions-state">
+                Chargement des sessions...
+              </p>
+            )}
+
+            {!openSessionsLoading && openSessionsError && (
+              <p className="events-open-sessions-state">{openSessionsError}</p>
+            )}
+
+            {!openSessionsLoading &&
+              !openSessionsError &&
+              openConstellationSessions.length === 0 && (
+                <p className="events-open-sessions-state">
+                  Aucune session ouverte pour le moment.
+                </p>
+              )}
+
+            {!openSessionsLoading &&
+              !openSessionsError &&
+              openConstellationSessions.length > 0 && (
+                <div className="events-open-sessions-grid">
+                  {openConstellationSessions.map((session) => (
+                    <div key={session.id} className="events-open-session-card">
+                      <div className="events-open-session-date">
+                        {formatWaitlistDate(session.session_date)}
+                      </div>
+                      <div className="events-open-session-time">
+                        {String(session.start_time || "").slice(0, 5)} a{" "}
+                        {String(session.end_time || "").slice(0, 5)}
+                      </div>
+                      <div className="events-open-session-location">
+                        {session.location || "Grand-Lancy"}
+                      </div>
+                      <a
+                        href={`/rendez-vous?open_waitlist=1&session_id=${session.id}`}
+                        className="events-open-session-link"
+                      >
+                        Rejoindre la liste
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+          </div>
+        </AnimatedSection>
+        {selectedEvent && (
+          <div className="event-detail-modal" onClick={() => setSelectedEvent(null)}>
+            <div className="event-detail-content" onClick={(e) => e.stopPropagation()}>
+              <button 
+                className="event-detail-close"
+                onClick={() => setSelectedEvent(null)}
+              >
+                ✕
+              </button>
+              {selectedEvent.image_url && (
+                <img
+                  src={`${DOMAIN}${selectedEvent.image_url}`}
+                  alt={selectedEvent.titre}
+                  className="event-detail-image"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setZoomedImage(`${DOMAIN}${selectedEvent.image_url}`);
+                  }}
+                  style={{ cursor: "zoom-in" }}
                   title="Cliquer pour agrandir"
                 />
               )}
-              <h2 className="event-card-title">{evt.titre}</h2>
-              {evt.prix && (
-                <div className="event-card-price">
-                  💶 {evt.prix}
-                  {evt.devise ? ` ${evt.devise}` : ""}
+              <h2 className="event-detail-title">{selectedEvent.titre}</h2>
+              {selectedEvent.prix && (
+                <div className="event-detail-price">
+                  💶 {selectedEvent.prix}
+                  {selectedEvent.devise ? ` ${selectedEvent.devise}` : ""}
                 </div>
               )}
-              <div className="event-card-date">
+              <div className="event-detail-date">
                 {(() => {
-                  const dateDebut = new Date(evt.date_event);
-                  const dateFin = evt.date_fin ? new Date(evt.date_fin) : null;
+                  const dateDebut = new Date(selectedEvent.date_event);
+                  const dateFin = selectedEvent.date_fin ? new Date(selectedEvent.date_fin) : null;
 
                   const formatDate = (date: Date) =>
                     date.toLocaleDateString("fr-FR", {
@@ -278,7 +476,6 @@ const EventsAndExperiences: React.FC = () => {
                     return formatDate(dateDebut);
                   }
 
-                  // Si même mois et année, afficher : "4 - 12 avril 2026"
                   if (
                     dateDebut.getMonth() === dateFin.getMonth() &&
                     dateDebut.getFullYear() === dateFin.getFullYear()
@@ -286,261 +483,169 @@ const EventsAndExperiences: React.FC = () => {
                     return `${dateDebut.getDate()} - ${formatDate(dateFin)}`;
                   }
 
-                  // Sinon afficher les deux dates complètes
                   return `${formatDate(dateDebut)} - ${formatDate(dateFin)}`;
                 })()}
               </div>
-              <p className="event-card-description">{evt.description}</p>
-              {evt.url_inscription && (
+              <p className="event-detail-description">{selectedEvent.description}</p>
+              {selectedEvent.video_urls && selectedEvent.video_urls.length > 0 && (
+                <div className="event-detail-videos">
+                  <h3 className="event-detail-videos-title">Vidéos / Réels</h3>
+                  <div className="event-detail-videos-list">
+                    {selectedEvent.video_urls.map((videoUrl, index) => (
+                      (() => {
+                        const embed = getVideoEmbedInfo(videoUrl);
+                        if (embed) {
+                          return (
+                            <div key={`${selectedEvent.id}-video-${index}`} className="event-detail-video-embed-wrap">
+                              <iframe
+                                src={embed.embedUrl}
+                                title={`Video ${index + 1}`}
+                                className={`event-detail-video-embed ${embed.provider}`}
+                                loading="lazy"
+                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                                allowFullScreen
+                              />
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <a
+                            key={`${selectedEvent.id}-video-${index}`}
+                            href={videoUrl}
+                            className="event-detail-video-link"
+                            onClick={(e) => {
+                              const instagramUrl = getInstagramUrl(videoUrl);
+                              if (instagramUrl) {
+                                e.preventDefault();
+                                openCenteredPopup(instagramUrl);
+                              }
+                            }}
+                          >
+                            Voir la vidéo {index + 1}
+                          </a>
+                        );
+                      })()
+                    ))}
+                  </div>
+                </div>
+              )}
+              {selectedEvent.url_inscription && (
                 <a
-                  href={evt.url_inscription}
+                  href={selectedEvent.url_inscription}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="event-card-register-btn"
-                  style={{
-                    display: "inline-block",
-                    background: "#5c7671",
-                    color: "#fff",
-                    padding: "0.7rem 1.5rem",
-                    borderRadius: "24px",
-                    textDecoration: "none",
-                    fontWeight: "bold",
-                    marginTop: "1rem",
-                    transition: "all 0.3s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#4a5e5a";
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#5c7671";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
+                  className="event-detail-register-btn"
                 >
-                  📝 S'inscrire à cet événement
+                  S'inscrire à cet événement
                 </a>
               )}
+              <button
+                type="button"
+                className="event-detail-waitlist-btn"
+                onClick={() => openEventWaitlistModal(selectedEvent)}
+              >
+                S'inscrire à la liste d'attente
+              </button>
             </div>
-          ))}
-        </div>
-        {modalImg && (
-          <div className="events-modal" onClick={() => setModalImg(null)}>
-            <img src={modalImg} alt={modalAlt} className="events-modal-image" />
           </div>
         )}
-      </section>
 
-      {/* ========== SÉPARATEUR ========== */}
-      <div style={{ margin: "3rem 0 2rem 0", textAlign: "center" }}>
-        <span
-          style={{
-            display: "inline-block",
-            width: 120,
-            height: 4,
-            background: "var(--color-primary)",
-            borderRadius: 2,
-            opacity: 0.4,
-          }}
-        />
-      </div>
-
-      {/* ========== SECTION TÉMOIGNAGES & AVIS ========== */}
-      <section className="experiences-page">
-        {/* En-tête */}
-        <AnimatedSection animationType="fadeUp" delay={200}>
-          <div className="experiences-header">
-            <h1 className="sparkle experiences-title">
-              ✨ Témoignages & Avis ✨
-            </h1>
-            <p className="experiences-description">
-              Découvrez les témoignages de personnes qui ont vécu l'expérience
-              Vision 3D et partagez la vôtre pour inspirer d'autres âmes en
-              quête de transformation.
-            </p>
+        {zoomedImage && (
+          <div className="image-zoom-modal" onClick={() => setZoomedImage(null)}>
+            <img 
+              src={zoomedImage} 
+              alt="Image agrandie" 
+              className="image-zoom-content"
+            />
           </div>
-        </AnimatedSection>
+        )}
 
-        {/* Bouton pour partager une expérience */}
-        <AnimatedSection animationType="scale" delay={400}>
-          <div className="experiences-toggle-container">
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="btn-magical zoom-hover experiences-toggle-btn"
+        {waitlistEvent && (
+          <div className="event-waitlist-modal" onClick={closeEventWaitlistModal}>
+            <div
+              className="event-waitlist-content"
+              onClick={(e) => e.stopPropagation()}
             >
-              {showForm
-                ? "🔙 Retour aux témoignages"
-                : "💫 Partager mon expérience"}
-            </button>
-          </div>
-        </AnimatedSection>
-
-        {/* Messages de feedback */}
-        {message && (
-          <AnimatedSection animationType="fadeUp">
-            <div className={`experiences-message ${message.type}`}>
-              {message.text}
-            </div>
-          </AnimatedSection>
-        )}
-
-        {/* Formulaire de partage d'expérience */}
-        {showForm && (
-          <AnimatedSection animationType="fadeUp" delay={200}>
-            <div className="experiences-form">
-              <h2 className="experiences-form-title">
-                🌟 Partagez votre expérience
-              </h2>
-
-              <form onSubmit={handleSubmit}>
-                <div className="experiences-form-field">
-                  <label className="experiences-form-label">
-                    Votre prénom (ou initiales) *
-                  </label>
-                  <input
-                    type="text"
-                    name="nom"
-                    value={formData.nom}
-                    onChange={handleInputChange}
-                    required
-                    maxLength={100}
-                    className="experiences-form-input"
-                    placeholder="Ex: Marie L."
-                  />
-                </div>
-
-                <div className="experiences-form-field">
-                  <label className="experiences-form-label">
-                    Titre de votre expérience *
-                  </label>
-                  <input
-                    type="text"
-                    name="titre"
-                    value={formData.titre}
-                    onChange={handleInputChange}
-                    required
-                    maxLength={200}
-                    className="experiences-form-input"
-                    placeholder="Ex: Une transformation en douceur"
-                  />
-                </div>
-
-                <div className="experiences-form-field large">
-                  <label className="experiences-form-label">
-                    Votre témoignage *
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                    rows={6}
-                    className="experiences-form-textarea"
-                    placeholder="Partagez votre expérience avec la Vision 3D, les transformations vécues, vos ressentis..."
-                  />
-                </div>
-
-                <div className="experiences-form-submit-container">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="btn-magical zoom-hover experiences-form-submit-btn"
-                    style={{
-                      opacity: submitting ? 0.7 : 1,
-                      cursor: submitting ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {submitting
-                      ? "🔄 Envoi en cours..."
-                      : "✨ Partager mon expérience"}
-                  </button>
-                </div>
+              <button
+                className="event-detail-close"
+                onClick={closeEventWaitlistModal}
+                type="button"
+              >
+                ✕
+              </button>
+              <h2 className="event-waitlist-title">Liste d'attente</h2>
+              <p className="event-waitlist-subtitle">{waitlistEvent.titre}</p>
+              <form onSubmit={submitEventWaitlist} className="event-waitlist-form">
+                <input
+                  type="text"
+                  placeholder="Nom"
+                  value={waitlistForm.nom}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, nom: e.target.value }))
+                  }
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={waitlistForm.email}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, email: e.target.value }))
+                  }
+                  required
+                />
+                <input
+                  type="tel"
+                  placeholder="Téléphone"
+                  value={waitlistForm.telephone}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, telephone: e.target.value }))
+                  }
+                  required
+                />
+                <textarea
+                  placeholder="Message (optionnel)"
+                  value={waitlistForm.message}
+                  onChange={(e) =>
+                    setWaitlistForm((prev) => ({ ...prev, message: e.target.value }))
+                  }
+                  rows={4}
+                />
+                <button type="submit" disabled={waitlistSubmitting}>
+                  {waitlistSubmitting ? "Envoi en cours..." : "Rejoindre la liste"}
+                </button>
               </form>
             </div>
-          </AnimatedSection>
-        )}
-
-        {/* Section des avis Google - DÉSACTIVÉE temporairement */}
-        {/* {!showForm && (
-          <AnimatedSection animationType="fadeUp" delay={600}>
-            <div className="experiences-google-section">
-              <GoogleReviews maxReviews={6} showHeader={true} />
-            </div>
-          </AnimatedSection>
-        )} */}
-
-        {/* Liste des expériences de la base de données */}
-        {!showForm && (
-          <div className="experiences-content">
-            {experiencesLoading ? (
-              <div className="experiences-loading">
-                <div className="creative-loading experiences-loading-spinner"></div>
-                <p className="experiences-loading-text">
-                  Chargement des expériences...
-                </p>
-              </div>
-            ) : experiences.length === 0 ? (
-              <AnimatedSection animationType="fadeUp">
-                <div className="experiences-empty">
-                  <p className="experiences-empty-text">
-                    Soyez le premier à partager votre expérience ! 🌟
-                  </p>
-                </div>
-              </AnimatedSection>
-            ) : (
-              <div className="experiences-grid">
-                {experiences.map((experience, index) => (
-                  <ScrollReveal
-                    key={experience.id}
-                    direction="scale"
-                    delay={index * 100}
-                  >
-                    <div className="experiences-card">
-                      <div className="experiences-card-header">
-                        <div className="pulse-glow experiences-card-icon">
-                          ✨
-                        </div>
-                        <div>
-                          <h3 className="experiences-card-title">
-                            {experience.titre}
-                          </h3>
-                          <p className="experiences-card-author">
-                            Par {experience.nom}
-                          </p>
-                          <p className="experiences-card-date">
-                            {formatDate(experience.date_creation)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <p className="experiences-card-message">
-                        "{experience.message}"
-                      </p>
-                    </div>
-                  </ScrollReveal>
-                ))}
-              </div>
-            )}
           </div>
         )}
+
       </section>
 
-      {/* ========== SÉPARATEUR ========== */}
-      <div style={{ margin: "3rem 0 2rem 0", textAlign: "center" }}>
-        <span
-          style={{
-            display: "inline-block",
-            width: 120,
-            height: 4,
-            background: "var(--color-primary)",
-            borderRadius: 2,
-            opacity: 0.4,
-          }}
-        />
-      </div>
-
-      {/* ========== SECTION INSTAGRAM ========== */}
-      <AnimatedSection animationType="fadeUp" delay={900}>
-        <PowrInstagramWidget powrId="8ac912d6_1765981801" />
+      {/* Bouton Instagram */}
+      <AnimatedSection animationType="scale" delay={300}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "3rem 0 5rem 0" }}>
+          <a
+            href="https://www.instagram.com/rabab_rit_a_la_vie"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
+              color: "white",
+              padding: "1rem 2rem",
+              borderRadius: "50px",
+              textDecoration: "none",
+              fontFamily: "'Lato', sans-serif",
+              fontWeight: 700,
+              fontSize: "16px",
+              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+              transition: "all 0.3s ease",
+            }}
+          >
+            Suivre @rabab_rit_a_la_vie
+          </a>
+        </div>
       </AnimatedSection>
     </div>
   );

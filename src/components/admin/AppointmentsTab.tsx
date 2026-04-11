@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import AppointmentsCalendar from "../AppointmentsCalendar";
 
@@ -87,6 +87,79 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   onPrintReport,
   onExportCSV,
 }) => {
+  const [inlineEditingId, setInlineEditingId] = useState<number | null>(null);
+  const [inlineUpdatingId, setInlineUpdatingId] = useState<number | null>(null);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [calendarCopied, setCalendarCopied] = useState(false);
+
+  const getCalendarUrl = (protocol: "webcal" | "https") =>
+    `${protocol}://${window.location.hostname}/rabab/api/calendar.php`;
+
+  const handleOpenCalendarSubscription = () => {
+    const ua = navigator.userAgent || "";
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+    if (isMobile) {
+      window.location.href = getCalendarUrl("webcal");
+      setTimeout(() => setShowCalendarModal(true), 1500);
+    } else {
+      setShowCalendarModal(true);
+    }
+  };
+
+  const handleCopyCalendarUrl = () => {
+    navigator.clipboard.writeText(getCalendarUrl("webcal")).then(() => {
+      setCalendarCopied(true);
+      setTimeout(() => setCalendarCopied(false), 2500);
+    });
+  };
+
+  const handleInlineStatusChange = async (appointment: Appointment, newStatut: string) => {
+    setInlineUpdatingId(appointment.id);
+    try {
+      const formData = new FormData();
+      formData.append("action", "update_reservation");
+      formData.append("id", String(appointment.id));
+      formData.append("nom", appointment.nom);
+      formData.append("prenom", appointment.prenom);
+      formData.append("email", appointment.email);
+      formData.append("telephone", appointment.telephone);
+      formData.append("service_type", appointment.service_type);
+      formData.append("date_reservation", appointment.date_reservation);
+      formData.append("heure_reservation", appointment.heure_reservation);
+      formData.append("montant", String(appointment.montant));
+      formData.append("notes", appointment.notes || "");
+      formData.append("statut", newStatut);
+      const response = await fetch(`${API_BASE}/rabab/api/db_connect.php`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Statut mis à jour");
+        onRefreshAppointments();
+      } else {
+        toast.error(data.message || "Erreur lors de la mise à jour");
+      }
+    } catch {
+      toast.error("Erreur de connexion");
+    } finally {
+      setInlineUpdatingId(null);
+      setInlineEditingId(null);
+    }
+  };
+
+  const isPaidStatus = (status: string) =>
+    status === "payee_a_confirmer" || status === "confirmee" || status === "reportee";
+
+  const getStatusLabel = (status: string) => {
+    if (status === "payee_a_confirmer") return "💳 Payé, à confirmer";
+    if (status === "confirmee" || status === "confirme") return "✅ Confirmé";
+    if (status === "reportee") return "🔁 Reporté";
+    if (status === "en_attente") return "⏳ En attente";
+    if (status === "annulee") return "❌ Annulé";
+    return status || "❓ Sans statut";
+  };
+
   // Fonction pour ouvrir le modal d'édition
   const handleEditAppointment = (appointment: Appointment) => {
     setEditingAppointment(appointment);
@@ -127,6 +200,71 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
         console.error("Erreur:", error);
         toast.error("Erreur de connexion");
       }
+    }
+  };
+
+  // Fonction pour annuler un rendez-vous sans le supprimer
+  const handleCancelAppointment = async (id: number) => {
+    if (
+      !window.confirm(
+        "Confirmer l'annulation de ce rendez-vous ? Le rendez-vous restera visible dans l'historique."
+      )
+    ) {
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("action", "cancel_reservation");
+      formData.append("id", String(id));
+      const response = await fetch(`${API_BASE}/rabab/api/db_connect.php`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Rendez-vous annulé avec succès");
+        onRefreshAppointments();
+      } else {
+        toast.error(data.message || "Erreur lors de l'annulation");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error("Erreur de connexion");
+    }
+  };
+
+  // Fonction pour rembourser un rendez-vous payé via Stripe
+  const handleRefundAppointment = async (appointment: Appointment) => {
+    if (
+      !window.confirm(
+        "Confirmer le remboursement Stripe de ce rendez-vous ?"
+      )
+    ) {
+      return;
+    }
+    try {
+      const response = await fetch(
+        `${API_BASE}/rabab/api/payment.php?action=refund-reservation`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            reservation_id: appointment.id,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Remboursement effectué avec succès");
+        onRefreshAppointments();
+      } else {
+        toast.error(data.message || "Remboursement impossible");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error("Erreur de connexion");
     }
   };
 
@@ -343,7 +481,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
           <div class="invoice-header">
             <div class="company-info">
               <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                <img src="/images/logo.png" alt="Logo Rabab Ali" style="width: 60px; height: 60px; object-fit: contain;" />
+                <img src="/images/logo.png?v=1" alt="Logo Rabab Ali" style="width: 60px; height: 60px; object-fit: contain;" />
                 <h1 style="margin: 0;">Rabab Ali</h1>
               </div>
               <p><strong>Thérapeute & Coach de Vie</strong></p>
@@ -417,15 +555,17 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
 
           <div style="text-align: center; margin: 20px 0;">
             <span class="status ${
-              appointment.statut === "confirmee"
+              isPaidStatus(appointment.statut)
                 ? "status-paid"
                 : appointment.statut === "en_attente"
                 ? "status-pending"
                 : "status-cancelled"
             }">
               ${
-                appointment.statut === "confirmee"
-                  ? "✅ PAYÉ"
+                appointment.statut === "payee_a_confirmer"
+                  ? "💳 PAYÉ - EN ATTENTE DE CONFIRMATION"
+                  : appointment.statut === "confirmee" || appointment.statut === "reportee"
+                  ? "✅ PAYÉ ET CONFIRMÉ"
                   : appointment.statut === "en_attente"
                   ? "⏳ EN ATTENTE DE PAIEMENT"
                   : "❌ ANNULÉ"
@@ -446,7 +586,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
           }
 
           ${
-            appointment.statut === "confirmee"
+            isPaidStatus(appointment.statut)
               ? `
             <div class="notes">
               <strong>✅ Paiement confirmé:</strong><br>
@@ -485,15 +625,19 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
         <>
           {/* Calendrier avec les rendez-vous */}
           <div className="admin-appointments-calendar">
-            <h2
-              style={{
-                color: "#4682B4",
-                marginBottom: "1rem",
-                textAlign: "center",
-              }}
-            >
-              📅 Calendrier des Rendez-vous
-            </h2>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+              <h2 style={{ color: "#4682B4", margin: 0 }}>
+                📅 Calendrier des Rendez-vous
+              </h2>
+              <button
+                onClick={handleOpenCalendarSubscription}
+                className="btn-magical"
+                style={{ fontSize: "0.8rem", padding: "0.4rem 0.9rem", background: "linear-gradient(135deg, #6c63ff, #5048e5)" }}
+                title="Synchroniser avec votre calendrier téléphone"
+              >
+                📲 Ajouter au calendrier
+              </button>
+            </div>
             <AppointmentsCalendar appointments={appointments} />
           </div>
 
@@ -536,13 +680,6 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                   title="Télécharger en CSV pour Excel"
                 >
                   📊 Export CSV
-                </button>
-                <button
-                  onClick={onAddAppointment}
-                  className="btn-magical"
-                  style={{ fontSize: "0.8rem", padding: "0.4rem 0.8rem" }}
-                >
-                  ➕ Ajouter
                 </button>
               </div>
             </div>
@@ -590,7 +727,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                         style={{ color: "#28a745" }}
                       >
                         {appointments
-                          .filter((appt) => appt.statut === "confirmee")
+                          .filter((appt) => isPaidStatus(appt.statut))
                           .reduce(
                             (total, appt) =>
                               total + (Number(appt.montant) || 0),
@@ -622,7 +759,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       <span className="stat-number">
                         {(() => {
                           const paidAppointments = appointments.filter(
-                            (appt) => appt.statut === "confirmee"
+                            (appt) => isPaidStatus(appt.statut)
                           ).length;
                           const totalAppointments = appointments.filter(
                             (appt) => appt.statut !== "annulee"
@@ -693,6 +830,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               apptDate.getMonth() === thisMonth &&
                               apptDate.getFullYear() === thisYear &&
                               appt.statut === "confirmee"
+                              || appt.statut === "payee_a_confirmer"
+                              || appt.statut === "reportee"
                             );
                           }).length;
                         })()}
@@ -737,7 +876,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                           appointments.filter(
                             (appt) =>
                               appt.service_type === "seance_online" &&
-                              appt.statut === "confirmee"
+                              isPaidStatus(appt.statut)
                           ).length
                         }
                       </span>
@@ -752,7 +891,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                           appointments.filter(
                             (appt) =>
                               appt.service_type === "seance_presentiel" &&
-                              appt.statut === "confirmee"
+                              isPaidStatus(appt.statut)
                           ).length
                         }
                       </span>
@@ -762,7 +901,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       <span className="stat-number">
                         {(() => {
                           const paidAppointments = appointments.filter(
-                            (appt) => appt.statut === "confirmee"
+                            (appt) => isPaidStatus(appt.statut)
                           );
                           const avgRevenue =
                             paidAppointments.length > 0
@@ -812,6 +951,21 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
 
             {/* Tableau des rendez-vous */}
             <div className="admin-appointments-table">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <button
+                  onClick={onAddAppointment}
+                  className="btn-magical"
+                  style={{ fontSize: "0.85rem", padding: "0.45rem 0.95rem" }}
+                >
+                  ➕ Ajouter un rendez-vous
+                </button>
+              </div>
               {appointments.length === 0 ? (
                 <p
                   style={{
@@ -882,18 +1036,38 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                             </strong>
                           </td>
                           <td>
-                            <span
-                              className={`status-badge ${appointment.statut}`}
-                            >
-                              {appointment.statut === "confirme" ||
-                              appointment.statut === "confirmee"
-                                ? "✅ Payé"
-                                : appointment.statut === "en_attente"
-                                ? "⏳ En attente"
-                                : appointment.statut === "annulee"
-                                ? "❌ Annulé"
-                                : appointment.statut || "❓ Sans statut"}
-                            </span>
+                            {inlineEditingId === appointment.id ? (
+                              <select
+                                className="inline-status-select"
+                                defaultValue={appointment.statut}
+                                disabled={inlineUpdatingId === appointment.id}
+                                autoFocus
+                                onChange={(e) =>
+                                  handleInlineStatusChange(appointment, e.target.value)
+                                }
+                                onBlur={() => setInlineEditingId(null)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Escape") setInlineEditingId(null);
+                                }}
+                              >
+                                <option value="payee_a_confirmer">💳 Payé, à confirmer</option>
+                                <option value="confirmee">✅ Confirmé</option>
+                                <option value="reportee">🔁 Reporté</option>
+                                <option value="en_attente">⏳ En attente</option>
+                                <option value="annulee">❌ Annulé</option>
+                              </select>
+                            ) : (
+                              <span
+                                className={`status-badge ${appointment.statut}`}
+                                onClick={() => setInlineEditingId(appointment.id)}
+                                title="Cliquer pour modifier le statut"
+                                style={{ cursor: "pointer" }}
+                              >
+                                {inlineUpdatingId === appointment.id
+                                  ? "⏳..."
+                                  : getStatusLabel(appointment.statut)}
+                              </span>
+                            )}
                           </td>
                           <td>
                             <div style={{ fontSize: "0.8rem" }}>
@@ -922,6 +1096,30 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               >
                                 ✏️
                               </button>
+                              {isPaidStatus(appointment.statut) && (
+                                <button
+                                  onClick={() =>
+                                    handleRefundAppointment(appointment)
+                                  }
+                                  className="btn-delete"
+                                  title="Rembourser"
+                                  style={{ background: "#6f42c1" }}
+                                >
+                                  💸
+                                </button>
+                              )}
+                              {appointment.statut !== "annulee" && (
+                                <button
+                                  onClick={() =>
+                                    handleCancelAppointment(appointment.id)
+                                  }
+                                  className="btn-delete"
+                                  title="Annuler le rendez-vous"
+                                  style={{ background: "#cc8a00" }}
+                                >
+                                  🚫
+                                </button>
+                              )}
                               <button
                                 onClick={() =>
                                   handleDeleteAppointment(appointment.id)
@@ -1039,7 +1237,9 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       onChange={handleAppointmentFormChange}
                       className="booking-form-input"
                     >
-                      <option value="confirmee">Payé</option>
+                      <option value="payee_a_confirmer">Payé, à confirmer</option>
+                      <option value="confirmee">Confirmé</option>
+                      <option value="reportee">Reporté</option>
                       <option value="en_attente">En attente de paiement</option>
                       <option value="annulee">Annulé</option>
                     </select>
@@ -1116,6 +1316,89 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* Modale calendrier */}
+          {showCalendarModal && (
+            <div
+              className="booking-modal-overlay"
+              style={{ zIndex: 9999 }}
+              onClick={() => setShowCalendarModal(false)}
+            >
+              <div
+                className="booking-modal-content"
+                style={{ maxWidth: "420px", textAlign: "center" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  className="booking-modal-close"
+                  onClick={() => setShowCalendarModal(false)}
+                  style={{ position: "absolute", top: "1rem", right: "1rem" }}
+                >
+                  ✕
+                </button>
+                <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>📲</div>
+                <h3 style={{ color: "#4682B4", marginBottom: "0.5rem" }}>
+                  Ajouter au calendrier
+                </h3>
+
+                {/* Bouton ouverture directe */}
+                <button
+                  onClick={() => { window.location.href = getCalendarUrl("webcal"); }}
+                  className="btn-magical"
+                  style={{ width: "100%", padding: "0.7rem", marginBottom: "1rem", background: "linear-gradient(135deg, #6c63ff, #5048e5)" }}
+                >
+                  📅 Ouvrir dans l'app Calendrier
+                </button>
+
+                <p style={{ color: "#777", fontSize: "0.85rem", marginBottom: "0.8rem" }}>
+                  Si le bouton ci-dessus ne fonctionne pas, copiez l'URL et collez-la manuellement :
+                </p>
+                <p style={{ color: "#555", fontSize: "0.8rem", marginBottom: "0.6rem" }}>
+                  <strong>Google Agenda :</strong> Autres agendas → + → À partir de l'URL
+                </p>
+                <p style={{ color: "#555", fontSize: "0.8rem", marginBottom: "1rem" }}>
+                  <strong>Samsung Calendrier :</strong> Menu → Gérer les agendas → Ajouter un compte
+                </p>
+
+                <div
+                  style={{
+                    background: "#f4f4f4",
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    padding: "0.7rem 1rem",
+                    marginBottom: "0.8rem",
+                    wordBreak: "break-all",
+                    fontSize: "0.75rem",
+                    color: "#333",
+                    textAlign: "left",
+                  }}
+                >
+                  {getCalendarUrl("webcal")}
+                </div>
+                <button
+                  onClick={handleCopyCalendarUrl}
+                  className="btn-magical"
+                  style={{ width: "100%", padding: "0.7rem", marginBottom: "1rem", background: calendarCopied ? "linear-gradient(135deg, #28a745, #20c997)" : "linear-gradient(135deg, #17a2b8, #138496)" }}
+                >
+                  {calendarCopied ? "✅ Copié !" : "📋 Copier l'URL"}
+                </button>
+
+                <div
+                  style={{
+                    background: "#fff8e1",
+                    border: "1px solid #ffe082",
+                    borderRadius: "8px",
+                    padding: "0.6rem 0.8rem",
+                    fontSize: "0.78rem",
+                    color: "#795548",
+                    textAlign: "left",
+                  }}
+                >
+                  ⚠️ <strong>Google Agenda</strong> peut mettre jusqu'à <strong>24h</strong> pour afficher les rendez-vous après l'ajout de l'URL. C'est une limitation de Google, pas un bug.
+                </div>
               </div>
             </div>
           )}

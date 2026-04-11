@@ -41,11 +41,12 @@ try {
     // Validation des champs requis
     $nom = trim($data['nom'] ?? '');
     $email = trim($data['email'] ?? '');
-    $sujet = trim($data['sujet'] ?? '');
+    $telephone = trim($data['telephone'] ?? '');
+    $sujet = trim($data['sujet'] ?? 'Message depuis la page Contact');
     $message = trim($data['message'] ?? '');
 
-    if (empty($nom) || empty($email) || empty($sujet) || empty($message)) {
-        throw new Exception('Tous les champs sont obligatoires');
+    if (empty($nom) || empty($email) || empty($message)) {
+        throw new Exception('Les champs Nom, Email et Message sont obligatoires');
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -92,6 +93,7 @@ try {
             <div style='background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;'>
                 <p><strong>👤 Nom :</strong> " . htmlspecialchars($nom) . "</p>
                 <p><strong>📧 Email :</strong> <a href='mailto:" . htmlspecialchars($email) . "'>" . htmlspecialchars($email) . "</a></p>
+                <p><strong>📞 Téléphone :</strong> " . (!empty($telephone) ? htmlspecialchars($telephone) : 'Non renseigné') . "</p>
                 <p><strong>📋 Sujet :</strong> " . htmlspecialchars($sujet) . "</p>
                 <p><strong>🕒 Date :</strong> " . date('d/m/Y à H:i') . "</p>
             </div>

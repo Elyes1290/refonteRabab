@@ -41,11 +41,11 @@ const LogoIntro: React.FC = () => {
     <div className={`logo-intro-overlay ${!isAnimating ? "animate-out" : ""}`}>
       <div className="logo-intro-content">
         <img
-          src="/images/logo.png"
+          src="/images/logo.png?v=1"
           alt="Logo Rabab Ali"
           className="logo-intro-image"
         />
-        <h1 className="logo-intro-text">Approche&Constellation</h1>
+        {/* Logo uniquement, pas de texte */}
       </div>
     </div>
   );

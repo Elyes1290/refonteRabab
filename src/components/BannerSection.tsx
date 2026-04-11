@@ -1,10 +1,10 @@
-import React from "react";
+﻿import React from "react";
 import { AnimatedText } from "./AnimatedText";
 
 const BannerSection: React.FC = () => (
-  <section className="banner-section" style={{ background: "#faf1e6" }}>
+  <section className="banner-section" style={{ background: "#F2E8E1" }}>
     <img
-      src="/images/image4.jpeg"
+      src="/images/image4.jpeg?v=2"
       alt="Bannière accueil"
       className="floating shimmer"
       style={{ marginTop: 16 }}

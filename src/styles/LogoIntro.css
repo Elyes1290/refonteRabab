@@ -5,7 +5,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #faf1e6;
+  background: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,14 +39,15 @@
 
 /* Texte */
 .logo-intro-text {
-  font-family: "Monotype Corsiva", "Brush Script MT", cursive;
+  font-family: var(--font-subtitles);
   font-size: 3.5rem;
-  color: #5c7671;
+  color: var(--color-accent);
   font-weight: bold;
   text-align: center;
   animation: fadeInUp 0.8s ease-out 0.3s backwards;
   transition: all 1s ease-in-out;
   white-space: nowrap;
+  font-style: normal !important;
 }
 
 /* Animation d'apparition du logo */

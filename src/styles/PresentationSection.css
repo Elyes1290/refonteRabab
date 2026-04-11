@@ -2,7 +2,7 @@
 
 /* Section principale */
 .presentation-section {
-  background: #faf1e6;
+  background: var(--color-bg);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -44,7 +44,7 @@
 
 /* Paragraphes de présentation */
 .presentation-content p {
-  text-align: justify;
+  text-align: left;
   line-height: 1.6;
   margin-bottom: 1rem;
   font-weight: normal;

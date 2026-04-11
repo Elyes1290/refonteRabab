@@ -20,9 +20,10 @@ export interface ReservationData {
   prenom: string;
   email: string;
   telephone: string;
-  service_type: "seance_online" | "seance_presentiel";
+  service_type: "seance_online" | "seance_presentiel" | "seance_domicile";
   date_reservation: string;
   heure_reservation: string;
+  duration_minutes?: 60 | 90;
   montant: number;
   notes?: string;
 }
@@ -80,6 +81,10 @@ class ApiService {
     formData.append("service_type", reservationData.service_type);
     formData.append("date_reservation", reservationData.date_reservation);
     formData.append("heure_reservation", reservationData.heure_reservation);
+    formData.append(
+      "duration_minutes",
+      String(reservationData.duration_minutes ?? 60)
+    );
     formData.append("montant", reservationData.montant.toString());
     if (reservationData.notes) {
       formData.append("notes", reservationData.notes);
@@ -95,13 +100,15 @@ class ApiService {
   async checkAvailability(
     date: string,
     heure: string,
-    serviceType: "seance_online" | "seance_presentiel"
+    serviceType: "seance_online" | "seance_presentiel" | "seance_domicile",
+    durationMinutes: 60 | 90
   ): Promise<ApiResponse<{ available: boolean }>> {
     const formData = new FormData();
     formData.append("action", "check_availability");
     formData.append("date", date);
     formData.append("heure", heure);
     formData.append("service_type", serviceType);
+    formData.append("duration_minutes", String(durationMinutes));
 
     return this.request<{ available: boolean }>("", {
       method: "POST",

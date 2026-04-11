@@ -2,7 +2,7 @@
 
 /* Section principale */
 .success-page {
-  background: #faf1e6;
+  background: var(--color-bg);
   min-height: 80vh;
   display: flex;
   align-items: center;

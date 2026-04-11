@@ -2,7 +2,7 @@
 
 /* Section principale */
 .booking-page {
-  background: #faf1e6;
+  background: var(--color-bg);
   min-height: 100vh;
   padding: 2rem 0;
 }
@@ -14,51 +14,110 @@
 }
 
 .booking-title {
-  font-family: "Avenir", Arial, sans-serif;
-  font-weight: bold;
-  font-size: 48px;
-  color: #5c7671;
-  margin-bottom: 18px;
+  font-family: var(--font-titles);
+  font-weight: 400;
+  font-size: 72px;
+  color: var(--color-text);
+  margin-bottom: 2.5rem;
+  text-align: center;
 }
 
 .booking-description {
-  font-family: "Avenir", Arial, sans-serif;
   font-size: 20px;
   color: var(--color-text);
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
   line-height: 1.6;
+  text-align: center;
+}
+
+.booking-description-cinzel {
+  font-family: "Cinzel Decorative Local", serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--color-body-text);
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  line-height: 1.8;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .booking-title {
+    font-size: 48px;
+  }
+
+  .booking-description {
+    font-size: 17px;
+  }
+
+  .booking-description-cinzel {
+    font-size: 14px;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-title {
+    font-size: 40px;
+  }
+
+  .booking-description-cinzel {
+    font-size: 13px;
+  }
 }
 
 /* Container des services */
 .booking-services-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 100%;
+  margin: 0 auto 2rem auto;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 1100px) {
+  .booking-services-container {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 640px) {
+  .booking-services-container {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    padding: 0 1rem;
+  }
 }
 
 /* Carte de service */
 .booking-service-card {
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  border-radius: 70px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 0rem 2.5rem 1.5rem 2.5rem;
   width: 100%;
-  max-width: 600px;
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.booking-service-card.online {
-  border: 3px solid #5c7671;
+.booking-service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.booking-service-card.presentiel {
-  border: 3px solid #5c7671;
+@media (max-width: 640px) {
+  .booking-service-card {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+  }
 }
 
 /* Badge type de séance */
@@ -75,24 +134,30 @@
 }
 
 .booking-service-badge.online {
-  background: #5c7671;
+  background: var(--color-accent);
 }
 
 .booking-service-badge.presentiel {
-  background: #5c7671;
+  background: var(--color-accent);
 }
 
 /* Contenu du service */
 .booking-service-content {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  width: 100%;
 }
 
 .booking-service-title {
-  font-family: "Avenir", Arial, sans-serif;
-  font-weight: bold;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-style: italic;
   font-size: 24px;
-  color: #5c7671;
-  margin-bottom: 8px;
+  color: var(--color-accent);
+  margin-bottom: 1.2rem;
+  padding-bottom: 0;
+  border-bottom: none;
+  text-align: center;
+  width: 100%;
 }
 
 .booking-service-subtitle {
@@ -103,11 +168,11 @@
 }
 
 .booking-service-subtitle.online {
-  color: #5c7671;
+  color: var(--color-accent);
 }
 
 .booking-service-subtitle.presentiel {
-  color: #5c7671;
+  color: var(--color-accent);
 }
 
 .booking-service-description {
@@ -128,63 +193,108 @@
 /* Durée et bouton */
 .booking-service-footer {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
+  width: 100%;
 }
 
-.booking-service-pricing {
+.booking-service-pricing-dual {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.booking-service-price-option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
 }
 
 .booking-service-duration {
-  font-family: "Avenir", Arial, sans-serif;
-  font-weight: bold;
   font-size: 18px;
-}
-
-.booking-service-duration.online {
-  color: #5c7671;
-}
-
-.booking-service-duration.presentiel {
-  color: #5c7671;
+  color: var(--color-text);
+  font-weight: 400;
 }
 
 .booking-service-price {
-  font-family: "Avenir", Arial, sans-serif;
-  font-weight: bold;
-  font-size: 20px;
-  color: #5c7671;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .booking-service-button {
+  background: var(--color-accent);
   color: #fff;
   border: none;
-  border-radius: 24px;
-  padding: 0.8rem 1.5rem;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 50px;
+  padding: 0.55rem 2.2rem;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.booking-service-button.online {
-  background: #5c7671;
-}
-
-.booking-service-button.presentiel {
-  background: #5c7671;
+  transition: all 0.3s ease;
+  width: auto;
+  margin-top: 0;
 }
 
 .booking-service-button:hover {
+  background: var(--color-accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Carte tarif etudiant */
+.booking-student-card {
+  background: #fff;
+  border: 1px solid #dfeae7;
+  border-radius: 40px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  max-width: 700px;
+  margin: 0.8rem auto 1.6rem;
+  padding: 1.4rem 2rem;
+  text-align: center;
+}
+
+.booking-student-title {
+  margin: 0 0 0.35rem;
+  color: var(--color-accent);
+  font-family: "Lato", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.booking-student-price {
+  margin: 0 0 0.6rem;
+  color: var(--color-text);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.booking-student-text {
+  margin: 0.25rem 0;
+  color: var(--color-text);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.booking-student-contact-btn {
+  display: inline-block;
+  margin-top: 0.9rem;
+  background: var(--color-accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 0.58rem 1.35rem;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.booking-student-contact-btn:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-1px);
 }
 
 /* Modal overlay */
@@ -222,17 +332,64 @@
   background: none;
   border: none;
   font-size: 28px;
-  color: #5c7671;
+  color: var(--color-accent);
   cursor: pointer;
 }
 
 .booking-modal-title {
-  font-family: "Avenir", Arial, sans-serif;
-  font-weight: bold;
+  font-family: var(--font-headings);
+  font-weight: 600;
   font-size: 26px;
-  color: #5c7671;
+  color: var(--color-text);
   text-align: center;
   margin-bottom: 24px;
+}
+
+/* Sélecteur de durée */
+.booking-duration-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.booking-duration-option {
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-width: 120px;
+}
+
+.booking-duration-option:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.booking-duration-option.selected {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.booking-duration-option.selected .booking-duration-time,
+.booking-duration-option.selected .booking-duration-price {
+  color: #fff;
+}
+
+.booking-duration-time {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.booking-duration-price {
+  font-size: 16px;
+  color: var(--color-text);
+  font-weight: 400;
 }
 
 /* Calendrier */
@@ -251,7 +408,7 @@
 }
 
 .booking-calendar-nav {
-  background: #5c7671 !important;
+  background: var(--color-accent) !important;
   color: white !important;
   border: none;
   border-radius: 8px;
@@ -274,7 +431,7 @@
 }
 
 .booking-calendar-nav:hover {
-  background: #4a5e5a !important;
+  background: var(--color-accent-hover) !important;
   color: white !important;
 }
 
@@ -285,7 +442,7 @@
 .booking-calendar-month {
   font-weight: bold;
   font-size: 18px;
-  color: #5c7671;
+  color: var(--color-accent);
 }
 
 .booking-calendar-grid {
@@ -299,7 +456,7 @@
 .booking-calendar-day-header {
   text-align: center;
   font-weight: bold;
-  color: #5c7671;
+  color: var(--color-accent);
   padding: 8px 4px;
 }
 
@@ -324,18 +481,18 @@
 }
 
 .booking-calendar-day.selectable {
-  background: #5c7671;
+  background: var(--color-accent);
   color: #fff !important;
 }
 
 .booking-calendar-day.selectable:hover {
-  background: #4a5e5a;
+  background: var(--color-accent-hover);
 }
 
 .booking-calendar-day.selected {
-  background: #4a5e5a;
+  background: var(--color-accent-hover);
   color: #fff !important;
-  border: 2px solid #4a5e5a;
+  border: 2px solid var(--color-accent-hover);
   font-weight: bold;
 }
 
@@ -347,7 +504,7 @@
 .booking-time-slots-title {
   font-weight: bold;
   margin-bottom: 8px;
-  color: #5c7671;
+  color: var(--color-accent);
 }
 
 .booking-time-slots-grid {
@@ -366,16 +523,16 @@
 }
 
 .booking-time-slot.available {
-  background: #5c7671;
+  background: var(--color-accent);
 }
 
 .booking-time-slot.available:hover {
-  background: #4a5e5a;
+  background: var(--color-accent-hover);
 }
 
 .booking-time-slot.selected {
-  background: #4a5e5a;
-  border: 2px solid #4a5e5a;
+  background: var(--color-accent-hover);
+  border: 2px solid var(--color-accent-hover);
   font-weight: bold;
 }
 
@@ -408,7 +565,7 @@
 
 .booking-form-input:focus {
   outline: none;
-  border-color: #5c7671;
+  border-color: var(--color-accent);
   box-shadow: 0 0 0 2px rgba(92, 118, 113, 0.2);
 }
 
@@ -424,7 +581,7 @@
 
 .booking-form-textarea:focus {
   outline: none;
-  border-color: #5c7671;
+  border-color: var(--color-accent);
   box-shadow: 0 0 0 2px rgba(92, 118, 113, 0.2);
 }
 
@@ -438,7 +595,7 @@
 }
 
 .booking-form-submit {
-  background: #5c7671;
+  background: var(--color-accent);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -450,7 +607,7 @@
 }
 
 .booking-form-submit:hover:not(:disabled) {
-  background: #4a5e5a;
+  background: var(--color-accent-hover);
   transform: translateY(-1px);
 }
 
@@ -463,7 +620,7 @@
 /* Confirmation */
 .booking-confirmation {
   text-align: center;
-  color: #5c7671;
+  color: var(--color-accent);
   font-weight: bold;
   font-size: 20px;
   margin-top: 24px;
@@ -493,7 +650,7 @@
 }
 
 .booking-additional-info strong {
-  color: #5c7671;
+  color: var(--color-accent);
 }
 
 /* Responsive */
@@ -523,6 +680,20 @@
   .booking-service-button {
     width: 100%;
     text-align: center;
+  }
+
+  .booking-student-card {
+    margin: 0.8rem 1rem 1.4rem;
+    padding: 1.1rem 1.1rem;
+    border-radius: 26px;
+  }
+
+  .booking-student-title {
+    font-size: 23px;
+  }
+
+  .booking-student-price {
+    font-size: 21px;
   }
 
   .booking-modal-content {
@@ -567,5 +738,154 @@
 
   .booking-calendar-month {
     font-size: 16px;
+  }
+
+  .booking-duration-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .booking-duration-option {
+    width: 100%;
+  }
+}
+
+/* Carte constellation familiale */
+.booking-constellation-card {
+  background: #fff;
+  border-radius: 70px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 0.5rem 3rem 1.5rem 3rem;
+  max-width: 500px;
+  margin: 1rem auto 2rem auto;
+  text-align: center;
+}
+
+.booking-constellation-title {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  color: var(--color-accent);
+  margin-bottom: 1.2rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.booking-constellation-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  margin-bottom: 1rem;
+}
+
+.booking-constellation-time {
+  font-size: 16px;
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+.booking-constellation-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.booking-constellation-lieu {
+  font-family: "Lato", sans-serif;
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: 1.2rem;
+}
+
+.booking-constellation-button {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.6rem 2.5rem;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.booking-constellation-button:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .booking-constellation-card {
+    padding: 1.5rem;
+    margin: 1rem 1.5rem;
+  }
+
+  .booking-constellation-title {
+    font-size: 20px;
+  }
+
+  .booking-constellation-info {
+    gap: 2rem;
+  }
+}
+
+.booking-waitlist-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.booking-waitlist-modal-content {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2rem;
+  position: relative;
+}
+
+.booking-waitlist-session-meta {
+  text-align: center;
+  margin-top: -8px;
+  margin-bottom: 1.25rem;
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.booking-waitlist-session-picker {
+  margin-bottom: 0.9rem;
+}
+
+.booking-waitlist-session-picker label {
+  display: block;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.45rem;
+}
+
+.booking-waitlist-session-picker .booking-form-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .booking-waitlist-modal-content {
+    padding: 1.4rem 1rem;
   }
 }

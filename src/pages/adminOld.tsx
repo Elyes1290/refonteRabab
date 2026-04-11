@@ -1158,7 +1158,7 @@ const Admin: React.FC = () => {
                      <div class="invoice-header">
              <div class="company-info">
                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                 <img src="/images/logo.png" alt="Logo Rabab Ali" style="width: 60px; height: 60px; object-fit: contain;" />
+                 <img src="/images/logo.png?v=1" alt="Logo Rabab Ali" style="width: 60px; height: 60px; object-fit: contain;" />
                  <h1 style="margin: 0;">Rabab Ali</h1>
                </div>
                <p><strong>Thérapeute & Coach de Vie</strong></p>

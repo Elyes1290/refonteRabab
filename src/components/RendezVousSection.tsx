@@ -1,7 +1,7 @@
-import React from "react";
+﻿import React from "react";
 
 const RendezVousSection: React.FC = () => (
-  <section className="rendezvous-section" style={{ background: "#faf1e6" }}>
+  <section className="rendezvous-section" style={{ background: "#F2E8E1" }}>
     <h2>Prendre rendez-vous</h2>
     <p>
       Envie d'avancer sur ton chemin ? Réserve ta séance d'accompagnement en
